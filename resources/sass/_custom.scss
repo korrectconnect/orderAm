@@ -1,0 +1,89 @@
+// Here you can add other styles
+
+
+.c-header.c-header-fixed{
+    top:0px;
+}
+
+.null {padding: 0px; margin: 0px;}
+
+.click-file{
+    cursor:pointer;
+}
+
+.card-overflow {
+    overflow-y: auto;
+    max-height: 340px;
+}
+
+.cover-container {
+    width: 100%;
+    background-color: #fff;
+    height: auto;
+}
+
+.vendor-image {
+    background-color: #eee;
+    width: 100%;
+    height: 300px;
+    cursor: pointer;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: 0px;
+}
+
+.cover-image {
+    background-color: #eee;
+    width: 100%;
+    height: 300px;
+    cursor: pointer;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: 0px;
+}
+
+.cover-txt {
+    color: #999;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.menu-vendor-div {
+    border-bottom: solid 2px #eee;
+    margin-bottom: 10px;
+    background-color: #fff;
+    padding: 8px 0px;
+    border-radius: 10px;
+}
+
+.menu-vendor-div:hover {
+    background-color: #eee;
+}
+
+.menu-vendor-image {
+    width:  80px;
+    height:  80px;
+    border-radius: 10px;
+    background-color: #eee;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: 0px;
+}
+
+.menu-vendor-txt {
+    padding: 5px 5px;
+}
+
+.search-vendor {
+    background-color:#eee;
+    margin-bottom:10px;
+}
+
+.category-label {
+    display:inline-block;
+    padding:4px 10px;
+    font-size: 13px;
+    margin:0px 5px;
+    border-radius:5px;
+    color:#fff;
+}
