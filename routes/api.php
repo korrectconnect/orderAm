@@ -23,14 +23,10 @@ Route::group(['middleware' => ['auth:api']], function() {
     Route::post('/users/update/{id}', 'ApiController@editUser');
     Route::get('/vendor/{id}', 'ApiController@vendor');
     Route::get('/vendors', 'ApiController@vendors');
-    Route::get('/vendors/{p}', 'ApiController@vendors');
     Route::get('/menu/{id}', 'ApiController@getMenus');
-    Route::get('/menu/{id}/{p}', 'ApiController@getMenus');
     Route::get('/menu/c/{id}', 'ApiController@getMenusCategory');
     Route::get('/menu/{id}/c/{category}', 'ApiController@getMenusByCategory');
-    Route::get('/menu/{id}/c/{category}/{p}', 'ApiController@getMenusByCategory');
     Route::get('/vendors/s/{key}', 'ApiController@searchVendors');
-    Route::get('/vendors/s/{key}/{p}', 'ApiController@searchVendors');
 
 });
 
