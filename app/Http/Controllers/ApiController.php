@@ -9,6 +9,9 @@ use App\Vendors;
 use App\Menus;
 use App\User;
 use App\Menu_category;
+use App\Order;
+use App\Order_item;
+use App\Order_status;
 
 class ApiController extends Controller
 {
@@ -60,5 +63,62 @@ class ApiController extends Controller
         $search = Vendors::where('name','LIKE',"%$key%")->orderBy('id','desc')->get();
 
         return AppResource::collection($search);
+    }
+
+    public function makeOrder(Request $request) {
+        $order = new Order;
+        $order_no = auth()->user()->id.time().rand(0,100);
+
+        $order->user_id = auth()->user()->id;
+        $order->order_no = $order_no;
+        $order->vendor_id = $request->vendor_id;
+        // $order->transaction_id = $request->transaction_id;
+        // $order->coupon_code = $request->coupon_code;
+        // $order->address = $request->address;
+        // $order->payment_mode = $request->payment_mode;
+        // $order->delivery_charge = $request->delivery_charge;
+        // $order->vendor_charge = $request->vendor_charge;
+        // $order->total = $request->total;
+        // $order->tax = $request->tax;
+        // $order->comment = $request->comment;
+        // $order->balance = $request->balance;
+        // $order->status = $request->status;
+        $order->cancelled = 0;
+
+        if($order->save()) {
+            return new AppResource($order);
+        }
+    }
+
+    public function cancelOrder(Request $request) {
+        $order = Order::where('order_no', $request->order_no)->update(['cancelled' => 1]);
+        $get = Order::where('order_no', $request->order_no)->first();
+
+        return new AppResource($get);
+    }
+
+    public function insertOrderItem(Request $request) {
+        $order_item = new Order_item;
+
+        $order_item->order_no = $request->order_no ;
+        $order_item->menu_id = $request->menu_id ;
+        $order_item->quantity = $request->quantity ;
+        $order_item->name = $request->name ;
+        $order_item->price = $request->price ;
+
+        if($order_item->save()) {
+            return new AppResource($order_item);
+        }
+    }
+
+    public function insertOrderStatus(Request $request) {
+        $order_status = new Order_status;
+
+        $order_status->order_no = $request->order_no ;
+        $order_status->status = $request->status ;
+
+        if($order_status->save()) {
+            return new AppResource($order_status);
+        }
     }
 }

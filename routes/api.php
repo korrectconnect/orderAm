@@ -21,6 +21,10 @@ Route::post('/login', 'Api\authController@login');
 Route::group(['middleware' => ['auth:api']], function() {
 
     Route::post('/users/update/{id}', 'ApiController@editUser');
+    Route::post('/makeOrder', 'ApiController@makeOrder');
+    Route::post('/insertOrderItem', 'ApiController@insertOrderItem');
+    Route::post('/insertOrderStatus', 'ApiController@insertOrderStatus');
+    Route::post('/cancelOrder', 'ApiController@cancelOrder');
     Route::get('/vendor/{id}', 'ApiController@vendor');
     Route::get('/vendors', 'ApiController@vendors');
     Route::get('/menu/{id}', 'ApiController@getMenus');
