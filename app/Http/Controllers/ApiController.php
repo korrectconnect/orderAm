@@ -72,17 +72,17 @@ class ApiController extends Controller
         $order->user_id = auth()->user()->id;
         $order->order_no = $order_no;
         $order->vendor_id = $request->vendor_id;
-        // $order->transaction_id = $request->transaction_id;
-        // $order->coupon_code = $request->coupon_code;
-        // $order->address = $request->address;
-        // $order->payment_mode = $request->payment_mode;
-        // $order->delivery_charge = $request->delivery_charge;
-        // $order->vendor_charge = $request->vendor_charge;
-        // $order->total = $request->total;
-        // $order->tax = $request->tax;
-        // $order->comment = $request->comment;
-        // $order->balance = $request->balance;
-        // $order->status = $request->status;
+        $order->transaction_id = $request->transaction_id;
+        $order->coupon_code = $request->coupon_code;
+        $order->address = $request->address;
+        $order->payment_mode = $request->payment_mode;
+        $order->delivery_charge = $request->delivery_charge;
+        $order->vendor_charge = $request->vendor_charge;
+        $order->total = $request->total;
+        $order->tax = $request->tax;
+        $order->comment = $request->comment;
+        $order->balance = $request->balance;
+        $order->status = $request->status;
         $order->cancelled = 0;
 
         if($order->save()) {
