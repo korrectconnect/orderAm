@@ -99,8 +99,23 @@ class ApiController extends Controller
         }
     }
 
+    public function allOrder() {
+        $order = Order::where('user_id',auth()->user()->id)->get();
+        return AppResource::collection($order);
+    }
+
+    public function runningOrder() {
+        $order = Order::where([['user_id','=',auth()->user()->id],['status','=',0]])->get();
+        return AppResource::collection($order);
+    }
+
+    public function completedOrder() {
+        $order = Order::where([['user_id','=',auth()->user()->id],['status','=',1]])->get();
+        return AppResource::collection($order);
+    }
+
     public function cancelOrder(Request $request) {
-        $order = Order::where('order_no', $request->order_no)->update(['cancelled' => 1]);
+        $order = Order::where('order_no', $request->order_no)->update(['cancelled' => 1,'status' => 1]);
         $get = Order::where('order_no', $request->order_no)->first();
 
         return new AppResource($get);
