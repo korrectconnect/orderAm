@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Address;
 use Illuminate\Http\Request;
-use App\ApiModel ;
+use Illuminate\Support\Facades\DB;
 use App\Http\Resources\AppResource;
 use App\Vendors;
 use App\Menus;
@@ -16,13 +17,12 @@ use App\Order_status;
 class ApiController extends Controller
 {
     //
-    public function editUser($id, Request $request) {
-        $user = User::findOrFail($id);
+    public function editUser(Request $request) {
+        $user = User::findOrFail(auth()->user()->id);
 
         $user->firstname = $request->firstname ;
         $user->lastname = $request->lastname ;
         $user->phone = $request->phone ;
-        $user->address = $request->address ;
 
         if($user->save()) {
             return new AppResource($user);
@@ -65,6 +65,15 @@ class ApiController extends Controller
         return AppResource::collection($search);
     }
 
+    public function searchVendorsByLocation(Request $request) {
+        $search = Vendors::where([
+            ['state','=',$request->state],
+            ['lga','=',$request->lga]
+        ])->get();
+
+        return AppResource::collection($search);
+    }
+
     public function makeOrder(Request $request) {
         $order = new Order;
         $order_no = auth()->user()->id.time().rand(0,100);
@@ -82,7 +91,7 @@ class ApiController extends Controller
         $order->tax = $request->tax;
         $order->comment = $request->comment;
         $order->balance = $request->balance;
-        $order->status = $request->status;
+        $order->status = 0;
         $order->cancelled = 0;
 
         if($order->save()) {
@@ -120,5 +129,56 @@ class ApiController extends Controller
         if($order_status->save()) {
             return new AppResource($order_status);
         }
+    }
+
+    public function saveAddress(Request $request) {
+        $address = new Address ;
+
+        $address->user_id = auth()->user()->id;
+        $address->state = $request->state;
+        $address->lga = $request->lga;
+        $address->address = $request->address;
+        $address->default = NULL ;
+
+        if($address->save()) {
+            return new AppResource($address);
+        }
+    }
+
+    public function setDefaultAddress(Request $request) {
+        $updateAddressToNULL = DB::table('address')->update(['default' => NULL]);
+        $user = DB::table('users')->where('id',auth()->user()->id)->update(['address_id' => $request->address_id]);
+        $updateAddressDefault = Address::findOrFail($request->address_id);
+        $updateAddressDefault->update(['default' => 1]);
+        return new AppResource($updateAddressDefault);
+    }
+
+    public function getDefaultAddress() {
+        $address = Address::where([['user_id','=',auth()->user()->id],['default','=',1]])->firstOrFail();
+
+        return new AppResource($address);
+    }
+
+    public function getAddress() {
+        $address = Address::where('user_id',auth()->user()->id)->get();
+        return AppResource::collection($address);
+    }
+
+    public function deleteAddress(Request $request) {
+        $address = Address::where([['user_id','=',auth()->user()->id],['id','=',$request->address_id]])->firstOrFail() ;
+        $user = DB::table('users')->where('id',auth()->user()->id)->first();
+
+        if ($address->delete()) {
+            if($user->address_id == $address->id) {
+                $updateUser = DB::table('users')->where('id',auth()->user()->id)->update(['address_id' => NULL]);
+            }
+            return new AppResource($address);
+        }
+    }
+
+    public function test($id,$name) {
+        $users =DB::table('users')->where('id',$id)->update(['firstname' => $name]);
+        $user =DB::table('users')->where('id',$id)->first();
+        echo $user->firstname." ".$user->lastname ;
     }
 }

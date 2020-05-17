@@ -28,7 +28,7 @@ class CreateOrderTable extends Migration
             $table->decimal('tax')->nullable();
             $table->text('comment')->nullable();
             $table->decimal('balance')->nullable();
-            $table->string('status')->nullable();
+            $table->boolean('status')->nullable();
             $table->boolean('cancelled')->nullable();
             $table->timestamps();
         });
