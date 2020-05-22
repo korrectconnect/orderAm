@@ -29,10 +29,20 @@ Route::group(['middleware' => ['auth:api']], function() {
     Route::post('/address/delete', 'ApiController@deleteAddress');
     Route::post('/address/default', 'ApiController@setDefaultAddress');
     Route::post('/vendors/search', 'ApiController@searchVendorsByLocation');
+    Route::post('/cart', 'ApiController@addToCart');
+
+    Route::delete('/cart/{id}', 'ApiController@deleteCart');
 
     Route::get('/address', 'ApiController@getAddress');
+    Route::get('/cart', 'ApiController@cart');
+    Route::get('/state', 'ApiController@state');
+    Route::get('/lga', 'ApiController@lga');
+    Route::get('/area', 'ApiController@area');
+    Route::get('/cart/clear', 'ApiController@clearCart');
     Route::get('/address/default', 'ApiController@getDefaultAddress');
     Route::get('/vendor/{id}', 'ApiController@vendor');
+    Route::get('/vendors/category', 'ApiController@vendorsCategory');
+    Route::get('/vendors/featured/{limit}', 'ApiController@vendorsFeatured');
     Route::get('/vendors', 'ApiController@vendors');
     Route::get('/menu/{id}', 'ApiController@getMenus');
     Route::get('/menu/c/{id}', 'ApiController@getMenusCategory');

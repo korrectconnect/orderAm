@@ -49,7 +49,7 @@
         <div class="modal-body">
 
             <!-- Start form -->
-                @include('admin.ajax.add_menu_form')
+                @include('admin.pages.ajax.add_menu_form')
             <!-- End form -->
 
         </div>
@@ -74,7 +74,7 @@
         <div class="modal-body">
 
             <!-- Start form -->
-            @include('admin.ajax.add_category_form')
+            @include('admin.pages.ajax.add_category_form')
             <!-- End form -->
 
         </div>

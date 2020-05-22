@@ -21,8 +21,9 @@ class CreateVendorsTable extends Migration
             $table->string('address')->nullable();
             $table->string('state')->nullable();
             $table->string('lga')->nullable();
+            $table->string('area')->nullable();
             $table->string('country')->nullable();
-            $table->string('zip')->nullable();
+            $table->int('zip')->nullable();
             $table->string('type')->nullable();
             $table->decimal('opening')->nullable();
             $table->decimal('closing')->nullable();
@@ -30,6 +31,7 @@ class CreateVendorsTable extends Migration
             $table->decimal('vendor_charge')->nullable();
             $table->decimal('tax')->nullable();
             $table->string('image')->nullable();
+            $table->string('cover')->nullable();
             $table->tinyInteger('status')->nullable();
             $table->timestamps();
         });

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\AdminModel;
+use App\Location;
+use App\Vendor_category;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -22,11 +24,25 @@ class AdminController extends Controller
             'menus' => $menus
         );
 
-        return view('admin.homepage')->with($data);
+        return view('admin.pages.homepage')->with($data);
     }
 
     public function addVendorForm() {
-        return view('admin.vendor.add');
+        $categories = Vendor_category::all() ;
+        $states = Location::where('type','=','state')->get();
+        $countries = Location::where('type','=','country')->get();
+        $lgas = Location::where('type','=','lga')->get();
+        $areas = Location::where('type','=','area')->get();
+
+        $data = array(
+            'categories' => $categories,
+            'states' => $states,
+            'countries' => $countries,
+            'lgas' => $lgas,
+            'areas' => $areas,
+        );
+
+        return view('admin.pages.vendor.add')->with($data);
     }
 
     public function vendors() {
@@ -34,7 +50,7 @@ class AdminController extends Controller
         $data = array(
             'query' => $query
         );
-        return view('admin.vendor.view')->with($data);
+        return view('admin.pages.vendor.view')->with($data);
     }
 
     public function vendor($id) {
@@ -48,7 +64,7 @@ class AdminController extends Controller
             'categories' => $categories
         );
 
-        return view('admin.vendor.single')->with($data);
+        return view('admin.pages.vendor.single')->with($data);
     }
 
     public function menus() {
@@ -60,7 +76,7 @@ class AdminController extends Controller
             'vendors' => $vendors,
             'menus' => $menus
         );
-        return view('admin.menus.home')->with($data);
+        return view('admin.pages.menus.home')->with($data);
     }
 
     public function menu($id) {
@@ -74,7 +90,26 @@ class AdminController extends Controller
             'menus' => $menus,
             'categories' => $categories
         );
-        return view('admin.menus.view')->with($data);
+        return view('admin.pages.menus.view')->with($data);
+    }
+
+    public function vendorCategory() {
+        $categories = Vendor_category::all() ;
+
+        $data = array(
+            'categories' => $categories,
+        );
+        return view('admin.pages.vendor.category')->with($data);
+    }
+
+    public function location() {
+        $locations = Location::all() ;
+
+        $data = array(
+            'locations' => $locations,
+        );
+
+        return view('admin.pages.vendor.location')->with($data);
     }
 
 }

@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Address;
+use App\Cart;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\AppResource;
+use App\Location;
 use App\Vendors;
 use App\Menus;
 use App\User;
@@ -13,6 +15,7 @@ use App\Menu_category;
 use App\Order;
 use App\Order_item;
 use App\Order_status;
+use App\Vendor_category;
 
 class ApiController extends Controller
 {
@@ -26,6 +29,8 @@ class ApiController extends Controller
 
         if($user->save()) {
             return new AppResource($user);
+        }else {
+            return response()->json(['status' => '400']);
         }
     }
 
@@ -68,7 +73,9 @@ class ApiController extends Controller
     public function searchVendorsByLocation(Request $request) {
         $search = Vendors::where([
             ['state','=',$request->state],
-            ['lga','=',$request->lga]
+            ['lga','=',$request->lga],
+            ['area','=',$request->area],
+            ['type','=',$request->category],
         ])->get();
 
         return AppResource::collection($search);
@@ -96,6 +103,8 @@ class ApiController extends Controller
 
         if($order->save()) {
             return new AppResource($order);
+        }else {
+            return response()->json(['status' => '400']);
         }
     }
 
@@ -132,6 +141,8 @@ class ApiController extends Controller
 
         if($order_item->save()) {
             return new AppResource($order_item);
+        }else {
+            return response()->json(['status' => '400']);
         }
     }
 
@@ -143,6 +154,8 @@ class ApiController extends Controller
 
         if($order_status->save()) {
             return new AppResource($order_status);
+        }else {
+            return response()->json(['status' => '400']);
         }
     }
 
@@ -157,6 +170,8 @@ class ApiController extends Controller
 
         if($address->save()) {
             return new AppResource($address);
+        }else {
+            return response()->json(['status' => '400']);
         }
     }
 
@@ -186,8 +201,10 @@ class ApiController extends Controller
         if ($address->delete()) {
             if($user->address_id == $address->id) {
                 $updateUser = DB::table('users')->where('id',auth()->user()->id)->update(['address_id' => NULL]);
+                return new AppResource($address);
             }
-            return new AppResource($address);
+
+
         }
     }
 
@@ -196,4 +213,85 @@ class ApiController extends Controller
         $user =DB::table('users')->where('id',$id)->first();
         echo $user->firstname." ".$user->lastname ;
     }
+
+    public function addToCart(Request $request) {
+        $get = Cart::where([['user_id','=',auth()->user()->id],['menu_id','=',$request->menu_id]])->first();
+
+        if($get != null) {
+            $quantity = $get->quantity + 1;
+            $update = Cart::where([['menu_id','=',$request->menu_id],['user_id','=',auth()->user()->id]])->update(['quantity' => $quantity]);
+            $getCart = Cart::where([['user_id','=',auth()->user()->id],['menu_id','=',$request->menu_id]])->first();
+            return new AppResource($getCart);
+        }else {
+            $cart = new Cart ;
+            $cart->user_id = auth()->user()->id;
+            $cart->menu_id = $request->menu_id;
+            $cart->quantity = 1;
+            $cart->name = $request->name;
+            $cart->price = $request->price;
+
+            if ($cart->save()) {
+                return new AppResource($cart);
+            }else {
+                return response()->json(['status' => '400']);
+            }
+        }
+    }
+
+    public function vendorsCategory() {
+        $query = Vendor_category::all();
+
+        return AppResource::collection($query);
+    }
+
+    public function cart() {
+        $query = Cart::where('user_id','=',auth()->user()->id)->get();
+
+        return AppResource::collection($query);
+    }
+
+    public function deleteCart($id) {
+        $delete = Cart::where([['user_id','=',auth()->user()->id],['menu_id','=',$id]])->firstOrFail() ;
+
+        if ($delete->delete()) {
+            return new AppResource($delete);
+        }else {
+            return response()->json(['status' => '400']);
+        }
+    }
+
+    public function clearCart() {
+        $delete = Cart::where([['user_id','=',auth()->user()->id]])->delete() ;
+
+        if ($delete) {
+            return response()->json(['status' => '200']);
+        }else {
+            return response()->json(['status' => '400']);
+        }
+    }
+
+    public function vendorsFeatured($limit) {
+        $vendors = Vendors::all()->random($limit) ;
+
+        return AppResource::collection($vendors);
+    }
+
+    public function state() {
+        $query = Location::where('type','=','state')->get();
+
+        return AppResource::collection($query);
+    }
+
+    public function lga() {
+        $query = Location::where('type','=','lga')->get();
+
+        return AppResource::collection($query);
+    }
+
+    public function area() {
+        $query = Location::where('type','=','area')->get();
+
+        return AppResource::collection($query);
+    }
+
 }

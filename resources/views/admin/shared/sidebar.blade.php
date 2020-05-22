@@ -14,11 +14,19 @@
         <div class="c-sidebar-nav-dropdown-items">
             <a class="dropdown-item" href="{{route('admin.vendor.add')}}">
                 <i class="fa fa-pencil"></i> &nbsp; &nbsp;
-                Add
+                Add Vendor
             </a>
             <a class="dropdown-item" href="{{route('admin.vendor.view')}}">
                 <i class="fa fa-pencil"></i> &nbsp; &nbsp;
                 View All
+            </a>
+            <a class="dropdown-item" href="{{route('admin.vendor.category')}}">
+                <i class="fa fa-pencil"></i> &nbsp; &nbsp;
+                Vendor Category
+            </a>
+            <a class="dropdown-item" href="{{route('admin.vendor.location')}}">
+                <i class="fa fa-pencil"></i> &nbsp; &nbsp;
+                Vendor Location
             </a>
         </div>
 

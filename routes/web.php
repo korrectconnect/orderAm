@@ -98,7 +98,9 @@
     Route::group(['middleware' => ['admin'],'prefix' => 'adminredirect'], function() {
 
         Route::get('dashboard', ['as' => 'admin.dashboard', 'uses' => 'AdminController@dashboard']);
+        Route::get('vendor/location', ['as' => 'admin.vendor.location', 'uses' => 'AdminController@location']);
         Route::get('vendor/add', ['as' => 'admin.vendor.add', 'uses' => 'AdminController@addVendorForm']);
+        Route::get('vendor/category', ['as' => 'admin.vendor.category', 'uses' => 'AdminController@vendorCategory']);
         Route::get('vendor', ['as' => 'admin.vendor.view', 'uses' => 'AdminController@vendors']);
         Route::get('vendor/{id}', ['uses' => 'AdminController@vendor']);
         Route::get('menus', ['as' => 'admin.menus', 'uses' => 'AdminController@menus']);
@@ -108,13 +110,19 @@
         //Ajax Requests
 
         Route::post('vendor/add', ['as' => 'admin.vendor.add', 'uses' => 'AjaxController@addVendor']);
+        Route::post('vendor/category', 'AjaxController@addVendorCategory');
+        Route::post('vendor/location', 'AjaxController@addVendorLocation');
         Route::post('menus/add', ['as' => 'admin.menu.add', 'uses' => 'AjaxController@addMenu']);
         Route::post('menuCategory/add', ['as' => 'admin.menu_category.add', 'uses' => 'AjaxController@addMenuCategory']);
         Route::post('menuCategory/delete', ['as' => 'admin.menu_category.delete', 'uses' => 'AjaxController@deleteMenuCategory']);
 
         Route::get('ajax/viewVendor/{id}', ['as' => 'admin.ajax.vendor.view', 'uses' => 'AjaxController@viewVendor']);
         Route::get('ajax/addMenuFrom/{id}', [ 'uses' => 'AjaxController@addMenuFrom']);
+        Route::get('ajax/deleteVendorCategory/{id}', 'AjaxController@deleteVendorCategory');
+        Route::get('ajax/deleteVendorLocation/{id}', 'AjaxController@deleteVendorLocation');
         Route::get('ajax/refreshMenu', [ 'uses' => 'AjaxController@refreshMenus']);
+        Route::get('ajax/refreshVendorCategory', [ 'uses' => 'AjaxController@refreshVendorCategory']);
+        Route::get('ajax/refreshVendorLocation', [ 'uses' => 'AjaxController@refreshVendorLocation']);
         Route::get('ajax/refreshMenu/{id}', [ 'uses' => 'AjaxController@refreshMenu']);
         Route::get('ajax/getMenuCategoryList/{id}', ['uses' => 'AjaxController@getMenuCategoryList']);
         Route::get('ajax/deleteMenu/{id}', ['as' => 'admin.menu.delete', 'uses' => 'AjaxController@deleteMenu']);

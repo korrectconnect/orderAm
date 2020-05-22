@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\AdminModel;
+use App\Location;
+use App\Vendor_category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -17,13 +19,18 @@ class AjaxController extends Controller
                 'name' => 'max:55|required',
                 'email' => 'email|required',
                 'cover' => 'required|image|max:1999',
+                'vendor-image' => 'required|image|max:1999',
                 'address' => 'max:250|required',
                 'contact' => 'max:250|required',
                 'state' => 'max:250|required',
                 'lga' => 'max:250|required',
+                'area' => 'max:250|required',
                 'country' => 'max:250|required',
                 'zip' => 'max:250|required',
                 'type' => 'max:250|required',
+                'tax' => 'max:250|required',
+                'delivery_charge' => 'max:250|required',
+                'vendor_charge' => 'max:250|required',
                 'open' => 'max:250|required',
                 'close' => 'max:250|required',
             ]);
@@ -33,20 +40,22 @@ class AjaxController extends Controller
                 return response()->json(['errors'=>$validatedData->errors()->all()]);
             }else {
 
-                if ($request->hasFile('cover')) {
+                if ($request->hasFile('cover') && $request->hasFile('vendor-image')) {
 
-                    $filenameExt = $request->file('cover')->getClientOriginalName();
-                    $file = pathinfo($filenameExt, PATHINFO_FILENAME);
-                    $extension = $request->file('cover')->getClientOriginalExtension();
-                    $filename = $request->name.'_'.time().'.'.$extension ;
-                    $path = $request->file('cover')->storeAs('public/vendor', $filename) ;
+                    $vendor_image_extension = $request->file('vendor-image')->getClientOriginalExtension();
+                    $vendor_image_filename = $request->name.'_image_'.time().'.'.$vendor_image_extension ;
+                    $image_path = $request->file('vendor-image')->storeAs('public/vendor', $vendor_image_filename) ;
 
-                    if($path) {
-                        $query = AdminModel::addVendor($request, $filename);
+                    $vendor_cover_extension = $request->file('cover')->getClientOriginalExtension();
+                    $cover_filename = $request->name.'_cover_'.time().'.'.$vendor_cover_extension ;
+                    $cover_path = $request->file('cover')->storeAs('public/vendor', $cover_filename) ;
+
+                    if($image_path && $cover_path) {
+                        $query = AdminModel::addVendor($request, $vendor_image_filename, $cover_filename);
                         if($query) {
                             return response()->json(['errors'=>null, 'message'=>'Uploaded Successfully']);
                         }
-                        return response()->json(['errors'=>'Server error try again']);
+                        return response()->json(['errors'=>['Server error try again']]);
                     }
                     return response()->json(['errors'=>'Error uploading file']);
 
@@ -87,7 +96,7 @@ class AjaxController extends Controller
                         if($query) {
                             return response()->json(['errors'=>null, 'message'=>'Uploaded Successfully']);
                         }
-                        return response()->json(['errors'=>'Server error try again']);
+                        return response()->json(['errors'=>['Server error try again']]);
                     }
                     return response()->json(['errors'=>'Error uploading file']);
 
@@ -106,7 +115,7 @@ class AjaxController extends Controller
         $data = array(
             'query' => $query
         );
-        return view('admin.ajax.view_vendor')->with($data) ;
+        return view('admin.pages.ajax.view_vendor')->with($data) ;
     }
 
     public function addMenuFrom($id) {
@@ -115,7 +124,7 @@ class AjaxController extends Controller
             'vendor' => $vendor
         );
 
-        return view('admin.ajax.add_menu_form')->with($data);
+        return view('admin.pages.ajax.add_menu_form')->with($data);
     }
 
     public function refreshMenus() {
@@ -124,7 +133,7 @@ class AjaxController extends Controller
         $data = array(
             'menus' => $menus
         );
-        return view('admin.ajax.viewQuickMenus')->with($data);
+        return view('admin.pages.ajax.viewQuickMenus')->with($data);
     }
 
     public function refreshMenu($id) {
@@ -133,7 +142,7 @@ class AjaxController extends Controller
         $data = array(
             'menus' => $menus
         );
-        return view('admin.ajax.viewQuickMenus')->with($data);
+        return view('admin.pages.ajax.viewQuickMenus')->with($data);
     }
 
     public function addMenuCategory(Request $request) {
@@ -151,7 +160,7 @@ class AjaxController extends Controller
                 if($query) {
                     return response()->json(['errors'=>null, 'message'=>'Added Successfully']);
                 }
-                return response()->json(['errors'=>'Server error try again']);
+                return response()->json(['errors'=>['Server error try again']]);
             }
         }
     }
@@ -162,7 +171,7 @@ class AjaxController extends Controller
             if($query) {
                 return response()->json(['errors'=>null, 'message'=>'Deleted Successfully']);
             }else {
-                return response()->json(['errors'=>'Server error try again']);
+                return response()->json(['errors'=>['Server error try again']]);
             }
         }
     }
@@ -187,7 +196,7 @@ class AjaxController extends Controller
             if($query) {
                 return response()->json(['errors'=>null, 'message'=>'Deleted Successfully']);
             }else {
-                return response()->json(['errors'=>'Server error try again']);
+                return response()->json(['errors'=>['Server error try again']]);
             }
     }
 
@@ -196,7 +205,7 @@ class AjaxController extends Controller
             if($query) {
                 return response()->json(['errors'=>null, 'message'=>'Deleted Successfully']);
             }else {
-                return response()->json(['errors'=>'Server error try again']);
+                return response()->json(['errors'=>['Server error try again']]);
             }
     }
 
@@ -206,7 +215,111 @@ class AjaxController extends Controller
         $data = array(
             'vendors' => $vendors
         );
-        return view('admin.ajax.searchVendors')->with($data);
+        return view('admin.pages.ajax.searchVendors')->with($data);
+    }
+
+    public function addVendorCategory(Request $request) {
+        if($request->ajax()) {
+
+            $validatedData = Validator::make($request->all(), [
+                'name' => 'max:191|required|unique:vendor_category',
+                'cover' => 'required|image|max:1999',
+                'description' => 'max:250|required',
+            ]);
+
+            if ($validatedData->fails())
+            {
+                return response()->json(['errors'=>$validatedData->errors()->all()]);
+            }else {
+
+                if ($request->hasFile('cover')) {
+
+                    $extension = $request->file('cover')->getClientOriginalExtension();
+                    $filename = $request->name.'_cover_'.time().'.'.$extension ;
+                    $path = $request->file('cover')->storeAs('public/vendor/category', $filename) ;
+
+                    if($path) {
+                        $query = Vendor_category::insert([
+                            'name' => $request->name,
+                            'description' => $request->description,
+                            'image' => asset('storage/vendor/category/'.$filename),
+                        ]);
+                        if($query) {
+                            return response()->json(['errors'=>null, 'message'=>'Uploaded Successfully']);
+                        }
+                        return response()->json(['errors'=>['Server error try again']]);
+                    }
+                    return response()->json(['errors'=>['Error uploading file']]);
+
+                }else {
+
+                    return response()->json(['errors'=>['No file Selected']]);
+
+                }
+            }
+        }
+    }
+
+    public function addVendorLocation(Request $request) {
+        if($request->ajax()) {
+            $validatedData = Validator::make($request->all(), [
+                'name' => 'max:191|required',
+                'type' => 'max:250|required',
+            ]);
+
+            if ($validatedData->fails())
+            {
+                return response()->json(['errors'=>$validatedData->errors()->all()]);
+            }else {
+                $query = Location::insert([
+                    'name' => $request->name,
+                    'type' => $request->type,
+                ]);
+
+                if($query) {
+                    return response()->json(['errors'=>null, 'message'=>'Location added Successfully']);
+                }
+                return response()->json(['errors'=>['Error adding location try again']]);
+            }
+        }
+    }
+
+    public function deleteVendorCategory($id) {
+        $delete = Vendor_category::where('id','=',$id)->delete() ;
+
+        if($delete) {
+            return response()->json(['errors'=>null, 'message'=>'Deleted Successfully']);
+        }else {
+            return response()->json(['errors'=>['Error deleting category']]);
+        }
+    }
+
+    public function deleteVendorLocation($id) {
+        $delete = Location::where('id','=',$id)->delete() ;
+
+        if($delete) {
+            return response()->json(['errors'=>null, 'message'=>'Deleted Successfully']);
+        }else {
+            return response()->json(['errors'=>['Error deleting category']]);
+        }
+    }
+
+    public function refreshVendorCategory() {
+        $categories = Vendor_category::all() ;
+
+        $data = array(
+            'categories' => $categories,
+        );
+        return view('admin.pages.ajax.vendor_category')->with($data);
+    }
+
+    public function refreshVendorLocation() {
+        $locations = Location::all() ;
+
+        $data = array(
+            'locations' => $locations,
+        );
+        return view('admin.pages.ajax.vendor_location')->with($data);
     }
 
 }
