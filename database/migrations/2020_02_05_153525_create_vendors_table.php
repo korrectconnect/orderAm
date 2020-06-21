@@ -23,8 +23,9 @@ class CreateVendorsTable extends Migration
             $table->string('lga')->nullable();
             $table->string('area')->nullable();
             $table->string('country')->nullable();
-            $table->int('zip')->nullable();
+            $table->integer('zip')->nullable();
             $table->string('type')->nullable();
+            $table->string('description')->nullable();
             $table->decimal('opening')->nullable();
             $table->decimal('closing')->nullable();
             $table->decimal('delivery_charge')->nullable();

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Address;
 use App\Cart;
+use App\Coupon;
+use App\Favourite_vendor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\AppResource;
@@ -16,6 +18,8 @@ use App\Order;
 use App\Order_item;
 use App\Order_status;
 use App\Vendor_category;
+use App\Vendor_rating;
+use Carbon\Carbon;
 
 class ApiController extends Controller
 {
@@ -23,19 +27,37 @@ class ApiController extends Controller
     public function editUser(Request $request) {
         $user = User::findOrFail(auth()->user()->id);
 
-        $user->firstname = $request->firstname ;
-        $user->lastname = $request->lastname ;
-        $user->phone = $request->phone ;
+        if ($request->hasFile('file')) {
+
+            $extension = $request->file('file')->getClientOriginalExtension();
+            $filename = auth()->user()->id.'_image_'.time().'.'.$extension ;
+            $image_path = $request->file('file')->storeAs('public/user', $filename) ;
+            if($image_path) {
+                $user->firstname = $request->firstname ;
+                $user->lastname = $request->lastname ;
+                $user->phone = $request->phone ;
+                $user->image = asset('storage/user/'.$filename);
+            }else {
+                return response()->json(['status' => 400, 'message' => 'Could not upload image']);
+            }
+        }else {
+            $user->firstname = $request->firstname ;
+            $user->lastname = $request->lastname ;
+            $user->phone = $request->phone ;
+        }
 
         if($user->save()) {
             return new AppResource($user);
         }else {
-            return response()->json(['status' => '400']);
+            return response()->json(['status' => 400, 'message' => 'Could not update profile']);
         }
     }
 
     public function vendor($id) {
-        $vendor = Vendors::findOrFail($id);
+        $vendor = Vendors::leftJoin('menus', 'menus.vendor_id', '=', 'vendors.id')
+                    ->select('vendors.*',DB::raw('min(menus.price) as price'))
+                    ->where(['vendors.id' => $id])
+                    ->first() ;
 
         return new AppResource($vendor);
     }
@@ -59,7 +81,7 @@ class ApiController extends Controller
     }
 
     public function getMenusCategory($id) {
-        $query =  Menu_category::where('vendor_id','=',"$id")->get() ;
+        $query =  Menu_category::where('vendor_id','=',$id)->get() ;
 
         return AppResource::collection($query);
     }
@@ -71,92 +93,218 @@ class ApiController extends Controller
     }
 
     public function searchVendorsByLocation(Request $request) {
-        $search = Vendors::where([
-            ['state','=',$request->state],
-            ['lga','=',$request->lga],
-            ['area','=',$request->area],
-            ['type','=',$request->category],
-        ])->get();
+
+        $search = Vendors::leftJoin('menus', 'menus.vendor_id', '=', 'vendors.id')
+                    ->select('vendors.*',DB::raw('min(menus.price) as price'))
+                    ->where([['vendors.type','=',$request->category],['vendors.state','=',$request->state],['vendors.lga','=',$request->lga]])
+                    ->groupBy('vendors.id')->get() ;
 
         return AppResource::collection($search);
     }
 
     public function makeOrder(Request $request) {
-        $order = new Order;
-        $order_no = auth()->user()->id.time().rand(0,100);
+        $vendor = Vendors::findOrFail($request->vendor_id);
+            if((date("H.i") < $vendor->opening) || (date("H.i") >= $vendor->closing)) {
+                return response()->json(['status' => 400, 'message'=>'Vendor is closed']);
+            }
+            if($request->coupon == "") {
+                $coupon = NULL ;
+                $coupon_amount = 0 ;
+            }else {
+                $date = Carbon::today();
+                $getCoupon = Coupon::where('code','=',$request->coupon)->whereDate('expire', '>=', $date)->first();
 
-        $order->user_id = auth()->user()->id;
-        $order->order_no = $order_no;
-        $order->vendor_id = $request->vendor_id;
-        $order->transaction_id = $request->transaction_id;
-        $order->coupon_code = $request->coupon_code;
-        $order->address = $request->address;
-        $order->payment_mode = $request->payment_mode;
-        $order->delivery_charge = $request->delivery_charge;
-        $order->vendor_charge = $request->vendor_charge;
-        $order->total = $request->total;
-        $order->tax = $request->tax;
-        $order->comment = $request->comment;
-        $order->balance = $request->balance;
-        $order->status = 0;
-        $order->cancelled = 0;
+                if ($getCoupon != NULL) {
+                    if(($getCoupon->vendor_id != NULL) && ($getCoupon->vendor_id != $vendor->id)) {
+                        $coupon = NULL ;
+                        $coupon_amount = 0 ;
+                    }else {
+                        $checkUser = Order::where(['user_id' => auth()->user()->id])->get();
+                        if ($getCoupon->count == 0) {
+                            if ($checkUser->count() >= 1) {
+                                $coupon = NULL ;
+                                $coupon_amount = 0 ;
+                            }else {
+                                $coupon = $request->coupon ;
+                                $coupon_amount = $getCoupon->amount ;
+                            }
+                        } else {
+                            if ($checkUser->count() >= $getCoupon->count) {
+                                $coupon = NULL ;
+                                $coupon_amount = 0 ;
+                            }else {
+                                $coupon = $request->coupon ;
+                                $coupon_amount = $getCoupon->amount ;
+                            }
+                        }
+                    }
 
-        if($order->save()) {
-            return new AppResource($order);
-        }else {
-            return response()->json(['status' => '400']);
-        }
+                }else {
+                    $coupon = NULL ;
+                    $coupon_amount = 0 ;
+                }
+            }
+
+            $carts = Cart::where(['user_id' => auth()->user()->id, 'vendor_id' => $vendor->id])->orderBy('id', 'desc')->get() ;
+            $order_no = auth()->user()->id.time().rand(0,100);
+
+            if($carts->count() >= 1) {
+                $order_total = 0 ;
+                foreach ($carts as $cart) {
+                    $order_total = $order_total + ($cart->price * $cart->quantity);
+
+                    Order_item::insert([
+                        'order_no' => $order_no,
+                        'menu_id' => $cart->menu_id,
+                        'quantity' => $cart->quantity,
+                        'name' => $cart->name,
+                        'price' => $cart->price,
+                    ]);
+                }
+            }else {
+                return response()->json(['status' => 400, 'message'=>'Cart is empty']);
+            }
+
+            $getTotal = $vendor->delivery_charge + $vendor->tax + $vendor->vendor_charge + $order_total - $coupon_amount ;
+            if ($getTotal < 0) {
+                $total = 0;
+            }else {
+                $total = $getTotal ;
+            }
+
+            $order = new Order;
+
+            $order->user_id = auth()->user()->id;
+            $order->order_no = $order_no;
+            $order->vendor_id = $vendor->id;
+            $order->transaction_id = $request->transaction_id;
+            $order->coupon_code = $coupon;
+            $order->address = $request->address_id;
+            $order->payment_mode = $request->payment_type;
+            $order->delivery_charge = $vendor->delivery_charge;
+            $order->vendor_charge = $vendor->vendor_charge;
+            $order->total = $total;
+            $order->tax = $vendor->tax;
+            $order->delivery_time = $request->delivery_time;
+            $order->balance = 0;
+            $order->status = 0;
+            $order->cancelled = 0;
+
+            if($order->save()) {
+                Cart::where(['vendor_id' => $request->vendor_id])->delete();
+                return new AppResource($order);
+            }else {
+                Order_item::where(['order_no' => $order_no])->delete();
+                return response()->json(['status' => 400, 'message'=>'Could not place order']);
+            }
     }
 
     public function allOrder() {
         $order = Order::where('user_id',auth()->user()->id)->get();
-        return AppResource::collection($order);
+        if ($order->count() >= 1) {
+            return AppResource::collection($order);
+        } else {
+            return response()->json(['status' => 201, 'message'=>'Order list is empty']);
+        }
+
     }
 
     public function runningOrder() {
-        $order = Order::where([['user_id','=',auth()->user()->id],['status','=',0]])->get();
-        return AppResource::collection($order);
+        $order = Order::where(['status' => 0, 'cancelled' => 0])->orWhere(['status' => 1, 'cancelled' => 0])->get();
+        if ($order->count() >= 1) {
+            return AppResource::collection($order);
+        } else {
+            return response()->json(['status' => 201, 'message'=>'Order list is empty']);
+        }
+
     }
 
     public function completedOrder() {
-        $order = Order::where([['user_id','=',auth()->user()->id],['status','=',1]])->get();
-        return AppResource::collection($order);
+        $order = Order::where(['status' => 2, 'cancelled' => 0])->get();
+        if ($order->count() >= 1) {
+            return AppResource::collection($order);
+        } else {
+            return response()->json(['status' => 201, 'message'=>'Order list is empty']);
+        }
+
     }
 
-    public function cancelOrder(Request $request) {
-        $order = Order::where('order_no', $request->order_no)->update(['cancelled' => 1,'status' => 1]);
-        $get = Order::where('order_no', $request->order_no)->first();
+    public function favouriteVendor(Request $request) {
+        $fav = Favourite_vendor::where(['user_id' => auth()->user()->id, 'vendor_id' => $request->vendor_id]);
 
-        return new AppResource($get);
-    }
-
-    public function insertOrderItem(Request $request) {
-        $order_item = new Order_item;
-
-        $order_item->order_no = $request->order_no ;
-        $order_item->menu_id = $request->menu_id ;
-        $order_item->quantity = $request->quantity ;
-        $order_item->name = $request->name ;
-        $order_item->price = $request->price ;
-
-        if($order_item->save()) {
-            return new AppResource($order_item);
+        if($fav->first() == NULL) {
+             $query = Favourite_vendor::insert([
+                 'user_id' => auth()->user()->id,
+                 'vendor_id' => $request->vendor_id,
+             ]);
+             return response()->json(['message' => 'Vendor has been added to favourites', 'status' => 200]);
         }else {
-            return response()->json(['status' => '400']);
+             $query = $fav->delete();
+             return response()->json(['message' => 'Vendor has been removed from favourites', 'status' => 200]);
         }
     }
 
-    public function insertOrderStatus(Request $request) {
-        $order_status = new Order_status;
+    public function getFavouriteVendors() {
+        $fav = Favourite_vendor::join('vendors','vendors.id','=','favourite_vendors.vendor_id')
+                                ->select('vendors.*')
+                                ->where(['favourite_vendors.user_id' => auth()->user()->id])
+                                ->get();
 
-        $order_status->order_no = $request->order_no ;
-        $order_status->status = $request->status ;
-
-        if($order_status->save()) {
-            return new AppResource($order_status);
-        }else {
-            return response()->json(['status' => '400']);
+        if ($fav->count() >= 1) {
+            return AppResource::collection($fav);
+        } else {
+            return response()->json(['status' => 201, 'message'=>'You have not added any vendor to favourites']);
         }
+
+    }
+
+    public function rateVendor(Request $request) {
+        $rating = Vendor_rating::where(['user_id' => auth()->user()->id, 'order_no' => $request->order_no])->first() ;
+
+        if($rating == NULL) {
+            $rate = new Vendor_rating ;
+            $rate->user_id = auth()->user()->id;
+            $rate->vendor_id = $request->vendor_id;
+            $rate->rating = $request->rating;
+            $rate->order_no = $request->order_no;
+            $rate->comment = $request->comment;
+
+            if ($rate->save()) {
+                return response()->json(['status' => 200, 'message'=>'Thank you for your rating']);
+            }else {
+                return response()->json(['status' => 400, 'message'=>'Could not rate vendor']);
+            }
+        }else {
+            return response()->json(['status' => 201, 'message'=>'You have already rated vendor on this order']);
+        }
+    }
+
+    public function checkUserRating($order) {
+        $rate = Vendor_rating::where(['user_id' => auth()->user()->id, 'order_no' => $order])->first();
+
+        if ($rate != NULL) {
+            return response()->json(['status' => 200]);
+        } else {
+            return response()->json(['status' => 201]);
+        }
+
+    }
+
+    public function checkVendorRating($id) {
+        $rating = Vendor_rating::where('vendor_id', $id)->get() ;
+        if ($rating->count() >= 1) {
+            $r = 0 ;
+
+            foreach($rating as $rate) {
+                $r = $r + $rate->rating ;
+            }
+
+            $vendor_rating = $r/$rating->count() ;
+            return response()->json(['status' => 200, 'rating' => $vendor_rating]);
+        } else {
+            return response()->json(['status' => 200, 'rating' => 0]);
+        }
+
     }
 
     public function saveAddress(Request $request) {
@@ -166,12 +314,54 @@ class ApiController extends Controller
         $address->state = $request->state;
         $address->lga = $request->lga;
         $address->address = $request->address;
+        $address->phone = $request->phone;
+        $address->description = $request->description;
         $address->default = NULL ;
 
-        if($address->save()) {
-            return new AppResource($address);
+        if ($address->save()) {
+            if (Address::where(['user_id' => auth()->user()->id])->get()->count() == 1) {
+                $getAddress = Address::where(['user_id' => auth()->user()->id])->firstOrFail();
+                $updateUser = User::where(['id' => auth()->user()->id])->update([
+                    'address_id' => $getAddress->id,
+                ]);
+                $updateAddress = $getAddress->update([
+                    'default' => 1,
+                ]) ;
+
+                return new AppResource($address);
+            }else {
+                return new AppResource($address);
+            }
         }else {
-            return response()->json(['status' => '400']);
+            return response()->json(['status' => 400]);
+        }
+    }
+
+    public function editAddress(Request $request) {
+        $get = Address::where(['user_id' => auth()->user()->id, 'id' => $request->address_id]);
+        if($get->first() == NULL) {
+            return response()->json(['status' => 400, 'message'=>'Invalid Address']);
+        }else {
+            $edit = $get->update([
+                'address' => $request->address,
+                'description' => $request->description,
+                'phone' => $request->phone,
+            ]);
+
+            if($edit) {
+                return new AppResource($get->first());
+            }else {
+                return response()->json(['status' => 400, 'message'=>'Error editing Address']);
+            }
+        }
+    }
+
+    public function getSingleAddress($id) {
+        $get = Address::where(['id' => $id])->first();
+        if ($get != NULL) {
+            return new AppResource($get);
+        }else {
+            return response()->json(['status' => 400, 'message'=>'Invalid Address']);
         }
     }
 
@@ -194,17 +384,18 @@ class ApiController extends Controller
         return AppResource::collection($address);
     }
 
-    public function deleteAddress(Request $request) {
-        $address = Address::where([['user_id','=',auth()->user()->id],['id','=',$request->address_id]])->firstOrFail() ;
-        $user = DB::table('users')->where('id',auth()->user()->id)->first();
+    public function deleteAddress($id) {
+        $address = Address::where(['id' => $id]) ;
+        $get = $address->first();
 
         if ($address->delete()) {
-            if($user->address_id == $address->id) {
+            if(auth()->user()->address_id == $id) {
                 $updateUser = DB::table('users')->where('id',auth()->user()->id)->update(['address_id' => NULL]);
-                return new AppResource($address);
+                return new AppResource($get);
             }
-
-
+            return new AppResource($get);
+        }else {
+            return response()->json(['status' => 400]);
         }
     }
 
@@ -217,23 +408,35 @@ class ApiController extends Controller
     public function addToCart(Request $request) {
         $get = Cart::where([['user_id','=',auth()->user()->id],['menu_id','=',$request->menu_id]])->first();
 
+        $getMenu = Menus::where(['id' => $request->menu_id])->first();
+        $vendor = Vendors::findOrFail($getMenu->vendor_id);
+        if((date("H.i") < $vendor->opening) || (date("H.i") >= $vendor->closing)) {
+            return response()->json(['status' => 400, 'message' => 'Vendor is closed']);
+        }
+
         if($get != null) {
             $quantity = $get->quantity + 1;
             $update = Cart::where([['menu_id','=',$request->menu_id],['user_id','=',auth()->user()->id]])->update(['quantity' => $quantity]);
             $getCart = Cart::where([['user_id','=',auth()->user()->id],['menu_id','=',$request->menu_id]])->first();
-            return new AppResource($getCart);
+            if ($update) {
+                return new AppResource($getCart);
+            }else {
+                return response()->json(['status' => 400]);
+            }
         }else {
+
             $cart = new Cart ;
             $cart->user_id = auth()->user()->id;
             $cart->menu_id = $request->menu_id;
+            $cart->vendor_id = $getMenu->vendor_id;
             $cart->quantity = 1;
-            $cart->name = $request->name;
-            $cart->price = $request->price;
+            $cart->name = $getMenu->menu;
+            $cart->price = $getMenu->price;
 
             if ($cart->save()) {
                 return new AppResource($cart);
             }else {
-                return response()->json(['status' => '400']);
+                return response()->json(['status' => 400]);
             }
         }
     }
@@ -244,29 +447,92 @@ class ApiController extends Controller
         return AppResource::collection($query);
     }
 
-    public function cart() {
-        $query = Cart::where('user_id','=',auth()->user()->id)->get();
+    public function cart($id) {
+        $query = Cart::where(['user_id' => auth()->user()->id, 'vendor_id' => $id])->get();
 
         return AppResource::collection($query);
     }
 
     public function deleteCart($id) {
-        $delete = Cart::where([['user_id','=',auth()->user()->id],['menu_id','=',$id]])->firstOrFail() ;
+        $delete = Cart::where(['id' => $id])->firstOrFail() ;
 
         if ($delete->delete()) {
             return new AppResource($delete);
         }else {
-            return response()->json(['status' => '400']);
+            return response()->json(['status' => 400]);
         }
     }
 
-    public function clearCart() {
-        $delete = Cart::where([['user_id','=',auth()->user()->id]])->delete() ;
+    public function clearCart($id) {
+        $delete = Cart::where(['user_id' => auth()->user()->id, 'vendor_id' => $id])->delete() ;
 
         if ($delete) {
-            return response()->json(['status' => '200']);
+            return response()->json(['status' => 200]);
         }else {
-            return response()->json(['status' => '400']);
+            return response()->json(['status' => 400]);
+        }
+    }
+
+    public function decreaseCart($id, Request $request) {
+        $cart = Cart::where(['id' => $id]);
+        $getCart = $cart->first();
+        $vendor = Vendors::findOrFail($getCart->vendor_id);
+        if((date("H.i") < $vendor->opening) || (date("H.i") >= $vendor->closing)) {
+            return response()->json(['status' => 400, 'message' => 'Vendor is closed']);
+        }
+
+        if($getCart->quantity > 1) {
+            $update = $cart->update(['quantity' => $getCart->quantity - 1]) ;
+        }else {
+            $update = $cart->delete();
+        }
+
+        if($update) {
+            return new AppResource($cart->first());
+        }else {
+            return response()->json(['status'=> 400]);
+        }
+    }
+
+    public function increaseCart($id, Request $request) {
+        $cart = Cart::where(['id' => $id]);
+        $getCart = $cart->first();
+        $vendor = Vendors::findOrFail($getCart->vendor_id);
+        if((date("H.i") < $vendor->opening) || (date("H.i") >= $vendor->closing)) {
+            return response()->json(['status' => 400, 'message' => 'Vendor is closed']);
+        }
+
+        $update = $cart->update(['quantity' => $getCart->quantity + 1]) ;
+
+        if($update) {
+            return new AppResource($cart->first());
+        }else {
+            return response()->json(['status' => 400]);
+        }
+    }
+
+    public function checkCoupon(Request $request) {
+        $date = Carbon::today();
+        $coupon = Coupon::where('code','=',$request->coupon)->whereDate('expire', '>=', $date)->first();
+        if ($coupon != NULL) {
+            if(($coupon->vendor_id != NULL) && ($coupon->vendor_id != $request->vendor_id)) {
+                return response()->json(['status' => 400, 'message'=>'Coupon does not apply to this vendor']);
+            }else {
+                $checkUser = Order::where(['user_id' => auth()->user()->id])->get();
+                if ($coupon->count == 0) {
+                    if ($checkUser->count() >= 1) {
+                        return response()->json(['status' => 400, 'message'=>'Coupon only applies to first time users']);
+                    }
+                    return new AppResource($coupon);
+                } else {
+                    if ($checkUser->count() >= $coupon->count) {
+                        return response()->json(['status' => 400, 'message'=>'Coupon max reached']);
+                    }
+                    return new AppResource($coupon);
+                }
+            }
+        }else {
+            return response()->json(['status' => 400, 'message'=>'Expired or invalid Coupon']);
         }
     }
 

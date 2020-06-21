@@ -60,7 +60,7 @@
 
         <div class="col-md-6">
             <div class="card">
-            <div class="vendor-image card-img-top" style="background-image:url({{$vendor->image}}); height:250px;"></div>
+            <div class="vendor-image card-img-top" style="background-image:url('{{$vendor->image}}'); height:250px;"></div>
                 <div class="card-body">
                     <b>{{$vendor->name." . ".$vendor->lga}}</b>
                 </div>

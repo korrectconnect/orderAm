@@ -22,6 +22,8 @@ mix.copy('resources/vendors/pace-progress/css/pace.min.css', 'public/css');
 //main css
 mix.sass('resources/sass/style.scss', 'public/css');
 
+mix.sass('resources/sass/main.scss', 'public/css');
+
 //************** SCRIPTS ******************
 // general scripts
 mix.copy('node_modules/axios/dist/axios.min.js', 'public/js');

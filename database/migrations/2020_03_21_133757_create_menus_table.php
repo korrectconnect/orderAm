@@ -20,6 +20,7 @@ class CreateMenusTable extends Migration
             $table->string('description')->nullable();
             $table->string('category')->nullable();
             $table->decimal('price')->nullable();
+            $table->tinyInteger('stock')->default(1);
             $table->string('image')->nullable();
             $table->timestamps();
         });

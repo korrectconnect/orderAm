@@ -16,7 +16,7 @@
             <div class="menu-vendor-div">
                 <div class="row null">
                     <div class="col-sm-4">
-                        <div class="menu-vendor-image" style="background-image:url({{$vendor->image}});"></div>
+                        <div class="menu-vendor-image" style="background-image:url('{{$vendor->image}}');"></div>
                     </div>
                     <div class="col-sm-8">
                         <div class="menu-vendor-txt">

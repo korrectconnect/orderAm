@@ -20,6 +20,8 @@ class CraeteAddressTable extends Migration
             $table->string('state')->nullable();
             $table->string('lga')->nullable();
             $table->string('address')->nullable();
+            $table->text('description')->nullable();
+            $table->string('phone')->nullable();
             $table->boolean('default')->nullable();
             $table->timestamps();
         });

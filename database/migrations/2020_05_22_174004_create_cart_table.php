@@ -17,6 +17,7 @@ class CreateCartTable extends Migration
             $table->bigIncrements('id');
             $table->integer('user_id')->nullable();
             $table->integer('menu_id')->nullable();
+            $table->integer('vendor_id')->nullable();
             $table->integer('quantity')->nullable();
             $table->string('name')->nullable();
             $table->decimal('price')->nullable();

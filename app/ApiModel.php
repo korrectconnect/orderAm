@@ -148,4 +148,16 @@ class ApiModel extends Model
         return $search ;
     }
 
+    public static function order($request) {
+        $order_no = auth()->user()->id.time().rand(0,100);
+        $query = DB::table('order')->insert([
+            'user_id' => auth()->user()->id,
+            'order_no' => $order_no,
+            'vendor_id' => $request->vendor->id,
+            'transaction_id' => $request->transaction_id,
+        ]);
+
+
+    }
+
 }

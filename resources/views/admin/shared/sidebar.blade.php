@@ -5,10 +5,17 @@
     </a>
 </li>
 
+<li class="c-sidebar-nav-item">
+    <a class="c-sidebar-nav-link" href="{{route('admin.orders')}}">
+        <i class="fa fa-pencil"></i> &nbsp; &nbsp;
+        Orders
+    </a>
+</li>
+
 <li class="c-sidebar-nav-dropdown">
     <a class="c-sidebar-nav-dropdown-toggle" href="#">
         <i class="fa fa-pencil"></i> &nbsp; &nbsp;
-        Vendor
+        Vendors
     </a>
 
         <div class="c-sidebar-nav-dropdown-items">
@@ -32,17 +39,37 @@
 
 </li>
 
+<li class="c-sidebar-nav-dropdown">
+    <a class="c-sidebar-nav-dropdown-toggle" href="#">
+        <i class="fa fa-pencil"></i> &nbsp; &nbsp;
+        Riders
+    </a>
+
+        <div class="c-sidebar-nav-dropdown-items">
+            <a class="dropdown-item" href="{{route('admin.rider.add')}}">
+                <i class="fa fa-pencil"></i> &nbsp; &nbsp;
+                Register Rider
+            </a>
+            <a class="dropdown-item" href="{{route('admin.rider.view')}}">
+                <i class="fa fa-pencil"></i> &nbsp; &nbsp;
+                View All Riders
+            </a>
+            <a class="dropdown-item" href="{{route('admin.rider.locations')}}">
+                <i class="fa fa-pencil"></i> &nbsp; &nbsp;
+                View Assigned Locations
+            </a>
+            <a class="dropdown-item" href="{{route('admin.rider.category')}}">
+                <i class="fa fa-pencil"></i> &nbsp; &nbsp;
+                Riders Category
+            </a>
+        </div>
+
+</li>
+
 <li class="c-sidebar-nav-item">
     <a class="c-sidebar-nav-link" href="{{route('admin.menus')}}">
         <i class="fa fa-pencil"></i> &nbsp; &nbsp;
         Menus
-    </a>
-</li>
-
-<li class="c-sidebar-nav-item">
-    <a class="c-sidebar-nav-link" href="">
-        <i class="fa fa-pencil"></i> &nbsp; &nbsp;
-        Orders
     </a>
 </li>
 
