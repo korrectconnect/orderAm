@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\ApiModel ;
-use App\Http\Resources\AppResource;
-use App\Vendors;
-use App\Menus;
 use App\User;
-use App\Menu_category;
+use App\Menus;
 use App\Order;
+use App\Vendors;
+use App\ApiModel ;
 use App\Order_item;
 use App\Order_status;
+use App\Menu_category;
+use Illuminate\Http\Request;
+use App\OrderLocationDetails;
+use App\Http\Resources\AppResource;
 
 class ApiController extends Controller
 {
@@ -85,6 +86,20 @@ class ApiController extends Controller
         $order->status = $request->status;
         $order->cancelled = 0;
 
+        $user_address = DB::table('address')->where('user_id', auth()->user()->id)->first();
+        $vendor = DB::table('vendors')->find($request->vendor_id);
+
+        $vendor_coordinates = GoogleMaps::getAddress($vendor->address);
+        $user_coordinates = GoogleMaps::getAddress($user_address->address.' '.$user_address->lga.' '.$user_address->state);
+
+        OrderLocationDetails::create([
+            'order_id' => $order->id,
+            'user_lat' => $user_coordinates['lat'],
+            'user_long' => $user_coordinates['long'],
+            'vendor_lat' => $vendor_coordinates['lat'],
+            'vendor_long' => $vendor_coordinates['long'],
+        ]);
+        
         if($order->save()) {
             return new AppResource($order);
         }
@@ -120,5 +135,26 @@ class ApiController extends Controller
         if($order_status->save()) {
             return new AppResource($order_status);
         }
+    }
+
+    public function getDistance($order_id)
+    {
+        $order_details = OrderLocationDetails::find($order_id);
+        
+        $distance = GoogleMaps::getDistance($order_details->user_lat, $order_details->user_long, $order_details->vendor_lat, $order_details->vendor_long);
+
+        return new AppResource($distance);
+    }
+
+    public function getDistanceRider($order_id)
+    {
+        $order_details = OrderLocationDetails::find($order_id);
+        $rider_location = Location::get(request()->ip());
+        $getUserDistance = GoogleMaps::getDistance($order_details->user_lat, $order_details->user_long, $order_details->vendor_lat, $order_details->vendor_long);
+        $getVendorDistance = GoogleMaps::getDistance($order_details->vendor_lat, $order_details->vendor_long, $rider_location->latitude, $rider_location->longitude);
+
+        $total_time = $getUserDistance['duration'] + $getVendorDistance;
+
+        return response()->json(['total_time' => $total_time, 'getUserDistance' => $getUserDistance, 'getVendorDistance' => $getVendorDistance]);
     }
 }

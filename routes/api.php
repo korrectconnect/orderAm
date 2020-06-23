@@ -31,6 +31,12 @@ Route::group(['middleware' => ['auth:api']], function() {
     Route::get('/menu/c/{id}', 'ApiController@getMenusCategory');
     Route::get('/menu/{id}/c/{category}', 'ApiController@getMenusByCategory');
     Route::get('/vendors/s/{key}', 'ApiController@searchVendors');
-
+    Route::get('/order/distance', 'ApiController@getDistance');
+    Route::get('/rider/distance', 'ApiController@getDistanceRider');
+    Route::get('/messages/{admin_rider_id}', 'MessagesController@privateMessages');
+    Route::post('/messages/{admin_rider_id}', 'MessagesController@sendMessage');
+    Route::get('/rider/profile', 'RidersController@getRiderProfile');
+    Route::get('/rider/client-info', 'RidersController@getClientInfo');
+    Route::get('/rider/order-info', 'RidersController@getOrderInfo');
 });
 

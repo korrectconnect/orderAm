@@ -3,12 +3,57 @@
 namespace App\Http\Controllers;
 
 use App\AdminModel;
+use GuzzleHttp\Client;
+use App\Services\GoogleMaps;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Stevebauman\Location\Facades\Location;
 
 class AjaxController extends Controller
 {
     //
+
+    // public function testing()
+    // {
+    //     $ip = '129.18.181.170';
+    //     $rider_location = Location::get($ip);
+    //     dd($rider_location->latitude);
+    //     // $address = '33 jalupon surulere lagos';
+    //     // $url = 'https://maps.googleapis.com/maps/api/geocode/json?address='.urlencode($address).'&key='.env( 'GOOGLE_MAPS_KEY' );
+
+    //     // $client = new Client();
+
+    //     // $response = $client->get($url)->getBody();
+    //     // $decoded_response = json_decode( $response );
+    //     // dd($decoded_response);
+
+    //     $user_origin_lat = "6.4943891";
+    //     $user_origin_long = "3.355245";
+    //     $order_lat = "6.4902331";
+    //     $order_long = "3.3573441";
+
+    //     // $url = 'https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins='.urlencode($user_origin_lat.','.$user_origin_long).'&destinations='.urlencode($order_lat.','.$order_long).'&key='.env('GOOGLE_MAPS_KEY');
+
+    //     // $client = new Client();
+
+    //     // $response = $client->get($url)->getBody();
+
+    //     // $decoded_response = \json_decode($response);
+
+    //     // // dd($decoded_response);
+    //     // $coordinates['distance'] = null;
+    //     // $coordinates['duration'] = null;
+
+    //     // if(!empty($decoded_response) && isset($decoded_response->rows[0])){
+    //     //     $coordinates['distance'] = $decoded_response->rows[0]->elements[0]->distance->text;
+    //     //     $coordinates['duration'] = $decoded_response->rows[0]->elements[0]->duration->text;
+    //     // }
+    //     // dd($coordinates['distance']);
+
+    //     $map = GoogleMaps::getDistance($user_origin_lat, $user_origin_long, $order_lat, $order_long);
+    //     dd($map['distance']);
+    //     return response()->json($map);
+    // }
     public function addVendor(Request $request) {
 
         if($request->ajax()) {

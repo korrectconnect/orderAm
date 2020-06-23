@@ -13,6 +13,7 @@
 
 //Route::group(['middleware' => ['get.menu']], function () {
 
+    Route::get('/testing', 'AjaxController@testing');
     Route::get('/colors', function () {     return view('dashboard.colors'); });
     Route::prefix('vendor')->group(function(){
         Route::get('/add', function() { return view('dashboard.vendor.add'); })->name('vendor.add');

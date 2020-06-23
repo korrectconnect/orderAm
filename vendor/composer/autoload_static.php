@@ -100,6 +100,7 @@ class ComposerStaticInit3eb5bc9c2d5cccd9ccf08e9ddfe5df07
             'Symfony\\Component\\CssSelector\\' => 30,
             'Symfony\\Component\\Console\\' => 26,
             'Symfony\\Bridge\\PsrHttpMessage\\' => 30,
+            'Stevebauman\\Location\\' => 21,
             'Spatie\\TemporaryDirectory\\' => 26,
             'Spatie\\Permission\\' => 18,
             'Spatie\\PdfToImage\\' => 18,
@@ -136,6 +137,9 @@ class ComposerStaticInit3eb5bc9c2d5cccd9ccf08e9ddfe5df07
         array (
             'MyCLabs\\Enum\\' => 13,
             'Monolog\\' => 8,
+            'MaxMind\\WebService\\' => 19,
+            'MaxMind\\Exception\\' => 18,
+            'MaxMind\\Db\\' => 11,
         ),
         'L' => 
         array (
@@ -148,6 +152,8 @@ class ComposerStaticInit3eb5bc9c2d5cccd9ccf08e9ddfe5df07
             'Laravel\\Ui\\' => 11,
             'Laravel\\Tinker\\' => 15,
             'Laravel\\Passport\\' => 17,
+            'LaravelFCM\\Mocks\\' => 17,
+            'LaravelFCM\\' => 11,
             'Laminas\\ZendFrameworkBridge\\' => 28,
             'Laminas\\Diactoros\\' => 18,
         ),
@@ -170,6 +176,7 @@ class ComposerStaticInit3eb5bc9c2d5cccd9ccf08e9ddfe5df07
             'GuzzleHttp\\Psr7\\' => 16,
             'GuzzleHttp\\Promise\\' => 19,
             'GuzzleHttp\\' => 11,
+            'GeoIp2\\' => 7,
         ),
         'F' => 
         array (
@@ -196,6 +203,7 @@ class ComposerStaticInit3eb5bc9c2d5cccd9ccf08e9ddfe5df07
         'C' => 
         array (
             'Cron\\' => 5,
+            'Composer\\CaBundle\\' => 18,
             'Carbon\\' => 7,
         ),
         'A' => 
@@ -331,6 +339,10 @@ class ComposerStaticInit3eb5bc9c2d5cccd9ccf08e9ddfe5df07
         array (
             0 => __DIR__ . '/..' . '/symfony/psr-http-message-bridge',
         ),
+        'Stevebauman\\Location\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/stevebauman/location/src',
+        ),
         'Spatie\\TemporaryDirectory\\' => 
         array (
             0 => __DIR__ . '/..' . '/spatie/temporary-directory/src',
@@ -416,6 +428,18 @@ class ComposerStaticInit3eb5bc9c2d5cccd9ccf08e9ddfe5df07
         array (
             0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
         ),
+        'MaxMind\\WebService\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/maxmind/web-service-common/src/WebService',
+        ),
+        'MaxMind\\Exception\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/maxmind/web-service-common/src/Exception',
+        ),
+        'MaxMind\\Db\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/maxmind-db/reader/src/MaxMind/Db',
+        ),
         'League\\OAuth2\\Server\\' => 
         array (
             0 => __DIR__ . '/..' . '/league/oauth2-server/src',
@@ -451,6 +475,14 @@ class ComposerStaticInit3eb5bc9c2d5cccd9ccf08e9ddfe5df07
         'Laravel\\Passport\\' => 
         array (
             0 => __DIR__ . '/..' . '/laravel/passport/src',
+        ),
+        'LaravelFCM\\Mocks\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/brozot/laravel-fcm/tests/mocks',
+        ),
+        'LaravelFCM\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/brozot/laravel-fcm/src',
         ),
         'Laminas\\ZendFrameworkBridge\\' => 
         array (
@@ -491,6 +523,10 @@ class ComposerStaticInit3eb5bc9c2d5cccd9ccf08e9ddfe5df07
         'GuzzleHttp\\' => 
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/guzzle/src',
+        ),
+        'GeoIp2\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/geoip2/geoip2/src',
         ),
         'Firebase\\JWT\\' => 
         array (
@@ -548,6 +584,10 @@ class ComposerStaticInit3eb5bc9c2d5cccd9ccf08e9ddfe5df07
         array (
             0 => __DIR__ . '/..' . '/dragonmantank/cron-expression/src/Cron',
         ),
+        'Composer\\CaBundle\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/composer/ca-bundle/src',
+        ),
         'Carbon\\' => 
         array (
             0 => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon',
@@ -582,7 +622,9 @@ class ComposerStaticInit3eb5bc9c2d5cccd9ccf08e9ddfe5df07
     public static $classMap = array (
         'App\\Admin' => __DIR__ . '/../..' . '/app/Admin.php',
         'App\\AdminModel' => __DIR__ . '/../..' . '/app/AdminModel.php',
+        'App\\ApiModel' => __DIR__ . '/../..' . '/app/ApiModel.php',
         'App\\Console\\Kernel' => __DIR__ . '/../..' . '/app/Console/Kernel.php',
+        'App\\Events\\MessageSent' => __DIR__ . '/../..' . '/app/Events/MessageSent.php',
         'App\\Exceptions\\Handler' => __DIR__ . '/../..' . '/app/Exceptions/Handler.php',
         'App\\Http\\Controllers\\AdminAuth\\ForgotPasswordController' => __DIR__ . '/../..' . '/app/Http/Controllers/AdminAuth/ForgotPasswordController.php',
         'App\\Http\\Controllers\\AdminAuth\\LoginController' => __DIR__ . '/../..' . '/app/Http/Controllers/AdminAuth/LoginController.php',
@@ -591,6 +633,7 @@ class ComposerStaticInit3eb5bc9c2d5cccd9ccf08e9ddfe5df07
         'App\\Http\\Controllers\\AdminAuth\\VerificationController' => __DIR__ . '/../..' . '/app/Http/Controllers/AdminAuth/VerificationController.php',
         'App\\Http\\Controllers\\AdminController' => __DIR__ . '/../..' . '/app/Http/Controllers/AdminController.php',
         'App\\Http\\Controllers\\AjaxController' => __DIR__ . '/../..' . '/app/Http/Controllers/AjaxController.php',
+        'App\\Http\\Controllers\\ApiController' => __DIR__ . '/../..' . '/app/Http/Controllers/ApiController.php',
         'App\\Http\\Controllers\\Api\\authController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/authController.php',
         'App\\Http\\Controllers\\Auth\\ForgotPasswordController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/ForgotPasswordController.php',
         'App\\Http\\Controllers\\Auth\\LoginController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/LoginController.php',
@@ -602,12 +645,13 @@ class ComposerStaticInit3eb5bc9c2d5cccd9ccf08e9ddfe5df07
         'App\\Http\\Controllers\\MediaController' => __DIR__ . '/../..' . '/app/Http/Controllers/MediaController.php',
         'App\\Http\\Controllers\\MenuController' => __DIR__ . '/../..' . '/app/Http/Controllers/MenuController.php',
         'App\\Http\\Controllers\\MenuElementController' => __DIR__ . '/../..' . '/app/Http/Controllers/MenuElementController.php',
+        'App\\Http\\Controllers\\MessagesController' => __DIR__ . '/../..' . '/app/Http/Controllers/MessagesController.php',
         'App\\Http\\Controllers\\NotesController' => __DIR__ . '/../..' . '/app/Http/Controllers/NotesController.php',
         'App\\Http\\Controllers\\ResourceController' => __DIR__ . '/../..' . '/app/Http/Controllers/ResourceController.php',
+        'App\\Http\\Controllers\\RidersController' => __DIR__ . '/../..' . '/app/Http/Controllers/RidersController.php',
         'App\\Http\\Controllers\\RolesController' => __DIR__ . '/../..' . '/app/Http/Controllers/RolesController.php',
         'App\\Http\\Controllers\\UsersController' => __DIR__ . '/../..' . '/app/Http/Controllers/UsersController.php',
         'App\\Http\\Controllers\\admin\\UsersController' => __DIR__ . '/../..' . '/app/Http/Controllers/admin/UsersController.php',
-        'App\\Http\\Controllers\\apiController' => __DIR__ . '/../..' . '/app/Http/Controllers/apiController.php',
         'App\\Http\\Kernel' => __DIR__ . '/../..' . '/app/Http/Kernel.php',
         'App\\Http\\Menus\\GetSidebarMenu' => __DIR__ . '/../..' . '/app/Http/Menus/GetSidebarMenu.php',
         'App\\Http\\Menus\\MenuInterface' => __DIR__ . '/../..' . '/app/Http/Menus/MenuInterface.php',
@@ -621,13 +665,23 @@ class ComposerStaticInit3eb5bc9c2d5cccd9ccf08e9ddfe5df07
         'App\\Http\\Middleware\\TrustProxies' => __DIR__ . '/../..' . '/app/Http/Middleware/TrustProxies.php',
         'App\\Http\\Middleware\\VerifyCsrfToken' => __DIR__ . '/../..' . '/app/Http/Middleware/VerifyCsrfToken.php',
         'App\\Http\\Middleware\\adminMiddleware' => __DIR__ . '/../..' . '/app/Http/Middleware/adminMiddleware.php',
+        'App\\Http\\Resources\\AppResource' => __DIR__ . '/../..' . '/app/Http/Resources/AppResource.php',
+        'App\\Menu_category' => __DIR__ . '/../..' . '/app/Menu_category.php',
+        'App\\Menus' => __DIR__ . '/../..' . '/app/Menus.php',
+        'App\\Messages' => __DIR__ . '/../..' . '/app/Messages.php',
+        'App\\Order' => __DIR__ . '/../..' . '/app/Order.php',
+        'App\\OrderLocationDetails' => __DIR__ . '/../..' . '/app/OrderLocationDetails.php',
+        'App\\Order_item' => __DIR__ . '/../..' . '/app/Order_item.php',
+        'App\\Order_status' => __DIR__ . '/../..' . '/app/Order_status.php',
         'App\\Providers\\AppServiceProvider' => __DIR__ . '/../..' . '/app/Providers/AppServiceProvider.php',
         'App\\Providers\\AuthServiceProvider' => __DIR__ . '/../..' . '/app/Providers/AuthServiceProvider.php',
         'App\\Providers\\BroadcastServiceProvider' => __DIR__ . '/../..' . '/app/Providers/BroadcastServiceProvider.php',
         'App\\Providers\\EventServiceProvider' => __DIR__ . '/../..' . '/app/Providers/EventServiceProvider.php',
         'App\\Providers\\RouteServiceProvider' => __DIR__ . '/../..' . '/app/Providers/RouteServiceProvider.php',
+        'App\\Rider' => __DIR__ . '/../..' . '/app/Rider.php',
         'App\\Services\\EditMenuViewService' => __DIR__ . '/../..' . '/app/Services/EditMenuViewService.php',
         'App\\Services\\FormService' => __DIR__ . '/../..' . '/app/Services/FormService.php',
+        'App\\Services\\GoogleMaps' => __DIR__ . '/../..' . '/app/Services/GoogleMaps.php',
         'App\\Services\\RemoveFolderService' => __DIR__ . '/../..' . '/app/Services/RemoveFolderService.php',
         'App\\Services\\ResourceService' => __DIR__ . '/../..' . '/app/Services/ResourceService.php',
         'App\\Services\\RolesService' => __DIR__ . '/../..' . '/app/Services/RolesService.php',
@@ -671,11 +725,18 @@ class ComposerStaticInit3eb5bc9c2d5cccd9ccf08e9ddfe5df07
         'Carbon\\Traits\\Units' => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon/Traits/Units.php',
         'Carbon\\Traits\\Week' => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon/Traits/Week.php',
         'Carbon\\Translator' => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon/Translator.php',
+        'Composer\\CaBundle\\CaBundle' => __DIR__ . '/..' . '/composer/ca-bundle/src/CaBundle.php',
         'CreateAdminTable' => __DIR__ . '/../..' . '/database/migrations/2019_09_14_175009_create_admin_table.php',
         'CreateFailedJobsTable' => __DIR__ . '/../..' . '/database/migrations/2019_08_19_000000_create_failed_jobs_table.php',
         'CreateMenuCategoryTable' => __DIR__ . '/../..' . '/database/migrations/2020_03_22_142334_create_menu_category_table.php',
         'CreateMenusTable' => __DIR__ . '/../..' . '/database/migrations/2020_03_21_133757_create_menus_table.php',
+        'CreateMessagesTable' => __DIR__ . '/../..' . '/database/migrations/2020_05_24_161838_create_messages_table.php',
+        'CreateOrderItemTable' => __DIR__ . '/../..' . '/database/migrations/2020_05_15_143606_create_order_item_table.php',
+        'CreateOrderLocationDetailsTable' => __DIR__ . '/../..' . '/database/migrations/2020_05_18_170809_create_order_location_details_table.php',
+        'CreateOrderStatusTable' => __DIR__ . '/../..' . '/database/migrations/2020_05_15_145929_create_order_status_table.php',
+        'CreateOrderTable' => __DIR__ . '/../..' . '/database/migrations/2020_05_15_150902_create_order_table.php',
         'CreatePasswordResetsTable' => __DIR__ . '/../..' . '/database/migrations/2014_10_12_100000_create_password_resets_table.php',
+        'CreateRidersTable' => __DIR__ . '/../..' . '/database/migrations/2020_05_23_155746_create_riders_table.php',
         'CreateUsersTable' => __DIR__ . '/../..' . '/database/migrations/2014_10_12_000000_create_users_table.php',
         'CreateVendorsTable' => __DIR__ . '/../..' . '/database/migrations/2020_02_05_153525_create_vendors_table.php',
         'Cron\\AbstractField' => __DIR__ . '/..' . '/dragonmantank/cron-expression/src/Cron/AbstractField.php',
@@ -1403,6 +1464,36 @@ class ComposerStaticInit3eb5bc9c2d5cccd9ccf08e9ddfe5df07
         'Firebase\\JWT\\JWT' => __DIR__ . '/..' . '/firebase/php-jwt/src/JWT.php',
         'Firebase\\JWT\\SignatureInvalidException' => __DIR__ . '/..' . '/firebase/php-jwt/src/SignatureInvalidException.php',
         'FolderTableSeeder' => __DIR__ . '/../..' . '/database/seeds/FolderTableSeeder.php',
+        'GeoIp2\\Database\\Reader' => __DIR__ . '/..' . '/geoip2/geoip2/src/Database/Reader.php',
+        'GeoIp2\\Exception\\AddressNotFoundException' => __DIR__ . '/..' . '/geoip2/geoip2/src/Exception/AddressNotFoundException.php',
+        'GeoIp2\\Exception\\AuthenticationException' => __DIR__ . '/..' . '/geoip2/geoip2/src/Exception/AuthenticationException.php',
+        'GeoIp2\\Exception\\GeoIp2Exception' => __DIR__ . '/..' . '/geoip2/geoip2/src/Exception/GeoIp2Exception.php',
+        'GeoIp2\\Exception\\HttpException' => __DIR__ . '/..' . '/geoip2/geoip2/src/Exception/HttpException.php',
+        'GeoIp2\\Exception\\InvalidRequestException' => __DIR__ . '/..' . '/geoip2/geoip2/src/Exception/InvalidRequestException.php',
+        'GeoIp2\\Exception\\OutOfQueriesException' => __DIR__ . '/..' . '/geoip2/geoip2/src/Exception/OutOfQueriesException.php',
+        'GeoIp2\\Model\\AbstractModel' => __DIR__ . '/..' . '/geoip2/geoip2/src/Model/AbstractModel.php',
+        'GeoIp2\\Model\\AnonymousIp' => __DIR__ . '/..' . '/geoip2/geoip2/src/Model/AnonymousIp.php',
+        'GeoIp2\\Model\\Asn' => __DIR__ . '/..' . '/geoip2/geoip2/src/Model/Asn.php',
+        'GeoIp2\\Model\\City' => __DIR__ . '/..' . '/geoip2/geoip2/src/Model/City.php',
+        'GeoIp2\\Model\\ConnectionType' => __DIR__ . '/..' . '/geoip2/geoip2/src/Model/ConnectionType.php',
+        'GeoIp2\\Model\\Country' => __DIR__ . '/..' . '/geoip2/geoip2/src/Model/Country.php',
+        'GeoIp2\\Model\\Domain' => __DIR__ . '/..' . '/geoip2/geoip2/src/Model/Domain.php',
+        'GeoIp2\\Model\\Enterprise' => __DIR__ . '/..' . '/geoip2/geoip2/src/Model/Enterprise.php',
+        'GeoIp2\\Model\\Insights' => __DIR__ . '/..' . '/geoip2/geoip2/src/Model/Insights.php',
+        'GeoIp2\\Model\\Isp' => __DIR__ . '/..' . '/geoip2/geoip2/src/Model/Isp.php',
+        'GeoIp2\\ProviderInterface' => __DIR__ . '/..' . '/geoip2/geoip2/src/ProviderInterface.php',
+        'GeoIp2\\Record\\AbstractPlaceRecord' => __DIR__ . '/..' . '/geoip2/geoip2/src/Record/AbstractPlaceRecord.php',
+        'GeoIp2\\Record\\AbstractRecord' => __DIR__ . '/..' . '/geoip2/geoip2/src/Record/AbstractRecord.php',
+        'GeoIp2\\Record\\City' => __DIR__ . '/..' . '/geoip2/geoip2/src/Record/City.php',
+        'GeoIp2\\Record\\Continent' => __DIR__ . '/..' . '/geoip2/geoip2/src/Record/Continent.php',
+        'GeoIp2\\Record\\Country' => __DIR__ . '/..' . '/geoip2/geoip2/src/Record/Country.php',
+        'GeoIp2\\Record\\Location' => __DIR__ . '/..' . '/geoip2/geoip2/src/Record/Location.php',
+        'GeoIp2\\Record\\MaxMind' => __DIR__ . '/..' . '/geoip2/geoip2/src/Record/MaxMind.php',
+        'GeoIp2\\Record\\Postal' => __DIR__ . '/..' . '/geoip2/geoip2/src/Record/Postal.php',
+        'GeoIp2\\Record\\RepresentedCountry' => __DIR__ . '/..' . '/geoip2/geoip2/src/Record/RepresentedCountry.php',
+        'GeoIp2\\Record\\Subdivision' => __DIR__ . '/..' . '/geoip2/geoip2/src/Record/Subdivision.php',
+        'GeoIp2\\Record\\Traits' => __DIR__ . '/..' . '/geoip2/geoip2/src/Record/Traits.php',
+        'GeoIp2\\WebService\\Client' => __DIR__ . '/..' . '/geoip2/geoip2/src/WebService/Client.php',
         'GuzzleHttp\\Client' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/Client.php',
         'GuzzleHttp\\ClientInterface' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/ClientInterface.php',
         'GuzzleHttp\\Cookie\\CookieJar' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/Cookie/CookieJar.php',
@@ -1473,6 +1564,7 @@ class ComposerStaticInit3eb5bc9c2d5cccd9ccf08e9ddfe5df07
         'GuzzleHttp\\RetryMiddleware' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/RetryMiddleware.php',
         'GuzzleHttp\\TransferStats' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/TransferStats.php',
         'GuzzleHttp\\UriTemplate' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/UriTemplate.php',
+        'GuzzleHttp\\Utils' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/Utils.php',
         'Hamcrest\\Arrays\\IsArray' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Arrays/IsArray.php',
         'Hamcrest\\Arrays\\IsArrayContaining' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Arrays/IsArrayContaining.php',
         'Hamcrest\\Arrays\\IsArrayContainingInAnyOrder' => __DIR__ . '/..' . '/hamcrest/hamcrest-php/hamcrest/Hamcrest/Arrays/IsArrayContainingInAnyOrder.php',
@@ -2578,6 +2670,39 @@ class ComposerStaticInit3eb5bc9c2d5cccd9ccf08e9ddfe5df07
         'Laminas\\ZendFrameworkBridge\\Module' => __DIR__ . '/..' . '/laminas/laminas-zendframework-bridge/src/Module.php',
         'Laminas\\ZendFrameworkBridge\\Replacements' => __DIR__ . '/..' . '/laminas/laminas-zendframework-bridge/src/Replacements.php',
         'Laminas\\ZendFrameworkBridge\\RewriteRules' => __DIR__ . '/..' . '/laminas/laminas-zendframework-bridge/src/RewriteRules.php',
+        'LaravelFCM\\FCMManager' => __DIR__ . '/..' . '/brozot/laravel-fcm/src/FCMManager.php',
+        'LaravelFCM\\FCMServiceProvider' => __DIR__ . '/..' . '/brozot/laravel-fcm/src/FCMServiceProvider.php',
+        'LaravelFCM\\Facades\\FCM' => __DIR__ . '/..' . '/brozot/laravel-fcm/src/Facades/FCM.php',
+        'LaravelFCM\\Facades\\FCMGroup' => __DIR__ . '/..' . '/brozot/laravel-fcm/src/Facades/FCMGroup.php',
+        'LaravelFCM\\Message\\Exceptions\\InvalidOptionsException' => __DIR__ . '/..' . '/brozot/laravel-fcm/src/Message/Exceptions/InvalidOptionsException.php',
+        'LaravelFCM\\Message\\Exceptions\\NoTopicProvidedException' => __DIR__ . '/..' . '/brozot/laravel-fcm/src/Message/Exceptions/NoTopicProvidedException.php',
+        'LaravelFCM\\Message\\Options' => __DIR__ . '/..' . '/brozot/laravel-fcm/src/Message/Options.php',
+        'LaravelFCM\\Message\\OptionsBuilder' => __DIR__ . '/..' . '/brozot/laravel-fcm/src/Message/OptionsBuilder.php',
+        'LaravelFCM\\Message\\OptionsPriorities' => __DIR__ . '/..' . '/brozot/laravel-fcm/src/Message/OptionsBuilder.php',
+        'LaravelFCM\\Message\\PayloadData' => __DIR__ . '/..' . '/brozot/laravel-fcm/src/Message/PayloadData.php',
+        'LaravelFCM\\Message\\PayloadDataBuilder' => __DIR__ . '/..' . '/brozot/laravel-fcm/src/Message/PayloadDataBuilder.php',
+        'LaravelFCM\\Message\\PayloadNotification' => __DIR__ . '/..' . '/brozot/laravel-fcm/src/Message/PayloadNotification.php',
+        'LaravelFCM\\Message\\PayloadNotificationBuilder' => __DIR__ . '/..' . '/brozot/laravel-fcm/src/Message/PayloadNotificationBuilder.php',
+        'LaravelFCM\\Message\\Topics' => __DIR__ . '/..' . '/brozot/laravel-fcm/src/Message/Topics.php',
+        'LaravelFCM\\Mocks\\MockDownstreamResponse' => __DIR__ . '/..' . '/brozot/laravel-fcm/tests/mocks/MockDownstreamResponse.php',
+        'LaravelFCM\\Mocks\\MockGroupResponse' => __DIR__ . '/..' . '/brozot/laravel-fcm/tests/mocks/MockGroupResponse.php',
+        'LaravelFCM\\Mocks\\MockTopicResponse' => __DIR__ . '/..' . '/brozot/laravel-fcm/tests/mocks/MockTopicResponse.php',
+        'LaravelFCM\\Request\\BaseRequest' => __DIR__ . '/..' . '/brozot/laravel-fcm/src/Request/BaseRequest.php',
+        'LaravelFCM\\Request\\GroupRequest' => __DIR__ . '/..' . '/brozot/laravel-fcm/src/Request/GroupRequest.php',
+        'LaravelFCM\\Request\\Request' => __DIR__ . '/..' . '/brozot/laravel-fcm/src/Request/Request.php',
+        'LaravelFCM\\Response\\BaseResponse' => __DIR__ . '/..' . '/brozot/laravel-fcm/src/Response/BaseResponse.php',
+        'LaravelFCM\\Response\\DownstreamResponse' => __DIR__ . '/..' . '/brozot/laravel-fcm/src/Response/DownstreamResponse.php',
+        'LaravelFCM\\Response\\DownstreamResponseContract' => __DIR__ . '/..' . '/brozot/laravel-fcm/src/Response/DownstreamResponseContract.php',
+        'LaravelFCM\\Response\\Exceptions\\InvalidRequestException' => __DIR__ . '/..' . '/brozot/laravel-fcm/src/Response/Exceptions/InvalidRequestException.php',
+        'LaravelFCM\\Response\\Exceptions\\ServerResponseException' => __DIR__ . '/..' . '/brozot/laravel-fcm/src/Response/Exceptions/ServerResponseException.php',
+        'LaravelFCM\\Response\\Exceptions\\UnauthorizedRequestException' => __DIR__ . '/..' . '/brozot/laravel-fcm/src/Response/Exceptions/UnauthorizedRequestException.php',
+        'LaravelFCM\\Response\\GroupResponse' => __DIR__ . '/..' . '/brozot/laravel-fcm/src/Response/GroupResponse.php',
+        'LaravelFCM\\Response\\GroupResponseContract' => __DIR__ . '/..' . '/brozot/laravel-fcm/src/Response/GroupResponseContract.php',
+        'LaravelFCM\\Response\\TopicResponse' => __DIR__ . '/..' . '/brozot/laravel-fcm/src/Response/TopicResponse.php',
+        'LaravelFCM\\Response\\TopicResponseContract' => __DIR__ . '/..' . '/brozot/laravel-fcm/src/Response/TopicResponseContract.php',
+        'LaravelFCM\\Sender\\FCMGroup' => __DIR__ . '/..' . '/brozot/laravel-fcm/src/Sender/FCMGroup.php',
+        'LaravelFCM\\Sender\\FCMSender' => __DIR__ . '/..' . '/brozot/laravel-fcm/src/Sender/FCMSender.php',
+        'LaravelFCM\\Sender\\HTTPSender' => __DIR__ . '/..' . '/brozot/laravel-fcm/src/Sender/HTTPSender.php',
         'Laravel\\Passport\\ApiTokenCookieFactory' => __DIR__ . '/..' . '/laravel/passport/src/ApiTokenCookieFactory.php',
         'Laravel\\Passport\\AuthCode' => __DIR__ . '/..' . '/laravel/passport/src/AuthCode.php',
         'Laravel\\Passport\\Bridge\\AccessToken' => __DIR__ . '/..' . '/laravel/passport/src/Bridge/AccessToken.php',
@@ -2986,6 +3111,23 @@ class ComposerStaticInit3eb5bc9c2d5cccd9ccf08e9ddfe5df07
         'League\\OAuth2\\Server\\ResponseTypes\\BearerTokenResponse' => __DIR__ . '/..' . '/league/oauth2-server/src/ResponseTypes/BearerTokenResponse.php',
         'League\\OAuth2\\Server\\ResponseTypes\\RedirectResponse' => __DIR__ . '/..' . '/league/oauth2-server/src/ResponseTypes/RedirectResponse.php',
         'League\\OAuth2\\Server\\ResponseTypes\\ResponseTypeInterface' => __DIR__ . '/..' . '/league/oauth2-server/src/ResponseTypes/ResponseTypeInterface.php',
+        'MaxMind\\Db\\Reader' => __DIR__ . '/..' . '/maxmind-db/reader/src/MaxMind/Db/Reader.php',
+        'MaxMind\\Db\\Reader\\Decoder' => __DIR__ . '/..' . '/maxmind-db/reader/src/MaxMind/Db/Reader/Decoder.php',
+        'MaxMind\\Db\\Reader\\InvalidDatabaseException' => __DIR__ . '/..' . '/maxmind-db/reader/src/MaxMind/Db/Reader/InvalidDatabaseException.php',
+        'MaxMind\\Db\\Reader\\Metadata' => __DIR__ . '/..' . '/maxmind-db/reader/src/MaxMind/Db/Reader/Metadata.php',
+        'MaxMind\\Db\\Reader\\Util' => __DIR__ . '/..' . '/maxmind-db/reader/src/MaxMind/Db/Reader/Util.php',
+        'MaxMind\\Exception\\AuthenticationException' => __DIR__ . '/..' . '/maxmind/web-service-common/src/Exception/AuthenticationException.php',
+        'MaxMind\\Exception\\HttpException' => __DIR__ . '/..' . '/maxmind/web-service-common/src/Exception/HttpException.php',
+        'MaxMind\\Exception\\InsufficientFundsException' => __DIR__ . '/..' . '/maxmind/web-service-common/src/Exception/InsufficientFundsException.php',
+        'MaxMind\\Exception\\InvalidInputException' => __DIR__ . '/..' . '/maxmind/web-service-common/src/Exception/InvalidInputException.php',
+        'MaxMind\\Exception\\InvalidRequestException' => __DIR__ . '/..' . '/maxmind/web-service-common/src/Exception/InvalidRequestException.php',
+        'MaxMind\\Exception\\IpAddressNotFoundException' => __DIR__ . '/..' . '/maxmind/web-service-common/src/Exception/IpAddressNotFoundException.php',
+        'MaxMind\\Exception\\PermissionRequiredException' => __DIR__ . '/..' . '/maxmind/web-service-common/src/Exception/PermissionRequiredException.php',
+        'MaxMind\\Exception\\WebServiceException' => __DIR__ . '/..' . '/maxmind/web-service-common/src/Exception/WebServiceException.php',
+        'MaxMind\\WebService\\Client' => __DIR__ . '/..' . '/maxmind/web-service-common/src/WebService/Client.php',
+        'MaxMind\\WebService\\Http\\CurlRequest' => __DIR__ . '/..' . '/maxmind/web-service-common/src/WebService/Http/CurlRequest.php',
+        'MaxMind\\WebService\\Http\\Request' => __DIR__ . '/..' . '/maxmind/web-service-common/src/WebService/Http/Request.php',
+        'MaxMind\\WebService\\Http\\RequestFactory' => __DIR__ . '/..' . '/maxmind/web-service-common/src/WebService/Http/RequestFactory.php',
         'MenusTableSeeder' => __DIR__ . '/../..' . '/database/seeds/MenusTableSeeder.php',
         'Mockery' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery.php',
         'Mockery\\Adapter\\Phpunit\\Legacy\\TestListenerForV5' => __DIR__ . '/..' . '/mockery/mockery/library/Mockery/Adapter/Phpunit/Legacy/TestListenerForV5.php',
@@ -4448,6 +4590,18 @@ class ComposerStaticInit3eb5bc9c2d5cccd9ccf08e9ddfe5df07
         'Spatie\\Permission\\Traits\\HasRoles' => __DIR__ . '/..' . '/spatie/laravel-permission/src/Traits/HasRoles.php',
         'Spatie\\Permission\\Traits\\RefreshesPermissionCache' => __DIR__ . '/..' . '/spatie/laravel-permission/src/Traits/RefreshesPermissionCache.php',
         'Spatie\\TemporaryDirectory\\TemporaryDirectory' => __DIR__ . '/..' . '/spatie/temporary-directory/src/TemporaryDirectory.php',
+        'Stevebauman\\Location\\Drivers\\Driver' => __DIR__ . '/..' . '/stevebauman/location/src/Drivers/Driver.php',
+        'Stevebauman\\Location\\Drivers\\GeoPlugin' => __DIR__ . '/..' . '/stevebauman/location/src/Drivers/GeoPlugin.php',
+        'Stevebauman\\Location\\Drivers\\IpApi' => __DIR__ . '/..' . '/stevebauman/location/src/Drivers/IpApi.php',
+        'Stevebauman\\Location\\Drivers\\IpApiPro' => __DIR__ . '/..' . '/stevebauman/location/src/Drivers/IpApiPro.php',
+        'Stevebauman\\Location\\Drivers\\IpInfo' => __DIR__ . '/..' . '/stevebauman/location/src/Drivers/IpInfo.php',
+        'Stevebauman\\Location\\Drivers\\MaxMind' => __DIR__ . '/..' . '/stevebauman/location/src/Drivers/MaxMind.php',
+        'Stevebauman\\Location\\Exceptions\\DriverDoesNotExistException' => __DIR__ . '/..' . '/stevebauman/location/src/Exceptions/DriverDoesNotExistException.php',
+        'Stevebauman\\Location\\Exceptions\\LocationException' => __DIR__ . '/..' . '/stevebauman/location/src/Exceptions/LocationException.php',
+        'Stevebauman\\Location\\Facades\\Location' => __DIR__ . '/..' . '/stevebauman/location/src/Facades/Location.php',
+        'Stevebauman\\Location\\Location' => __DIR__ . '/..' . '/stevebauman/location/src/Location.php',
+        'Stevebauman\\Location\\LocationServiceProvider' => __DIR__ . '/..' . '/stevebauman/location/src/LocationServiceProvider.php',
+        'Stevebauman\\Location\\Position' => __DIR__ . '/..' . '/stevebauman/location/src/Position.php',
         'Symfony\\Bridge\\PsrHttpMessage\\Factory\\HttpFoundationFactory' => __DIR__ . '/..' . '/symfony/psr-http-message-bridge/Factory/HttpFoundationFactory.php',
         'Symfony\\Bridge\\PsrHttpMessage\\Factory\\PsrHttpFactory' => __DIR__ . '/..' . '/symfony/psr-http-message-bridge/Factory/PsrHttpFactory.php',
         'Symfony\\Bridge\\PsrHttpMessage\\Factory\\UploadedFile' => __DIR__ . '/..' . '/symfony/psr-http-message-bridge/Factory/UploadedFile.php',
