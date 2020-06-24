@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 class AdminModel extends Model
 {
     //
-    public static function addVendor($request, $file) {
+    public static function addVendor($request, $image, $cover) {
         $insert = DB::table('vendors')->insert(
             [
                 'name' => $request->name,
@@ -19,10 +19,15 @@ class AdminModel extends Model
                 'lga' => $request->lga,
                 'country' => $request->country,
                 'zip' => $request->zip,
+                'area' => $request->area,
                 'type' => $request->type,
+                'tax' => $request->tax,
+                'delivery_charge' => $request->delivery_charge,
+                'vendor_charge' => $request->vendor_charge,
                 'opening' => $request->open,
                 'closing' => $request->close,
-                'image' => $file,
+                'image' => asset('storage/vendor/'.$image),
+                'cover' => asset('storage/vendor/'.$cover),
                 'status' => 1,
                 'updated_at' => now(),
                 'created_at' => now()
@@ -44,7 +49,7 @@ class AdminModel extends Model
                 'description' => $request->description,
                 'category' => $request->category,
                 'price' => $request->price,
-                'image' => $file,
+                'image' => asset('storage/menu/'.$file),
                 'updated_at' => now(),
                 'created_at' => now()
             ]
@@ -141,9 +146,9 @@ class AdminModel extends Model
     }
 
     public static function searchVendor($key) {
-        $delete = DB::table('vendors')->where('name','LIKE',"%$key%")->orderBy('id','desc')->get();
+        $search = DB::table('vendors')->where('name','LIKE',"%$key%")->orderBy('id','desc')->get();
 
-        return $delete ;
+        return $search ;
     }
 
 }

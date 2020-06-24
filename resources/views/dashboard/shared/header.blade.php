@@ -61,7 +61,7 @@
                   <use xlink:href="{{ asset('assets/icons/coreui/free-symbol-defs.svg#cui-account-logout') }}"></use>
                 </svg><form action="/logout" method="POST"> @csrf <button type="submit" class="btn btn-ghost-dark btn-block">Logout</button></form></a> --}}
 
-                <a class="dropdown-item" href="{{route('login')}}">
+                <a class="dropdown-item" href="#">
                     <svg class="c-icon mr-2">
                         <use xlink:href="{{ asset('assets/icons/coreui/free-symbol-defs.svg#cui-account-logout') }}"></use>
                     </svg> Logout</a>

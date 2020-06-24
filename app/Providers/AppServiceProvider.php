@@ -2,9 +2,9 @@
 
 namespace App\Providers;
 
-use App\Http\Resources\AppResource;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
+use App\Http\Resources\AppResource;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -26,7 +26,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         AppResource::withoutWrapping();
-
         Schema::defaultStringLength(191);
     }
 }

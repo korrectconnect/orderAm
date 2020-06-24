@@ -12,11 +12,11 @@
     </a>
 
         <div class="c-sidebar-nav-dropdown-items">
-            <a class="dropdown-item" href="{{route('vendor.add')}}">
+            <a class="dropdown-item" href="#">
                 <i class="fa fa-pencil"></i> &nbsp; &nbsp;
                 Add
             </a>
-            <a class="dropdown-item" href="{{route('vendor.view')}}">
+            <a class="dropdown-item" href="#">
                 <i class="fa fa-pencil"></i> &nbsp; &nbsp;
                 View All
             </a>
@@ -31,11 +31,11 @@
     </a>
 
     <div class="c-sidebar-nav-dropdown-items">
-        <a class="dropdown-item" href="{{route('menu.add')}}">
+        <a class="dropdown-item" href="#">
             <i class="fa fa-pencil"></i> &nbsp; &nbsp;
             Add
         </a>
-        <a class="dropdown-item" href="{{route('menu.view')}}">
+        <a class="dropdown-item" href="#">
             <i class="fa fa-pencil"></i> &nbsp; &nbsp;
             View All
         </a>

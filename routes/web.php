@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -26,6 +28,57 @@
         Route::get('/', function() { return view('dashboard.menu.view'); })->name('menu.view');
     });
 
+   Route::get('/', 'UsersController@home')->name('user.home');
+   Route::get('vendors/{name}', 'UsersController@vendors')->name('user.vendors');
+   Route::get('vendors', 'UsersController@vendorsHome')->name('user.vendors.home');
+   Route::get('vendors/{id}/{name}', 'UsersController@vendorSingle')->name('user.vendor');
+   Route::get('order/{id}/process', 'UsersController@orderProcess')->name('user.order.process');
+   Route::get('order/success', 'UsersController@orderSuccess')->name('user.order.success');
+   Route::get('user/profile', 'UsersController@profile')->name('user.profile');
+   Route::get('user/orders', 'UsersController@orders')->name('user.orders');
+   Route::get('user/address', 'UsersController@address')->name('user.address.book');
+   Route::get('user/vendor/favourite', 'UsersController@favouriteVendors')->name('user.vendor.favourite');
+   Route::get('user/password/change', 'UsersController@changePassword')->name('user.password.change');
+
+
+   Route::post('logout', 'UsersController@logout')->name('logout');
+   Route::post('order/place', 'UsersController@placeOrder')->name('user.order.place');
+
+
+   //Ajax Requests
+   Route::post('request/vendor/location', 'AjaxController@storeLocationToSession');
+   Route::post('request/cart', 'AjaxController@addToCart');
+   Route::post('request/login', 'AjaxController@login')->name('user.login');
+   Route::post('request/register', 'AjaxController@register')->name('user.register');
+   Route::post('request/address', 'AjaxController@addAddress')->name('user.address');
+   Route::post('request/coupon', 'AjaxController@checkCoupon');
+   Route::post('request/address/edit', 'AjaxController@editAddresss')->name('user.address.edit');
+   Route::post('request/profile/edit', 'AjaxController@editProfile')->name('user.profile.edit');
+   Route::post('user/password/change', 'AjaxController@changePassword')->name('user.password.change');
+
+   Route::get('request/menu/{vendor}/{category}', 'AjaxController@getVendorMenu');
+   Route::get('request/login', 'AjaxController@loginFrom')->name('user.login');
+   Route::get('request/cart/{id}', 'AjaxController@cart');
+   Route::get('request/cart/delete/{id}', 'AjaxController@deleteCart');
+   Route::get('request/cart/increase/{id}', 'AjaxController@increaseCart');
+   Route::get('request/cart/decrease/{id}', 'AjaxController@decreaseCart');
+   Route::get('request/register', 'AjaxController@registerFrom')->name('user.register');
+   Route::get('request/recover', 'AjaxController@recoverFrom')->name('user.recover');
+   Route::get('request/address', 'AjaxController@addressForm')->name('user.address');
+   Route::get('request/address/edit/{id}', 'AjaxController@editAddresssForm')->name('user.address.edit.form');
+   Route::get('request/address/delete/{id}', 'AjaxController@deleteAddresss')->name('user.address.delete');
+   Route::get('request/address/dafault/{id}', 'AjaxController@makeDefaultAddresss')->name('user.address.default');
+   Route::get('request/order/{id}/summary/{address}/{type}/{coupon}', 'AjaxController@orderSummary')->name('user.order.summary');
+   Route::get('request/user/order/{no}', 'AjaxController@myOrderSummary')->name('user.myorder');
+   Route::get('request/vendor/favourite/{id}', 'AjaxController@favouriteVendor')->name('user.vendor.favourite.toggle');
+
+
+   Route::get('request/test', 'AjaxController@test');
+
+
+
+    Route::prefix('helper')->group(function(){
+        Route::get('/colors', function () {     return view('dashboard.colors'); });
         Route::get('/typography', function () { return view('dashboard.typography'); });
         Route::get('/charts', function () {     return view('dashboard.charts'); });
         Route::get('/widgets', function () {    return view('dashboard.widgets'); });
@@ -68,13 +121,12 @@
             Route::get('/badge', function(){    return view('dashboard.notifications.badge'); });
             Route::get('/modals', function(){   return view('dashboard.notifications.modals'); });
         });
-
-    Route::group(['middleware' => ['auth:api']], function () {
-
-        Route::get('/', function () { return view('dashboard.homepage'); });
-
     });
-    Auth::routes();
+
+    //Auth::routes();
+
+
+    //ADMIN ROUTES
 
     Route::get('/adminredirect', function() {return redirect('/adminredirect/dashboard'); });
 
@@ -99,84 +151,102 @@
     Route::group(['middleware' => ['admin'],'prefix' => 'adminredirect'], function() {
 
         Route::get('dashboard', ['as' => 'admin.dashboard', 'uses' => 'AdminController@dashboard']);
+        Route::get('vendor/location', ['as' => 'admin.vendor.location', 'uses' => 'AdminController@location']);
         Route::get('vendor/add', ['as' => 'admin.vendor.add', 'uses' => 'AdminController@addVendorForm']);
+        Route::get('vendor/category', ['as' => 'admin.vendor.category', 'uses' => 'AdminController@vendorCategory']);
         Route::get('vendor', ['as' => 'admin.vendor.view', 'uses' => 'AdminController@vendors']);
+        Route::get('rider/add', ['as' => 'admin.rider.add', 'uses' => 'AdminController@addRiderForm']);
+        Route::get('rider/category', ['as' => 'admin.rider.category', 'uses' => 'AdminController@riderCategory']);
+        Route::get('rider/locations', ['as' => 'admin.rider.locations', 'uses' => 'AdminController@ridersLocation']);
+        Route::get('rider', ['as' => 'admin.rider.view', 'uses' => 'AdminController@riders']);
+        Route::get('rider/{id}/view', ['as' => 'admin.rider.single', 'uses' => 'AdminController@singleRider']);
         Route::get('vendor/{id}', ['uses' => 'AdminController@vendor']);
         Route::get('menus', ['as' => 'admin.menus', 'uses' => 'AdminController@menus']);
+        Route::get('orders', ['as' => 'admin.orders', 'uses' => 'AdminController@orders']);
         Route::get('menus/view/{id}', ['uses' => 'AdminController@menu']);
+        Route::get('vendor/auth/{id}', 'AdminController@vendorAuth')->name('admin.vendor.auth');
 
 
         //Ajax Requests
 
-        Route::post('vendor/add', ['as' => 'admin.vendor.add', 'uses' => 'AjaxController@addVendor']);
-        Route::post('menus/add', ['as' => 'admin.menu.add', 'uses' => 'AjaxController@addMenu']);
-        Route::post('menuCategory/add', ['as' => 'admin.menu_category.add', 'uses' => 'AjaxController@addMenuCategory']);
-        Route::post('menuCategory/delete', ['as' => 'admin.menu_category.delete', 'uses' => 'AjaxController@deleteMenuCategory']);
+        Route::post('vendor/add', ['as' => 'admin.vendor.add', 'uses' => 'AdminAjaxController@addVendor']);
+        Route::post('vendor/category', 'AdminAjaxController@addVendorCategory');
+        Route::post('vendor/location', 'AdminAjaxController@addVendorLocation');
+        Route::post('rider/add', 'AdminAjaxController@addRider')->name('admin.rider.add');
+        Route::post('rider/category', 'AdminAjaxController@addRiderCategory')->name('admin.rider.category');
+        Route::post('menus/add', ['as' => 'admin.menu.add', 'uses' => 'AdminAjaxController@addMenu']);
+        Route::post('menuCategory/add', ['as' => 'admin.menu_category.add', 'uses' => 'AdminAjaxController@addMenuCategory']);
+        Route::post('menuCategory/delete', ['as' => 'admin.menu_category.delete', 'uses' => 'AdminAjaxController@deleteMenuCategory']);
+        Route::post('ajax/rider/assign', 'AdminAjaxController@assignRider')->name('admin.assign.rider');
 
-        Route::get('ajax/viewVendor/{id}', ['as' => 'admin.ajax.vendor.view', 'uses' => 'AjaxController@viewVendor']);
-        Route::get('ajax/addMenuFrom/{id}', [ 'uses' => 'AjaxController@addMenuFrom']);
-        Route::get('ajax/refreshMenu', [ 'uses' => 'AjaxController@refreshMenus']);
-        Route::get('ajax/refreshMenu/{id}', [ 'uses' => 'AjaxController@refreshMenu']);
-        Route::get('ajax/getMenuCategoryList/{id}', ['uses' => 'AjaxController@getMenuCategoryList']);
-        Route::get('ajax/deleteMenu/{id}', ['as' => 'admin.menu.delete', 'uses' => 'AjaxController@deleteMenu']);
-        Route::get('ajax/deleteVendor/{id}', ['as' => 'admin.vendor.delete', 'uses' => 'AjaxController@deleteVendor']);
-        Route::get('ajax/searchVendor/{key}', ['as' => 'admin.vendor.search', 'uses' => 'AjaxController@searchVendor']);
-
+        Route::get('ajax/viewVendor/{id}', ['as' => 'admin.ajax.vendor.view', 'uses' => 'AdminAjaxController@viewVendor']);
+        Route::get('ajax/addMenuFrom/{id}', [ 'uses' => 'AdminAjaxController@addMenuFrom']);
+        Route::get('ajax/deleteVendorCategory/{id}', 'AdminAjaxController@deleteVendorCategory');
+        Route::get('ajax/deleteVendorLocation/{id}', 'AdminAjaxController@deleteVendorLocation');
+        Route::get('ajax/refreshMenu', [ 'uses' => 'AdminAjaxController@refreshMenus']);
+        Route::get('ajax/refreshVendorCategory', [ 'uses' => 'AdminAjaxController@refreshVendorCategory']);
+        Route::get('ajax/refreshVendorLocation', [ 'uses' => 'AdminAjaxController@refreshVendorLocation']);
+        Route::get('ajax/refreshMenu/{id}', [ 'uses' => 'AdminAjaxController@refreshMenu']);
+        Route::get('ajax/getMenuCategoryList/{id}', ['uses' => 'AdminAjaxController@getMenuCategoryList']);
+        Route::get('ajax/deleteMenu/{id}', ['as' => 'admin.menu.delete', 'uses' => 'AdminAjaxController@deleteMenu']);
+        Route::get('ajax/deleteVendor/{id}', ['as' => 'admin.vendor.delete', 'uses' => 'AdminAjaxController@deleteVendor']);
+        Route::get('ajax/searchVendor/{key}', ['as' => 'admin.vendor.search', 'uses' => 'AdminAjaxController@searchVendor']);
+        Route::get('ajax/cancelOrder/{id}', ['as' => 'admin.order.cancel', 'uses' => 'AdminAjaxController@cancelOrder']);
+        Route::get('ajax/rider/category/{id}/delete', 'AdminAjaxController@deleteRiderCategory')->name('admin.rider.category.delete');
+        Route::get('ajax/rider/{id}/assign', 'AdminAjaxController@assignRiderForm')->name('admin.rider.assign');
+        Route::get('ajax/rider/{id}/unassign', 'AdminAjaxController@unassignRider')->name('admin.rider.unassign');
+        Route::get('ajax/rider/{location}/location/assign', 'AdminAjaxController@riderByAssignedLocation')->name('admin.rider.location.assign');
         //End Ajax Request
 
     });
 
-    // Route::resource('resource/{table}/resource', 'ResourceController')->names([
-    //     'index'     => 'resource.index',
-    //     'create'    => 'resource.create',
-    //     'store'     => 'resource.store',
-    //     'show'      => 'resource.show',
-    //     'edit'      => 'resource.edit',
-    //     'update'    => 'resource.update',
-    //     'destroy'   => 'resource.destroy'
-    // ]);
 
-    // Route::group(['middleware' => ['role:admin']], function () {
-    //     Route::resource('bread',  'BreadController');   //create BREAD (resource)
-    //     Route::resource('users',        'UsersController')->except( ['create', 'store'] );
-    //     Route::resource('roles',        'RolesController');
-    //     Route::get('/roles/move/move-up',      'RolesController@moveUp')->name('roles.up');
-    //     Route::get('/roles/move/move-down',    'RolesController@moveDown')->name('roles.down');
-    //     Route::prefix('menu/element')->group(function () {
-    //         Route::get('/',             'MenuElementController@index')->name('menu.index');
-    //         Route::get('/move-up',      'MenuElementController@moveUp')->name('menu.up');
-    //         Route::get('/move-down',    'MenuElementController@moveDown')->name('menu.down');
-    //         Route::get('/create',       'MenuElementController@create')->name('menu.create');
-    //         Route::post('/store',       'MenuElementController@store')->name('menu.store');
-    //         Route::get('/get-parents',  'MenuElementController@getParents');
-    //         Route::get('/edit',         'MenuElementController@edit')->name('menu.edit');
-    //         Route::post('/update',      'MenuElementController@update')->name('menu.update');
-    //         Route::get('/show',         'MenuElementController@show')->name('menu.show');
-    //         Route::get('/delete',       'MenuElementController@delete')->name('menu.delete');
-    //     });
-    //     Route::prefix('menu/menu')->group(function () {
-    //         Route::get('/',         'MenuController@index')->name('menu.menu.index');
-    //         Route::get('/create',   'MenuController@create')->name('menu.menu.create');
-    //         Route::post('/store',   'MenuController@store')->name('menu.menu.store');
-    //         Route::get('/edit',     'MenuController@edit')->name('menu.menu.edit');
-    //         Route::post('/update',  'MenuController@update')->name('menu.menu.update');
-    //         Route::get('/delete',   'MenuController@delete')->name('menu.menu.delete');
-    //     });
-    //     Route::prefix('media')->group(function () {
-    //         Route::get('/',                 'MediaController@index')->name('media.folder.index');
-    //         Route::get('/folder/store',     'MediaController@folderAdd')->name('media.folder.add');
-    //         Route::post('/folder/update',   'MediaController@folderUpdate')->name('media.folder.update');
-    //         Route::get('/folder',           'MediaController@folder')->name('media.folder');
-    //         Route::post('/folder/move',     'MediaController@folderMove')->name('media.folder.move');
-    //         Route::post('/folder/delete',   'MediaController@folderDelete')->name('media.folder.delete');;
 
-    //         Route::post('/file/store',      'MediaController@fileAdd')->name('media.file.add');
-    //         Route::get('/file',             'MediaController@file');
-    //         Route::post('/file/delete',     'MediaController@fileDelete')->name('media.file.delete');
-    //         Route::post('/file/update',     'MediaController@fileUpdate')->name('media.file.update');
-    //         Route::post('/file/move',       'MediaController@fileMove')->name('media.file.move');
-    //         Route::post('/file/cropp',      'MediaController@cropp');
-    //         Route::get('/file/copy',        'MediaController@fileCopy')->name('media.file.copy');
-    //     });
-    // });
-//});
+    //VENDOR ROUTE
+
+
+    Route::get('/vendorredirect', function() {return redirect('/vendorredirect/dashboard'); });
+
+    Route::group(['prefix' => 'vendorredirect'], function() {
+
+        // Login Routes...
+            Route::get('login', ['as' => 'vendor.login', 'uses' => 'VendorAuth\LoginController@showLoginForm']);
+            Route::post('login', ['as' => 'vendor.login', 'uses' => 'VendorAuth\LoginController@login']);
+            Route::post('logout', ['as' => 'vendor.logout', 'uses' => 'VendorAuth\LoginController@logout']);
+    });
+
+    Route::group(['middleware' => ['vendor'],'prefix' => 'vendorredirect'], function() {
+
+        Route::get('dashboard', ['as' => 'vendor.dashboard', 'uses' => 'VendorController@dashboard']);
+        Route::get('menu_list', ['as' => 'vendor.menus', 'uses' => 'VendorController@menus']);
+        Route::get('profile', ['as' => 'vendor.profile', 'uses' => 'VendorController@profile']);
+        Route::get('authenticate-admin', ['as' => 'vendor.authAdmin', 'uses' => 'VendorController@authAdmin']);
+
+        Route::post('authenticate-admin', ['as' => 'vendor.authAdmin', 'uses' => 'VendorController@authenticateAdmin']);
+        Route::post('authenticate-admin/logout', ['as' => 'vendor.authAdminLogout', 'uses' => 'VendorController@authenticateAdminLogout']);
+
+
+        //Ajax Requests
+
+        Route::get('request/orders/{status}/{cancelled}', 'VendorAjaxController@orders')->name('vendor.ajax.orders');
+        Route::get('request/order/{order_no}', 'VendorAjaxController@order')->name('vendor.ajax.order');
+        Route::get('request/order/{order_no}/confirm', 'VendorAjaxController@confirmOrder')->name('vendor.order.confirm');
+        Route::get('request/order/{order_no}/decline', 'VendorAjaxController@declineOrder')->name('vendor.order.decline');
+        Route::get('request/menu_list/{category}', 'VendorAjaxController@getMenuList')->name('vendor.menu_list');
+        Route::get('menu/add', 'VendorAjaxController@menuForm')->name('vendor.menu.add');
+        Route::get('menu_category/add', 'VendorAjaxController@menuCategoryForm')->name('vendor.menu_category.add');
+        Route::get('menu_category/edit/{id}', 'VendorAjaxController@editMenuCategoryForm')->name('vendor.menu_category.edit.form');
+        Route::get('menu_category/delete/{id}', 'VendorAjaxController@deleteMenuCategory')->name('vendor.menu_category.delete');
+        Route::get('menu/stock/{id}', 'VendorAjaxController@toggleMenuStock')->name('vendor.menu.stock');
+        Route::get('menu/edit/{id}', 'VendorAjaxController@editMenuForm')->name('vendor.menu.edit.form');
+        Route::get('menu/delete/{id}', 'VendorAjaxController@deleteMenu')->name('vendor.menu.delete');
+
+        Route::post('menu/add', 'VendorAjaxController@addMenu')->name('vendor.menu.add');
+        Route::post('menu_category/add', 'VendorAjaxController@addMenuCategory')->name('vendor.menu_category.add');
+        Route::post('menu_category/edit', 'VendorAjaxController@editMenuCategory')->name('vendor.menu_category.edit');
+        Route::post('menu/edit', 'VendorAjaxController@editMenu')->name('vendor.menu.edit');
+
+
+        //End Ajax Request
+
+    });

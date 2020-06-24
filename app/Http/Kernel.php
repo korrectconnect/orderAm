@@ -4,6 +4,7 @@ namespace App\Http;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 use App\Http\Middleware\adminMiddleware;
+use App\Http\Middleware\VendorMiddleware;
 
 class Kernel extends HttpKernel
 {
@@ -65,6 +66,7 @@ class Kernel extends HttpKernel
         'get.menu' => \App\Http\Middleware\GetMenu::class,
         'role' => \Spatie\Permission\Middlewares\RoleMiddleware::class,
         'admin' => adminMiddleware::class,
+        'vendor' => VendorMiddleware::class,
     ];
 
     /**

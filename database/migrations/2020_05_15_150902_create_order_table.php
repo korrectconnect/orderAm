@@ -19,6 +19,7 @@ class CreateOrderTable extends Migration
             $table->string('order_no')->nullable();
             $table->integer('vendor_id')->nullable();
             $table->string('transaction_id')->nullable();
+            $table->integer('rider_id')->nullable();
             $table->string('coupon_code')->nullable();
             $table->string('address')->nullable();
             $table->string('payment_mode')->nullable();
@@ -27,8 +28,9 @@ class CreateOrderTable extends Migration
             $table->decimal('total')->nullable();
             $table->decimal('tax')->nullable();
             $table->text('comment')->nullable();
+            $table->timestamp('delivery_time')->nullable();
             $table->decimal('balance')->nullable();
-            $table->string('status')->nullable();
+            $table->boolean('status')->nullable();
             $table->boolean('cancelled')->nullable();
             $table->timestamps();
         });

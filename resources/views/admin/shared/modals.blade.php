@@ -1,16 +1,16 @@
-<div class="modal fade" id="FreeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="adminModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title">Modal title</h4>
+          <h4 class="modal-title" id="adminModalTitle"></h4>
           <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
         </div>
-        <div class="modal-body">
-          <p>One fine body…</p>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
-          <button class="btn btn-primary " type="button">More</button>
+        <div class="modal-body" id="adminModalBody">
+          <center>
+              <br>
+                <i class="fa fa-spin fa-circle-notch fa-2x"></i>
+              <br>
+          </center>
         </div>
       </div>
       <!-- /.modal-content-->
@@ -43,13 +43,13 @@
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title">Modal title</h4>
+          <h4 class="modal-title">Add Menu</h4>
           <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
         </div>
         <div class="modal-body">
 
             <!-- Start form -->
-                @include('admin.ajax.add_menu_form')
+                @include('admin.pages.ajax.add_menu_form')
             <!-- End form -->
 
         </div>
@@ -74,7 +74,7 @@
         <div class="modal-body">
 
             <!-- Start form -->
-            @include('admin.ajax.add_category_form')
+            @include('admin.pages.ajax.add_category_form')
             <!-- End form -->
 
         </div>
@@ -123,85 +123,3 @@
 
 
 
-  <!-- /.modal-->
-  <div class="modal fade" id="primaryModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-primary" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title">Modal title</h4>
-          <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-        </div>
-        <div class="modal-body">
-          <p>One fine body…</p>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
-          <button class="btn btn-primary" type="button">More</button>
-        </div>
-      </div>
-      <!-- /.modal-content-->
-    </div>
-    <!-- /.modal-dialog-->
-  </div>
-  <!-- /.modal-->
-  <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-success" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title">Modal title</h4>
-          <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-        </div>
-        <div class="modal-body">
-          <p>One fine body…</p>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
-          <button class="btn btn-success modal_btn" type="button">More</button>
-        </div>
-      </div>
-      <!-- /.modal-content-->
-    </div>
-    <!-- /.modal-dialog-->
-  </div>
-  <!-- /.modal-->
-  <div class="modal fade" id="warningModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-warning" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title">Modal title</h4>
-          <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-        </div>
-        <div class="modal-body">
-          <p>One fine body…</p>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
-          <button class="btn btn-warning modal_btn" type="button">More</button>
-        </div>
-      </div>
-      <!-- /.modal-content-->
-    </div>
-    <!-- /.modal-dialog-->
-  </div>
-  <!-- /.modal-->
-
-  <!-- /.modal-->
-  <div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-info" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title">Modal title</h4>
-          <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-        </div>
-        <div class="modal-body">
-          <p>One fine body…</p>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
-          <button class="btn btn-info modal_btn" type="button">More</button>
-        </div>
-      </div>
-      <!-- /.modal-content-->
-    </div>
-    <!-- /.modal-dialog-->
-  </div>

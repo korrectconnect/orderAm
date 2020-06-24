@@ -46,6 +46,11 @@ return [
             'provider' => 'admin',
         ],
 
+        'vendor' => [
+            'driver' => 'session',
+            'provider' => 'vendor',
+        ],
+
         'api' => [
             'driver' => 'passport',
             'provider' => 'users',
@@ -79,6 +84,11 @@ return [
         'admin' => [
             'driver' => 'eloquent',
             'model' => App\Admin::class,
+        ],
+
+        'vendor' => [
+            'driver' => 'eloquent',
+            'model' => App\Vendor_auth::class,
         ],
     ],
 

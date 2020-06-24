@@ -1,5 +1,6 @@
 {
     "/css/style.css": "/css/style.css",
+    "/css/main.css": "/css/main.css",
     "/css/app.css": "/css/app.css",
     "/css/pace.min.css": "/css/pace.min.css",
     "/js/axios.min.js": "/js/axios.min.js",

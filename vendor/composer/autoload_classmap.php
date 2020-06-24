@@ -6,12 +6,21 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'App\\Address' => $baseDir . '/app/Address.php',
     'App\\Admin' => $baseDir . '/app/Admin.php',
     'App\\AdminModel' => $baseDir . '/app/AdminModel.php',
     'App\\ApiModel' => $baseDir . '/app/ApiModel.php',
+<<<<<<< HEAD
     'App\\Console\\Kernel' => $baseDir . '/app/Console/Kernel.php',
     'App\\Events\\MessageSent' => $baseDir . '/app/Events/MessageSent.php',
+=======
+    'App\\Cart' => $baseDir . '/app/Cart.php',
+    'App\\Console\\Kernel' => $baseDir . '/app/Console/Kernel.php',
+    'App\\Coupon' => $baseDir . '/app/Coupon.php',
+>>>>>>> 34de4705ca80576c4931efbe0122e1ef8fa0510c
     'App\\Exceptions\\Handler' => $baseDir . '/app/Exceptions/Handler.php',
+    'App\\Favourite_vendor' => $baseDir . '/app/Favourite_vendor.php',
+    'App\\Http\\Controllers\\AdminAjaxController' => $baseDir . '/app/Http/Controllers/AdminAjaxController.php',
     'App\\Http\\Controllers\\AdminAuth\\ForgotPasswordController' => $baseDir . '/app/Http/Controllers/AdminAuth/ForgotPasswordController.php',
     'App\\Http\\Controllers\\AdminAuth\\LoginController' => $baseDir . '/app/Http/Controllers/AdminAuth/LoginController.php',
     'App\\Http\\Controllers\\AdminAuth\\RegisterController' => $baseDir . '/app/Http/Controllers/AdminAuth/RegisterController.php',
@@ -31,12 +40,19 @@ return array(
     'App\\Http\\Controllers\\MediaController' => $baseDir . '/app/Http/Controllers/MediaController.php',
     'App\\Http\\Controllers\\MenuController' => $baseDir . '/app/Http/Controllers/MenuController.php',
     'App\\Http\\Controllers\\MenuElementController' => $baseDir . '/app/Http/Controllers/MenuElementController.php',
+<<<<<<< HEAD
     'App\\Http\\Controllers\\MessagesController' => $baseDir . '/app/Http/Controllers/MessagesController.php',
     'App\\Http\\Controllers\\NotesController' => $baseDir . '/app/Http/Controllers/NotesController.php',
+=======
+    'App\\Http\\Controllers\\NotesController' => $baseDir . '/app/Exceptions/NotesController.php',
+>>>>>>> 34de4705ca80576c4931efbe0122e1ef8fa0510c
     'App\\Http\\Controllers\\ResourceController' => $baseDir . '/app/Http/Controllers/ResourceController.php',
     'App\\Http\\Controllers\\RidersController' => $baseDir . '/app/Http/Controllers/RidersController.php',
     'App\\Http\\Controllers\\RolesController' => $baseDir . '/app/Http/Controllers/RolesController.php',
     'App\\Http\\Controllers\\UsersController' => $baseDir . '/app/Http/Controllers/UsersController.php',
+    'App\\Http\\Controllers\\VendorAjaxController' => $baseDir . '/app/Http/Controllers/VendorAjaxController.php',
+    'App\\Http\\Controllers\\VendorAuth\\LoginController' => $baseDir . '/app/Http/Controllers/VendorAuth/LoginController.php',
+    'App\\Http\\Controllers\\VendorController' => $baseDir . '/app/Http/Controllers/VendorController.php',
     'App\\Http\\Controllers\\admin\\UsersController' => $baseDir . '/app/Http/Controllers/admin/UsersController.php',
     'App\\Http\\Kernel' => $baseDir . '/app/Http/Kernel.php',
     'App\\Http\\Menus\\GetSidebarMenu' => $baseDir . '/app/Http/Menus/GetSidebarMenu.php',
@@ -49,14 +65,22 @@ return array(
     'App\\Http\\Middleware\\RedirectIfAuthenticated' => $baseDir . '/app/Http/Middleware/RedirectIfAuthenticated.php',
     'App\\Http\\Middleware\\TrimStrings' => $baseDir . '/app/Http/Middleware/TrimStrings.php',
     'App\\Http\\Middleware\\TrustProxies' => $baseDir . '/app/Http/Middleware/TrustProxies.php',
+    'App\\Http\\Middleware\\VendorMiddleware' => $baseDir . '/app/Http/Middleware/VendorMiddleware.php',
     'App\\Http\\Middleware\\VerifyCsrfToken' => $baseDir . '/app/Http/Middleware/VerifyCsrfToken.php',
     'App\\Http\\Middleware\\adminMiddleware' => $baseDir . '/app/Http/Middleware/adminMiddleware.php',
     'App\\Http\\Resources\\AppResource' => $baseDir . '/app/Http/Resources/AppResource.php',
+<<<<<<< HEAD
     'App\\Menu_category' => $baseDir . '/app/Menu_category.php',
     'App\\Menus' => $baseDir . '/app/Menus.php',
     'App\\Messages' => $baseDir . '/app/Messages.php',
     'App\\Order' => $baseDir . '/app/Order.php',
     'App\\OrderLocationDetails' => $baseDir . '/app/OrderLocationDetails.php',
+=======
+    'App\\Location' => $baseDir . '/app/Location.php',
+    'App\\Menu_category' => $baseDir . '/app/Menu_category.php',
+    'App\\Menus' => $baseDir . '/app/Menus.php',
+    'App\\Order' => $baseDir . '/app/Order.php',
+>>>>>>> 34de4705ca80576c4931efbe0122e1ef8fa0510c
     'App\\Order_item' => $baseDir . '/app/Order_item.php',
     'App\\Order_status' => $baseDir . '/app/Order_status.php',
     'App\\Providers\\AppServiceProvider' => $baseDir . '/app/Providers/AppServiceProvider.php',
@@ -72,6 +96,9 @@ return array(
     'App\\Services\\ResourceService' => $baseDir . '/app/Services/ResourceService.php',
     'App\\Services\\RolesService' => $baseDir . '/app/Services/RolesService.php',
     'App\\User' => $baseDir . '/app/User.php',
+    'App\\Vendor_auth' => $baseDir . '/app/Vendor_auth.php',
+    'App\\Vendor_category' => $baseDir . '/app/Vendor_category.php',
+    'App\\Vendor_rating' => $baseDir . '/app/Vendor_rating.php',
     'App\\Vendors' => $baseDir . '/app/Vendors.php',
     'BREADSeeder' => $baseDir . '/database/seeds/BREADSeeder.php',
     'Carbon\\Carbon' => $vendorDir . '/nesbot/carbon/src/Carbon/Carbon.php',
@@ -111,11 +138,20 @@ return array(
     'Carbon\\Traits\\Units' => $vendorDir . '/nesbot/carbon/src/Carbon/Traits/Units.php',
     'Carbon\\Traits\\Week' => $vendorDir . '/nesbot/carbon/src/Carbon/Traits/Week.php',
     'Carbon\\Translator' => $vendorDir . '/nesbot/carbon/src/Carbon/Translator.php',
+<<<<<<< HEAD
     'Composer\\CaBundle\\CaBundle' => $vendorDir . '/composer/ca-bundle/src/CaBundle.php',
+=======
+    'CraeteAddressTable' => $baseDir . '/database/migrations/2020_05_17_080207_craete_address_table.php',
+>>>>>>> 34de4705ca80576c4931efbe0122e1ef8fa0510c
     'CreateAdminTable' => $baseDir . '/database/migrations/2019_09_14_175009_create_admin_table.php',
+    'CreateCartTable' => $baseDir . '/database/migrations/2020_05_22_174004_create_cart_table.php',
+    'CreateCouponTable' => $baseDir . '/database/migrations/2020_05_29_173959_create_coupon_table.php',
     'CreateFailedJobsTable' => $baseDir . '/database/migrations/2019_08_19_000000_create_failed_jobs_table.php',
+    'CreateFavouriteVendorsTable' => $baseDir . '/database/migrations/2020_05_31_214848_create_favourite_vendors_table.php',
+    'CreateLocationTable' => $baseDir . '/database/migrations/2020_05_22_174319_create_location_table.php',
     'CreateMenuCategoryTable' => $baseDir . '/database/migrations/2020_03_22_142334_create_menu_category_table.php',
     'CreateMenusTable' => $baseDir . '/database/migrations/2020_03_21_133757_create_menus_table.php',
+<<<<<<< HEAD
     'CreateMessagesTable' => $baseDir . '/database/migrations/2020_05_24_161838_create_messages_table.php',
     'CreateOrderItemTable' => $baseDir . '/database/migrations/2020_05_15_143606_create_order_item_table.php',
     'CreateOrderLocationDetailsTable' => $baseDir . '/database/migrations/2020_05_18_170809_create_order_location_details_table.php',
@@ -123,7 +159,17 @@ return array(
     'CreateOrderTable' => $baseDir . '/database/migrations/2020_05_15_150902_create_order_table.php',
     'CreatePasswordResetsTable' => $baseDir . '/database/migrations/2014_10_12_100000_create_password_resets_table.php',
     'CreateRidersTable' => $baseDir . '/database/migrations/2020_05_23_155746_create_riders_table.php',
+=======
+    'CreateOrderItemTable' => $baseDir . '/database/migrations/2020_05_15_143606_create_order_item_table.php',
+    'CreateOrderTable' => $baseDir . '/database/migrations/2020_05_15_150902_create_order_table.php',
+    'CreatePasswordResetsTable' => $baseDir . '/database/migrations/2014_10_12_100000_create_password_resets_table.php',
+    'CreateRiderCategoryTable' => $baseDir . '/database/migrations/2020_06_16_150743_create_rider_category_table.php',
+    'CreateRidersTable' => $baseDir . '/database/migrations/2020_06_16_143353_create_riders_table.php',
+>>>>>>> 34de4705ca80576c4931efbe0122e1ef8fa0510c
     'CreateUsersTable' => $baseDir . '/database/migrations/2014_10_12_000000_create_users_table.php',
+    'CreateVendorAuthTable' => $baseDir . '/database/migrations/2020_06_09_162921_create_vendor_auth_table.php',
+    'CreateVendorCategoryTable' => $baseDir . '/database/migrations/2020_05_22_150916_create_vendor_category_table.php',
+    'CreateVendorRatingTable' => $baseDir . '/database/migrations/2020_06_01_105331_create_vendor_rating_table.php',
     'CreateVendorsTable' => $baseDir . '/database/migrations/2020_02_05_153525_create_vendors_table.php',
     'Cron\\AbstractField' => $vendorDir . '/dragonmantank/cron-expression/src/Cron/AbstractField.php',
     'Cron\\CronExpression' => $vendorDir . '/dragonmantank/cron-expression/src/Cron/CronExpression.php',
