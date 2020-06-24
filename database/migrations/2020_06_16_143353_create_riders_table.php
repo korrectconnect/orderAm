@@ -35,7 +35,6 @@ class CreateRidersTable extends Migration
             $table->string('image')->nullable();
             $table->string('username')->nullable();
             $table->string('password')->nullable();
-            $table->unsignedInteger('user_id');
             $table->timestamps();
         });
     }
