@@ -66,6 +66,8 @@ $(document).ready(function() {
     $(document).on('submit', '#authLoginForm', function(e) {
         e.preventDefault();
 
+        var href = $(this).data('href');
+
         $("#authLoginFormBtn").prop('disabled',true).html(" &nbsp; <i class='fa fa-spin fa-circle-notch'></i> &nbsp; ");
 
         $.ajaxSetup({
@@ -75,7 +77,7 @@ $(document).ready(function() {
         });
 
         $.ajax({
-            url:$("#authLoginFormBtn").data("href"),
+            url: href,
             type: "POST",
             data: new FormData(this),
             contentType: false,       // The content type used when sending data to the server.
@@ -98,6 +100,8 @@ $(document).ready(function() {
     $(document).on('submit', '#authRegisterForm', function(e) {
         e.preventDefault();
 
+        var href = $(this).data('href');
+
         $("#authRegisterFormBtn").prop('disabled',true).html(" &nbsp; <i class='fa fa-spin fa-circle-notch'></i> &nbsp; ");
 
         $.ajaxSetup({
@@ -107,7 +111,7 @@ $(document).ready(function() {
         });
 
         $.ajax({
-            url:$("#authRegisterFormBtn").data("href"),
+            url: href,
             type: "POST",
             data: new FormData(this),
             contentType: false,       // The content type used when sending data to the server.

@@ -9,9 +9,12 @@ use App\Menus;
 use App\Order;
 use App\Order_item;
 use App\User;
+use App\Vendor_auth;
 use App\Vendors;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
 
 class VendorAjaxController extends Controller
 {
@@ -93,6 +96,7 @@ class VendorAjaxController extends Controller
             if ($order->first() != NULL) {
                 $update = $order->update([
                     'cancelled' => 1,
+                    'status' => 2,
                 ]);
 
                 if ($update) {
@@ -111,10 +115,21 @@ class VendorAjaxController extends Controller
             }
             $vendor_id = auth()->guard('vendor')->user()->vendor_id ;
             $menus = Menus::where(['vendor_id' => $vendor_id, 'category' => $category])->orderBy('id', 'desc')->get() ;
+            if($request->session()->has('vendor_secret')) {
+                if(decrypt($request->session()->get('vendor_secret')) == decrypt(auth()->guard('vendor')->user()->secret)) {
+                    $auth = true ;
+                }else {
+                    $request->session()->forget('vendor_secret');
+                    $auth = false ;
+                }
+            }else {
+                $auth = false;
+            }
 
             $data = array(
                 'menus' => $menus,
                 'vendor_id' => $vendor_id,
+                'auth' => $auth,
             );
 
             return view('vendor.pages.ajax.menu_list')->with($data);
@@ -131,6 +146,41 @@ class VendorAjaxController extends Controller
             );
 
             return view('vendor.pages.ajax.add_menu')->with($data);
+        }
+    }
+
+    public function changePassword(Request $request) {
+        if($request->ajax()) {
+            $vendor_id = auth()->guard('vendor')->user()->vendor_id ;
+
+            if (!(Hash::check($request->old, auth()->guard('vendor')->user()->password))) {
+                return response()->json(['errors'=>['Old Password is incorrect']]);
+            }else {
+                if(strcmp($request->old, $request->password) == 0) {
+                    return response()->json(['errors'=>['New Password cannot be same as your current Password. Please Choose a different Password']]);
+                }else {
+                    $validatedData = Validator::make($request->all(), [
+                        'old' => 'required',
+                        'password' => 'required|string|min:6|confirmed',
+                    ]);
+
+                    if ($validatedData->fails()) {
+                        return response()->json(['errors'=>$validatedData->errors()->all()]);
+                    }else {
+                        $query = Vendor_auth::where(['vendor_id' => $vendor_id])->update([
+                            'password' => bcrypt($request->password),
+                        ]);
+
+                        if($query) {
+                            return response()->json(['errors'=>null, 'message'=>'Password changed Successfully']);
+                        }else {
+                            return response()->json(['errors'=>['Error !, try again later']]);
+                        }
+
+                    }
+
+                }
+            }
         }
     }
 
@@ -410,6 +460,84 @@ class VendorAjaxController extends Controller
                 return response()->json(['errors'=>null, 'message'=>'Menu deleted Successfully']);
             }
             return response()->json(['errors'=>['Server error try again']]);
+        }
+    }
+
+    public function transactionToday(Request $request) {
+        if ($request->ajax()) {
+            $vendor_id = auth()->guard('vendor')->user()->vendor_id ;
+
+            $orders = Order::where(['vendor_id' => $vendor_id, 'cancelled' => 0, 'status' => 2])
+                                ->whereDate('updated_at', Carbon::today())->get();
+            if ($orders->count() >= 1) {
+                $t = 0 ;
+                $c = 0;
+                foreach ($orders as $order) {
+                    $t += $order->total ;
+                    $c += ($order->total  * $order->commission)/100;
+                }
+                $total = $t ;
+            } else {
+                $total = 0.00;
+                $t = 0 ;
+                $c = 0;
+            }
+
+
+            $data = array(
+                'orders' => $orders,
+                'total' => $total,
+                'commission' => $c,
+                'profit' => $total - $c,
+            );
+
+            return view('vendor.pages.ajax.transaction_today')->with($data);
+        }
+    }
+
+    public function transactionFilter(Request $request) {
+        if ($request->ajax()) {
+            $vendor_id = auth()->guard('vendor')->user()->vendor_id ;
+
+            return view('vendor.pages.ajax.filter');
+        }
+    }
+
+    public function transactionFiltered(Request $request) {
+        if ($request->ajax()) {
+            $vendor_id = auth()->guard('vendor')->user()->vendor_id ;
+
+            if ($request->start == NULL || $request->end == NULL) {
+                return response()->json(['errors' => ['At least one filled was left undefined']]);
+            }else {
+                $end = Carbon::createFromFormat('Y-m-d', $request->end);
+
+                $orders = Order::where(['vendor_id' => $vendor_id, 'cancelled' => 0, 'status' => 2])->whereBetween('updated_at', [$request->start, $end])->get();
+                if ($orders->count() >= 1) {
+                    $t = 0 ;
+                    $c = 0 ;
+                    foreach ($orders as $order) {
+                        $t += $order->total ;
+                        $c += ($order->total  * $order->commission)/100;
+                    }
+                    $total = $t ;
+                } else {
+                    $total = 0.00;
+                    $c = 0;
+                }
+
+
+                $data = array(
+                    'orders' => $orders,
+                    'total' => $total,
+                    'start' => $request->start,
+                    'end' => $request->end,
+                    'commission' => $c,
+                    'profit' => $total - $c,
+                );
+
+                return view('vendor.pages.ajax.filtered')->with($data);
+            }
         }
     }
 }

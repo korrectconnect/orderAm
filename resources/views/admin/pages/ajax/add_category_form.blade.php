@@ -1,4 +1,4 @@
-<form action="{{route('admin.menu_category.add')}}" method="POST" id="addcategoryForm">
+<form data-href="{{route('admin.menu_category.add')}}" id="addcategoryForm">
     @csrf
 
     <div class="form-group">

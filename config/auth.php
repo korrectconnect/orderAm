@@ -51,6 +51,12 @@ return [
             'provider' => 'vendor',
         ],
 
+        'rider' => [
+            'driver' => 'passport',
+            'provider' => 'rider',
+            'hash' => false,
+        ],
+
         'api' => [
             'driver' => 'passport',
             'provider' => 'users',
@@ -89,6 +95,11 @@ return [
         'vendor' => [
             'driver' => 'eloquent',
             'model' => App\Vendor_auth::class,
+        ],
+
+        'rider' => [
+            'driver' => 'eloquent',
+            'model' => App\Rider::class,
         ],
     ],
 

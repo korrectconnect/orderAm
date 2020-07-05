@@ -27,6 +27,10 @@
                                         <label for="description">Description</label>
                                         <input name="description" class="form-control" id="description" type="text" placeholder="Eg. Foods you love">
                                     </div>
+                                    <div class="form-group">
+                                        <label for="commission">Commission (%)</label>
+                                        <input name="commission" class="form-control" id="commission" type="number" placeholder="Eg. 7">
+                                    </div>
                                 </div>
                             </div>
                         </div>

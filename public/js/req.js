@@ -377,7 +377,7 @@ function refreshMenus() {
     });
 }
 
-function refreshMenu(id, path = '../../') {
+function refreshMenu(path) {
 
     $(".refreshMenuDiv").html("<i class='fa fa-spin fa-spinner'></i> Please Wait");
 
@@ -388,7 +388,7 @@ function refreshMenu(id, path = '../../') {
     });
 
     $.ajax({
-        url: path + "ajax/refreshMenu/" + id,
+        url: path,
         type: "get",
         success: function(e) {
             $(".refreshMenuDiv").html(e);
@@ -398,6 +398,9 @@ function refreshMenu(id, path = '../../') {
 
 $("#addcategoryForm").submit(function(e) {
     e.preventDefault();
+    var href = $(this).data('href');
+
+    $(".addMenuCategoryBtn").prop("disabled", true).html(" <i class='fa fa-circle-notch fa-spin'><i> ");
 
     $.ajaxSetup({
         headers: {
@@ -406,7 +409,7 @@ $("#addcategoryForm").submit(function(e) {
     });
 
     $.ajax({
-        url:"../../menuCategory/add",
+        url: href,
         type: "POST",
         data: new FormData(this),
         contentType: false,       // The content type used when sending data to the server.
@@ -418,11 +421,11 @@ $("#addcategoryForm").submit(function(e) {
                 for(i in e.errors) {
                     toastr.error(e.errors[i], "Error", {timeOut: 5000});
                 }
-                $(".addMenuCategoryBtn").prop("disabled", false);
+                $(".addMenuCategoryBtn").prop("disabled", false).html('Add Category');
 
             }else {
                 toastr.success(e.message, "Success", {timeOut: 5000});
-                $(".addMenuCategoryBtn").prop("disabled", false);
+                $(".addMenuCategoryBtn").prop("disabled", false).html('Add Category');
                 window.location.reload();
             }
         }
@@ -433,9 +436,46 @@ $(".addCategoryLink").click(function() {
     $(".vendor_id").val($(this).data('id'));
 });
 
+$(document).on('click', '#authVendorBtn', function() {
+    $("#authVendorForm").submit();
+});
+
+$(document).on('click', '#authVendorResetBtn', function() {
+    if (confirm('Are you sure you want to reset vendors authentication credentials')) {
+        $("#authVendorForm").submit();
+    }
+});
+
 $(".deleteMenuCategory").click(function() {
-    $(".category_id").val($(this).data("id"));
-    $(".deleteMenuCategoryForm").submit();
+
+    if (confirm('Are you sure')) {
+        var btn = $(this) ;
+        var link = btn.data("href");
+
+        btn.prop('disabled', true).html("<i class='fa fa-spin fa-circle-notch'></i>");
+
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        $.ajax({
+            url: link,
+            type: "GET",
+            success: function(e) {
+                if(e.errors != null) {
+                    for(i in e.errors) {
+                        toastr.error(e.errors[i], "Error", {timeOut: 5000});
+                    }
+                    btn.prop('disabled', true).html("<i class='fa fa-times-circle'></i>");
+                }else {
+                    toastr.success(e.message, "Success", {timeOut: 5000});
+                    window.location.reload();
+                }
+            }
+        });
+    }
 });
 
 $(".deleteMenuCategoryForm").submit(function(e) {
@@ -660,9 +700,247 @@ $(document).on('submit', '#addRiderForm', function(e) {
     });
 });
 
+$(document).on('submit', '#editRiderForm', function(e) {
+    e.preventDefault();
+
+    var href = $(this).data("href");
+    $("#editRiderFormBtn").prop('disabled', true).html(" &nbsp; <i class='fa fa-spin fa-spinner'></i> &nbsp; ");
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    $.ajax({
+        url: href,
+        type: "POST",
+        data: new FormData(this),
+        contentType: false,       // The content type used when sending data to the server.
+        cache: false,             // To unable request pages to be cached
+        processData:false,
+        success: function(e) {
+            if(e.errors != null) {
+                for(i in e.errors) {
+                    toastr.error(e.errors[i], "Error", {timeOut: 5000});
+                }
+                $("#editRiderFormBtn").prop('disabled', false).html("Save edit & Upload");
+
+            }else {
+                toastr.success(e.message, "Success", {timeOut: 5000});
+                window.location.reload();
+            }
+        }
+    });
+});
+
+$(document).on('submit', '#editVendorForm', function(e) {
+    e.preventDefault();
+
+    var href = $(this).data("href");
+    $("#editVendorFormBtn").prop('disabled', true).html(" &nbsp; <i class='fa fa-spin fa-spinner'></i> &nbsp; ");
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    $.ajax({
+        url: href,
+        type: "POST",
+        data: new FormData(this),
+        contentType: false,       // The content type used when sending data to the server.
+        cache: false,             // To unable request pages to be cached
+        processData:false,
+        success: function(e) {
+            if(e.errors != null) {
+                for(i in e.errors) {
+                    toastr.error(e.errors[i], "Error", {timeOut: 5000});
+                }
+                $("#editVendorFormBtn").prop('disabled', false).html("Save edit & Upload");
+
+            }else {
+                toastr.success(e.message, "Success", {timeOut: 5000});
+                window.location.reload();
+            }
+        }
+    });
+});
+
+$(document).on('click', '#confirmOrderBtn', function() {
+    $("#adminModalBody").html("<center><br><i class='fa fa-spin fa-circle-notch fa-2x'></i></center><br>");
+    $("#adminModalTitle").html("Assign rider to order no. " + $(this).data('order'));
+    $('#adminModal').modal('show');
+    var href = $(this).data("href");
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    $.ajax({
+        url: href,
+        type: "get",
+        success: function(e) {
+            if(e.errors != null) {
+                for(i in e.errors) {
+                    toastr.error(e.errors[i], "Error", {timeOut: 3000});
+                    $('#adminModal').modal('hide');
+                }
+            }else {
+                $("#adminModalBody").html(e);
+            }
+        }
+    });
+});
+
+$(document).on('click', '#confirmAssignOrderBtn', function() {
+    var btn = $(this);
+    var href = btn.data("href");
+
+    btn.prop('disabled', true).html("<i class='fa fa-spin fa-spinner'></i>");
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    $.ajax({
+        url: href,
+        type: "get",
+        success: function(e) {
+            if(e.errors != null) {
+                for(i in e.errors) {
+                    toastr.error(e.errors[i], "Error", {timeOut: 3000});
+                    btn.prop('disabled', false).html("Confirm");
+                }
+            }else {
+                toastr.success(e.message, "Success", {timeOut: 5000});
+                window.location = e.location ;
+            }
+        }
+    });
+});
+
+$(document).on('click', '#deleteSliderBtn', function() {
+    var btn = $(this);
+    var href = btn.data("href");
+
+    btn.prop('disabled', true).html("<i class='fa fa-spin fa-spinner'></i>");
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    $.ajax({
+        url: href,
+        type: "get",
+        success: function(e) {
+            if(e.errors != null) {
+                for(i in e.errors) {
+                    toastr.error(e.errors[i], "Error", {timeOut: 3000});
+                    btn.prop('disabled', false).html("<i class='fa fa-trash'> Delete</i>");
+                }
+            }else {
+                toastr.success(e.message, "Success", {timeOut: 5000});
+                window.location.reload() ;
+            }
+        }
+    });
+});
+
+$(document).on('click', '#viewRiderOrdersBtn', function() {
+    $("#adminModalBody").html("<center><br><i class='fa fa-spin fa-circle-notch fa-2x'></i></center><br>");
+    $("#adminModalTitle").html("Pending Delivery");
+    $('#adminModal').modal('show');
+    var href = $(this).data("href");
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    $.ajax({
+        url: href,
+        type: "get",
+        success: function(e) {
+            if(e.errors != null) {
+                for(i in e.errors) {
+                    toastr.error(e.errors[i], "Error", {timeOut: 3000});
+                    $('#adminModal').modal('hide');
+                }
+            }else {
+                $("#adminModalBody").html(e);
+            }
+        }
+    });
+});
+
+$(document).on('click', '#viewOrderBtn', function() {
+    $("#adminModalBody").html("<center><br><i class='fa fa-spin fa-circle-notch fa-2x'></i></center><br>");
+    $("#adminModalTitle").html("Pending Delivery");
+    $('#adminModal').modal('show');
+    var href = $(this).data("href");
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    $.ajax({
+        url: href,
+        type: "get",
+        success: function(e) {
+            if(e.errors != null) {
+                for(i in e.errors) {
+                    toastr.error(e.errors[i], "Error", {timeOut: 3000});
+                    $('#adminModal').modal('hide');
+                }
+            }else {
+                $("#adminModalBody").html(e);
+            }
+        }
+    });
+});
+
+$(document).on('click', '#viewPendingDeliveryBtn', function() {
+    $("#adminModalBody").html("<center><br><i class='fa fa-spin fa-circle-notch fa-2x'></i></center><br>");
+    $("#adminModalTitle").html("Pending Delivery");
+    $('#adminModal').modal('show');
+    var href = $(this).data("href");
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    $.ajax({
+        url: href,
+        type: "get",
+        success: function(e) {
+            if(e.errors != null) {
+                for(i in e.errors) {
+                    toastr.error(e.errors[i], "Error", {timeOut: 3000});
+                    $('#adminModal').modal('hide');
+                }
+            }else {
+                $("#adminModalBody").html(e);
+            }
+        }
+    });
+});
+
 $(document).on('click', '#assignRiderBtn', function() {
     $("#adminModalBody").html("<center><br><i class='fa fa-spin fa-circle-notch fa-2x'></i></center><br>");
-    $("#adminModalTitle").html("Assign Rider");
+    $("#adminModalTitle").html("Assign rider to location");
     $('#adminModal').modal('show');
     var href = $(this).data("href");
 
@@ -713,6 +991,74 @@ $(document).on('submit', '#assignRiderForm', function(e) {
                     toastr.error(e.errors[i], "Error", {timeOut: 5000});
                 }
                 $("#assignRiderFormBtn").prop('disabled', false).html("Submit");
+
+            }else {
+                toastr.success(e.message, "Success", {timeOut: 5000});
+                window.location.reload();
+            }
+        }
+    });
+});
+
+$(document).on('submit', '#assignRiderForm', function(e) {
+    e.preventDefault();
+
+    var href = $(this).data("href");
+    $("#assignRiderFormBtn").prop('disabled', true).html(" &nbsp; <i class='fa fa-spin fa-spinner'></i> &nbsp; ");
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    $.ajax({
+        url: href,
+        type: "POST",
+        data: new FormData(this),
+        contentType: false,       // The content type used when sending data to the server.
+        cache: false,             // To unable request pages to be cached
+        processData:false,
+        success: function(e) {
+            if(e.errors != null) {
+                for(i in e.errors) {
+                    toastr.error(e.errors[i], "Error", {timeOut: 5000});
+                }
+                $("#assignRiderFormBtn").prop('disabled', false).html("Submit");
+
+            }else {
+                toastr.success(e.message, "Success", {timeOut: 5000});
+                window.location.reload();
+            }
+        }
+    });
+});
+
+$(document).on('submit', '#addSliderForm', function(e) {
+    e.preventDefault();
+
+    var href = $(this).data("href");
+    $("#addSliderFormBtn").prop('disabled', true).html(" &nbsp; <i class='fa fa-spin fa-spinner'></i> &nbsp; ");
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    $.ajax({
+        url: href,
+        type: "POST",
+        data: new FormData(this),
+        contentType: false,       // The content type used when sending data to the server.
+        cache: false,             // To unable request pages to be cached
+        processData:false,
+        success: function(e) {
+            if(e.errors != null) {
+                for(i in e.errors) {
+                    toastr.error(e.errors[i], "Error", {timeOut: 5000});
+                }
+                $("#addSliderFormBtn").prop('disabled', false).html("Add");
 
             }else {
                 toastr.success(e.message, "Success", {timeOut: 5000});

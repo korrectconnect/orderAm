@@ -13,6 +13,7 @@ class AdminModel extends Model
             [
                 'name' => $request->name,
                 'email' => $request->email,
+                'description' => $request->description,
                 'contact' => $request->contact,
                 'address' => $request->address,
                 'state' => $request->state,

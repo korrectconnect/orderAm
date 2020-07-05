@@ -2,7 +2,8 @@
 <!-- Border -->
 <div class="bor bg-orange"></div>
 <!-- Form -->
-<form class="form" role="form" method="POST" id="authRegisterForm">
+<form class="form" role="form" method="POST" id="authRegisterForm" data-href="{{route('user.register')}}">
+    @csrf
 	<!-- Form Group -->
 	<div class="form-group">
 		<!-- Label -->
@@ -49,6 +50,6 @@
 	</div>
 	<div class="form-group">
 		<!-- Buton -->
-		<button type="submit" class="btn btn-primary" id="authRegisterFormBtn" data-href="{{route('user.register')}}">Submit</button>
+		<button type="submit" class="btn btn-primary" id="authRegisterFormBtn">Submit</button>
 	</div>
 </form>

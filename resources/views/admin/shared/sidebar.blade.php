@@ -12,6 +12,13 @@
     </a>
 </li>
 
+<li class="c-sidebar-nav-item">
+    <a class="c-sidebar-nav-link" href="{{route('admin.pending')}}">
+        <i class="fa fa-pencil"></i> &nbsp; &nbsp;
+        Pending Deliveries
+    </a>
+</li>
+
 <li class="c-sidebar-nav-dropdown">
     <a class="c-sidebar-nav-dropdown-toggle" href="#">
         <i class="fa fa-pencil"></i> &nbsp; &nbsp;
@@ -67,31 +74,31 @@
 </li>
 
 <li class="c-sidebar-nav-item">
-    <a class="c-sidebar-nav-link" href="{{route('admin.menus')}}">
-        <i class="fa fa-pencil"></i> &nbsp; &nbsp;
-        Menus
-    </a>
-</li>
-
-<li class="c-sidebar-nav-item">
-    <a class="c-sidebar-nav-link" href="">
+    <a class="c-sidebar-nav-link" href="{{route('admin.transactions')}}">
         <i class="fa fa-pencil"></i> &nbsp; &nbsp;
         Transactions
     </a>
 </li>
 
-<li class="c-sidebar-nav-item">
+{{-- <li class="c-sidebar-nav-item">
     <a class="c-sidebar-nav-link" href="">
         <i class="fa fa-pencil"></i> &nbsp; &nbsp;
         Customers
     </a>
-</li>
+</li> --}}
 
-<li class="c-sidebar-nav-item">
-    <a class="c-sidebar-nav-link" href="">
+<li class="c-sidebar-nav-dropdown">
+    <a class="c-sidebar-nav-dropdown-toggle" href="#">
         <i class="fa fa-pencil"></i> &nbsp; &nbsp;
         Settings
     </a>
+
+        <div class="c-sidebar-nav-dropdown-items">
+            <a class="dropdown-item" href="{{route('admin.slider')}}">
+                <i class="fa fa-pencil"></i> &nbsp; &nbsp;
+                Home Slider
+            </a>
+        </div>
 </li>
 
 

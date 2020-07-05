@@ -17,7 +17,7 @@ class CreateRidersTable extends Migration
             $table->bigIncrements('id');
             $table->string('firstname')->nullable();
             $table->string('lastname')->nullable();
-            $table->string('email')->nullable();
+            $table->integer('user_id')->nullable();
             $table->string('category')->nullable();
             $table->string('phone')->nullable();
             $table->string('company')->nullable();
@@ -33,8 +33,6 @@ class CreateRidersTable extends Migration
             $table->string('location_assigned')->nullable();
             $table->text('location_description')->nullable();
             $table->string('image')->nullable();
-            $table->string('username')->nullable();
-            $table->string('password')->nullable();
             $table->timestamps();
         });
     }

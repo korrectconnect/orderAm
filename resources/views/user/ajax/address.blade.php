@@ -1,5 +1,5 @@
 
-<h3 class="siteColor">Hi {{auth()->user()->firstname}},</h3>
+<h3 class="siteColor">Hi {{$user->firstname}},</h3>
 <h4>Add new address</h4>
 	<!-- Border -->
 	<div class="bor bg-orange"></div>
@@ -46,7 +46,7 @@
             <!-- Label -->
             <label class="control-label">Default Phone</label>
             <!-- Input -->
-            <input type="text" class="form-control"  value="{{auth()->user()->phone}}" disabled>
+            <input type="text" class="form-control"  value="{{$user->phone}}" disabled>
         </div>
 
         <div class="form-group">

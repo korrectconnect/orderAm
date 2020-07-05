@@ -25,6 +25,16 @@
             <li>
                 <a href="{{route('vendor.profile')}}"><i class="fa fa-user"></i> Profile</a>
             </li>
+            @if ($auth == true)
+                <li>
+                    <a href="{{route('vendor.finances')}}"><i class="fa fa-chart-line"></i> Finances</a>
+                </li>
+            @endif
+            @if ($auth == true)
+                <li>
+                    <a href="{{route('vendor.password')}}"><i class="fa fa-lock"></i> Password</a>
+                </li>
+            @endif
             {{-- <li>
                 <a href="{{route('user.vendor.favourite')}}"><i class="fa fa-coins"></i> Coupons</a>
             </li>
@@ -32,7 +42,7 @@
                 <a href="{{route('user.password.change')}}"><i class="fa fa-digital-tachograph"></i> Finances</a>
             </li> --}}
             <li>
-                <a href="{{route('vendor.authAdmin')}}"><i class="fa fa-lock"></i> Authenticate Admin</a>
+                <a href="{{route('vendor.authAdmin')}}"><i class="fa fa-key"></i> Authenticate Admin</a>
             </li>
 
         </ul>

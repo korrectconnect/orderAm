@@ -15,8 +15,10 @@ use App\Order;
 use App\Address;
 use App\Cart;
 use App\Coupon;
+use App\Customer;
 use App\Favourite_vendor;
 use App\Order_item;
+use App\Slider;
 use Carbon\Carbon;
 
 class UsersController extends Controller
@@ -58,8 +60,9 @@ class UsersController extends Controller
                     ->groupBy('vendors.id')->orderBy('order_no','desc')->get() ;
 
         $states = Location::where('type','=','State')->get() ;
-        $lgas = Location::where('type','=','lga')->get() ;
-        $categories = Vendor_category::all(); 
+        $lgas = Location::where('type','=','lga')->limit(5)->get() ;
+        $categories = Vendor_category::all();
+        $sliders = Slider::orderBy('id','desc')->limit(5)->get();
 
         $data = array(
             'randoms' => $randoms,
@@ -67,6 +70,7 @@ class UsersController extends Controller
             'states' => $states,
             'lgas' => $lgas,
             'categories' => $categories,
+            'sliders' => $sliders
         );
         return view('user.pages.home')->with($data);
     }
@@ -81,8 +85,8 @@ class UsersController extends Controller
             return view('user.pages.404');
         }else {
             $states = Location::where('type','=','State')->get() ;
-            $lgas = Location::where('type','=','lga')->get() ;
-            $categories = Vendor_category::all(); 
+            $lgas = Location::where('type','=','lga')->limit(5)->get() ;
+            $categories = Vendor_category::all();
 
             if($request->session()->has('location')) {
                 //$vendors = Vendors::where([['state','=',$request->session()->get('location')['state']],['lga','=',$request->session()->get('location')['area']]])->get();
@@ -114,8 +118,8 @@ class UsersController extends Controller
         $lga = Location::where('type','=','lga')->get() ;
 
         $states = Location::where('type','=','State')->get() ;
-        $lgas = Location::where('type','=','lga')->get() ;
-        $categories = Vendor_category::all(); 
+        $lgas = Location::where('type','=','lga')->limit(5)->get() ;
+        $categories = Vendor_category::all();
 
         $data = array(
             'categories' => $category,
@@ -134,8 +138,8 @@ class UsersController extends Controller
         if($request->session()->has('location')) {
 
             $states = Location::where('type','=','State')->get() ;
-            $lgas = Location::where('type','=','lga')->get() ;
-            $categories = Vendor_category::all(); 
+            $lgas = Location::where('type','=','lga')->limit(5)->get() ;
+            $categories = Vendor_category::all();
 
             $vendor = Vendors::where(['id' => $id, 'type' => $name])->first() ;
 
@@ -202,15 +206,16 @@ class UsersController extends Controller
 
             $vendor = Vendors::where(['id' => $id])->first() ;
             $states = Location::where('type','=','State')->get() ;
-            $lgas = Location::where('type','=','lga')->get() ;
-            $categories = Vendor_category::all(); 
+            $lgas = Location::where('type','=','lga')->limit(5)->get() ;
+            $categories = Vendor_category::all();
+            $user = Customer::where(['user_id' => auth()->user()->id])->first() ;
 
             if($vendor != null) {
 
                 if(Auth::check()) {
                     $carts = Cart::where(['user_id' => auth()->user()->id, 'vendor_id' => $vendor->id])->orderBy('id', 'desc')->get();
                     $addresses = Address::where(['user_id' => auth()->user()->id, 'default' => NULL])->orderBy('id', 'desc')->get();
-                    $defaultAddress = Address::where(['user_id' => auth()->user()->id, 'default' => 1, 'id' => auth()->user()->address_id])->first();
+                    $defaultAddress = Address::where(['user_id' => auth()->user()->id, 'default' => 1, 'id' => $user->address_id])->first();
 
                     if($carts->count() >= 1) {
                         $order_total = 0 ;
@@ -250,6 +255,7 @@ class UsersController extends Controller
     public function placeOrder(Request $request) {
         if(Auth::check()) {
             $vendor = Vendors::findOrFail($request->vendor);
+            $vendorC = Vendor_category::where(['name' => $vendor->type])->first();
             if((date("H.i") < $vendor->opening) || (date("H.i") >= $vendor->closing)) {
                 return redirect()->route('user.vendors.home');
             }
@@ -325,6 +331,7 @@ class UsersController extends Controller
             $order->total = $total;
             $order->tax = $vendor->tax;
             $order->balance = 0;
+            $order->Commission = $vendorC->Commission;
             $order->status = 0;
             $order->cancelled = 0;
 
@@ -347,8 +354,8 @@ class UsersController extends Controller
     public function orderSuccess(Request $request) {
         if($request->session()->has('order')) {
             $states = Location::where('type','=','State')->get() ;
-            $lgas = Location::where('type','=','lga')->get() ;
-            $categories = Vendor_category::all(); 
+            $lgas = Location::where('type','=','lga')->limit(5)->get() ;
+            $categories = Vendor_category::all();
             $vendor = Vendors::findOrFail($request->session()->get('order')['vendor']);
             $order = $request->session()->get('order')['number'];
 
@@ -369,12 +376,14 @@ class UsersController extends Controller
     public function profile() {
         if(Auth::check()) {
             $states = Location::where('type','=','State')->get() ;
-            $lgas = Location::where('type','=','lga')->get() ;
-            $categories = Vendor_category::all(); 
+            $lgas = Location::where('type','=','lga')->limit(5)->get() ;
+            $categories = Vendor_category::all();
+            $user = Customer::where(['user_id' => auth()->user()->id])->first() ;
             $data = array(
                 'states' => $states,
                 'lgas' => $lgas,
                 'categories' => $categories,
+                'user' => $user,
             );
             return view('user.pages.profile')->with($data);
         }else {
@@ -385,15 +394,17 @@ class UsersController extends Controller
     public function orders() {
         if(Auth::check()) {
             $states = Location::where('type','=','State')->get() ;
-            $lgas = Location::where('type','=','lga')->get() ;
-            $categories = Vendor_category::all(); 
+            $lgas = Location::where('type','=','lga')->limit(5)->get() ;
+            $categories = Vendor_category::all();
             $orders = Order::where(['user_id' => auth()->user()->id])->orderBy('id','desc')->get();
+            $user = Customer::where(['user_id' => auth()->user()->id])->first() ;
 
             $data = array(
                 'orders' => $orders,
                 'states' => $states,
                 'lgas' => $lgas,
                 'categories' => $categories,
+                'user' => $user,
             );
 
             return view('user.pages.myorders')->with($data);
@@ -405,10 +416,12 @@ class UsersController extends Controller
     public function address() {
         if(Auth::check()) {
             $states = Location::where('type','=','State')->get() ;
-            $lgas = Location::where('type','=','lga')->get() ;
-            $categories = Vendor_category::all(); 
+            $lgas = Location::where('type','=','lga')->limit(5)->get() ;
+            $categories = Vendor_category::all();
             $addresses = Address::where(['user_id' => auth()->user()->id, 'default' => NULL])->orderBy('id', 'desc')->get();
-            $defaultAddress = Address::where(['user_id' => auth()->user()->id, 'default' => 1, 'id' => auth()->user()->address_id])->first();
+            $user = Customer::where(['user_id' => auth()->user()->id])->first() ;
+            $defaultAddress = Address::where(['user_id' => auth()->user()->id, 'default' => 1, 'id' => $user->address_id])->first();
+            $user = Customer::where(['user_id' => auth()->user()->id])->first() ;
 
             $data = array(
                 'addresses' => $addresses,
@@ -416,6 +429,7 @@ class UsersController extends Controller
                 'states' => $states,
                 'lgas' => $lgas,
                 'categories' => $categories,
+                'user' => $user,
             );
 
             return view('user.pages.address')->with($data);
@@ -427,19 +441,22 @@ class UsersController extends Controller
     public function favouriteVendors() {
         if(Auth::check()) {
             $states = Location::where('type','=','State')->get() ;
-            $lgas = Location::where('type','=','lga')->get() ;
-            $categories = Vendor_category::all(); 
+            $lgas = Location::where('type','=','lga')->limit(5)->get() ;
+            $categories = Vendor_category::all();
             $vendors = Vendors::join('menus', 'menus.vendor_id', '=', 'vendors.id')
                         ->join('favourite_vendors', 'favourite_vendors.vendor_id', '=', 'vendors.id')
                         ->select('vendors.*',DB::raw('min(menus.price) as price'))
                         ->where(['favourite_vendors.user_id' => auth()->user()->id])
                         ->groupBy('favourite_vendors.id')->orderBy('favourite_vendors.id', 'desc')->get() ;
 
+            $user = Customer::where(['user_id' => auth()->user()->id])->first() ;
+
             $data = array(
                 'vendors' => $vendors,
                 'states' => $states,
                 'lgas' => $lgas,
                 'categories' => $categories,
+                'user' => $user,
             );
 
             return view('user.pages.fav_vendors')->with($data);
@@ -451,12 +468,15 @@ class UsersController extends Controller
     public function changePassword() {
         if(Auth::check()) {
             $states = Location::where('type','=','State')->get() ;
-            $lgas = Location::where('type','=','lga')->get() ;
-            $categories = Vendor_category::all(); 
+            $lgas = Location::where('type','=','lga')->limit(5)->get() ;
+            $categories = Vendor_category::all();
+            $user = Customer::where(['user_id' => auth()->user()->id])->first() ;
+
             $data = array(
                 'states' => $states,
                 'lgas' => $lgas,
                 'categories' => $categories,
+                'user' => $user,
             );
             return view('user.pages.password')->with($data);
         }else {

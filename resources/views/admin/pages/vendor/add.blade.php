@@ -12,13 +12,17 @@
       <div class="card-header"><strong>Add Vendors</strong></div>
       <div class="card-body">
         <div class="form-group">
-          <label for="company">Name</label>
-          <input name="name" class="form-control" id="company" type="text" placeholder="Enter your company name">
+          <label for="name">Name</label>
+          <input name="name" class="form-control" id="name" type="text" placeholder="Enter vendor name">
         </div>
         <div class="form-group">
-          <label for="vat">Email</label>
-          <input name="email" class="form-control" id="vat" type="text" placeholder="Eg a@b.com">
+          <label for="email">Email</label>
+          <input name="email" class="form-control" id="email" type="text" placeholder="Eg a@b.com">
         </div>
+        <div class="form-group">
+            <label for="description">Short description</label>
+            <input name="description" class="form-control" id="description" type="text" placeholder="Eg, Freshly baked ,African dishes, Local recipy etc">
+          </div>
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group">

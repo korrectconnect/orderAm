@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Address;
 use App\Cart;
 use App\Coupon;
+use App\Customer;
 use App\Favourite_vendor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -25,7 +26,7 @@ class ApiController extends Controller
 {
     //
     public function editUser(Request $request) {
-        $user = User::findOrFail(auth()->user()->id);
+        $user = Customer::where(['user_id' => auth()->user()->id]);
 
         if ($request->hasFile('file')) {
 
@@ -33,20 +34,24 @@ class ApiController extends Controller
             $filename = auth()->user()->id.'_image_'.time().'.'.$extension ;
             $image_path = $request->file('file')->storeAs('public/user', $filename) ;
             if($image_path) {
-                $user->firstname = $request->firstname ;
-                $user->lastname = $request->lastname ;
-                $user->phone = $request->phone ;
-                $user->image = asset('storage/user/'.$filename);
+                $edit = Customer::insert([
+                    'firstname' => $request->firstname,
+                    'lastname' => $request->lastname,
+                    'phone' => $request->phone,
+                    'image' => asset('storage/user/'.$filename),
+                ]);
             }else {
                 return response()->json(['status' => 400, 'message' => 'Could not upload image']);
             }
         }else {
-            $user->firstname = $request->firstname ;
-            $user->lastname = $request->lastname ;
-            $user->phone = $request->phone ;
+            $edit = Customer::insert([
+                'firstname' => $request->firstname,
+                'lastname' => $request->lastname,
+                'phone' => $request->phone,
+            ]);
         }
 
-        if($user->save()) {
+        if($edit) {
             return new AppResource($user);
         }else {
             return response()->json(['status' => 400, 'message' => 'Could not update profile']);
@@ -104,6 +109,7 @@ class ApiController extends Controller
 
     public function makeOrder(Request $request) {
         $vendor = Vendors::findOrFail($request->vendor_id);
+        $vendorC = Vendor_category::where(['name' => $vendor->type])->first();
             if((date("H.i") < $vendor->opening) || (date("H.i") >= $vendor->closing)) {
                 return response()->json(['status' => 400, 'message'=>'Vendor is closed']);
             }
@@ -187,6 +193,7 @@ class ApiController extends Controller
             $order->tax = $vendor->tax;
             $order->delivery_time = $request->delivery_time;
             $order->balance = 0;
+            $order->Commission = $vendorC->Commission;
             $order->status = 0;
             $order->cancelled = 0;
 
@@ -321,7 +328,7 @@ class ApiController extends Controller
         if ($address->save()) {
             if (Address::where(['user_id' => auth()->user()->id])->get()->count() == 1) {
                 $getAddress = Address::where(['user_id' => auth()->user()->id])->firstOrFail();
-                $updateUser = User::where(['id' => auth()->user()->id])->update([
+                $updateUser = Customer::where(['user_id' => auth()->user()->id])->update([
                     'address_id' => $getAddress->id,
                 ]);
                 $updateAddress = $getAddress->update([
@@ -367,7 +374,7 @@ class ApiController extends Controller
 
     public function setDefaultAddress(Request $request) {
         $updateAddressToNULL = DB::table('address')->update(['default' => NULL]);
-        $user = DB::table('users')->where('id',auth()->user()->id)->update(['address_id' => $request->address_id]);
+        $user = Customer::where(['user_id' => auth()->user()->id])->update(['address_id' => $request->address_id]);
         $updateAddressDefault = Address::findOrFail($request->address_id);
         $updateAddressDefault->update(['default' => 1]);
         return new AppResource($updateAddressDefault);
@@ -387,22 +394,17 @@ class ApiController extends Controller
     public function deleteAddress($id) {
         $address = Address::where(['id' => $id]) ;
         $get = $address->first();
+        $user = Customer::where(['user_id' => auth()->user()->id]);
 
         if ($address->delete()) {
-            if(auth()->user()->address_id == $id) {
-                $updateUser = DB::table('users')->where('id',auth()->user()->id)->update(['address_id' => NULL]);
+            if($user->address_id == $id) {
+                $updateUser = Customer::where(['user_id' => auth()->user()->id])->update(['address_id' => NULL]);
                 return new AppResource($get);
             }
             return new AppResource($get);
         }else {
             return response()->json(['status' => 400]);
         }
-    }
-
-    public function test($id,$name) {
-        $users =DB::table('users')->where('id',$id)->update(['firstname' => $name]);
-        $user =DB::table('users')->where('id',$id)->first();
-        echo $user->firstname." ".$user->lastname ;
     }
 
     public function addToCart(Request $request) {
@@ -536,8 +538,8 @@ class ApiController extends Controller
         }
     }
 
-    public function vendorsFeatured($limit) {
-        $vendors = Vendors::all()->random($limit) ;
+    public function vendorsFeatured($limit = 5, $category) {
+        $vendors = Vendors::where(['type' => $category])->inRandomOrder()->limit($limit)->get();
 
         return AppResource::collection($vendors);
     }

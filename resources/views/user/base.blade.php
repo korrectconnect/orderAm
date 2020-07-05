@@ -26,6 +26,7 @@
 
     <link href="{{ asset('css/main.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/all.css') }}">
+    <link rel="stylesheet" href="{{ asset('icons/ionicons/css/ionicons.css') }}">
     <link href="{{ asset('css/u/animate.css') }}" rel="stylesheet">
     <link href="{{ asset('css/u/main.css') }}" rel="stylesheet">
     <link href="{{ asset('css/u/component.css') }}" rel="stylesheet">

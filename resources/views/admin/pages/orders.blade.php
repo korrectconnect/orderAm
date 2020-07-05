@@ -32,7 +32,7 @@
                                             <td>&#8358; {{$order->total}}</td>
                                             <td>{{$order->name." (".$order->lga.")"}}</td>
                                             <td>{{$order->payment_mode}}</td>
-                                            <td><a href="#">View</a> / <a href="javascript:void()" id="cancelOrder" data-href="{{route('admin.order.cancel', ['id' => $order->id])}}">Cancel</a></td>
+                                            <td><a href="javascript:void()" id="viewOrderBtn" data-href="{{route('admin.ajax.order', ['id' => $order->id])}}">View</a> / <a href="javascript:void()" data-order="{{$order->order_no}}" data-href="{{route('admin.order.confirm.assign', ['id' => $order->id])}}" id="confirmOrderBtn">Confirm</a></td>
                                         </tr>
                                     @endforeach
                                 @endif

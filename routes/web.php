@@ -138,9 +138,11 @@ use Illuminate\Support\Facades\Route;
         Route::get('dashboard', ['as' => 'admin.dashboard', 'uses' => 'AdminController@dashboard']);
         Route::get('vendor/location', ['as' => 'admin.vendor.location', 'uses' => 'AdminController@location']);
         Route::get('vendor/add', ['as' => 'admin.vendor.add', 'uses' => 'AdminController@addVendorForm']);
+        Route::get('vendor/edit/{id}', ['as' => 'admin.vendor.edit.form', 'uses' => 'AdminController@editVendorForm']);
         Route::get('vendor/category', ['as' => 'admin.vendor.category', 'uses' => 'AdminController@vendorCategory']);
         Route::get('vendor', ['as' => 'admin.vendor.view', 'uses' => 'AdminController@vendors']);
         Route::get('rider/add', ['as' => 'admin.rider.add', 'uses' => 'AdminController@addRiderForm']);
+        Route::get('rider/edit/{id}', ['as' => 'admin.rider.edit.form', 'uses' => 'AdminController@editRiderForm']);
         Route::get('rider/category', ['as' => 'admin.rider.category', 'uses' => 'AdminController@riderCategory']);
         Route::get('rider/locations', ['as' => 'admin.rider.locations', 'uses' => 'AdminController@ridersLocation']);
         Route::get('rider', ['as' => 'admin.rider.view', 'uses' => 'AdminController@riders']);
@@ -149,29 +151,38 @@ use Illuminate\Support\Facades\Route;
         Route::get('menus', ['as' => 'admin.menus', 'uses' => 'AdminController@menus']);
         Route::get('orders', ['as' => 'admin.orders', 'uses' => 'AdminController@orders']);
         Route::get('menus/view/{id}', ['uses' => 'AdminController@menu']);
-        Route::get('vendor/auth/{id}', 'AdminController@vendorAuth')->name('admin.vendor.auth');
+        Route::get('transactions', 'AdminController@transactions')->name('admin.transactions');
+        Route::get('pending', 'AdminController@pending')->name('admin.pending');
+        Route::get('settings/slider', 'AdminController@slider')->name('admin.slider');
+
+
+        Route::post('vendor/auth', 'AdminController@vendorAuth')->name('admin.vendor.auth');
 
 
         //Ajax Requests
 
+        Route::post('slider/add', 'AdminAjaxController@addSlider')->name('admin.slider.add');
         Route::post('vendor/add', ['as' => 'admin.vendor.add', 'uses' => 'AdminAjaxController@addVendor']);
+        Route::post('vendor/edit', 'AdminAjaxController@editVendor')->name('admin.vendor.edit');
         Route::post('vendor/category', 'AdminAjaxController@addVendorCategory');
         Route::post('vendor/location', 'AdminAjaxController@addVendorLocation');
         Route::post('rider/add', 'AdminAjaxController@addRider')->name('admin.rider.add');
+        Route::post('rider/edit', 'AdminAjaxController@editRider')->name('admin.rider.edit');
         Route::post('rider/category', 'AdminAjaxController@addRiderCategory')->name('admin.rider.category');
         Route::post('menus/add', ['as' => 'admin.menu.add', 'uses' => 'AdminAjaxController@addMenu']);
         Route::post('menuCategory/add', ['as' => 'admin.menu_category.add', 'uses' => 'AdminAjaxController@addMenuCategory']);
-        Route::post('menuCategory/delete', ['as' => 'admin.menu_category.delete', 'uses' => 'AdminAjaxController@deleteMenuCategory']);
         Route::post('ajax/rider/assign', 'AdminAjaxController@assignRider')->name('admin.assign.rider');
 
+        Route::get('slider/{id}/delete', 'AdminAjaxController@deleteSlider')->name('admin.slider.delete');
         Route::get('ajax/viewVendor/{id}', ['as' => 'admin.ajax.vendor.view', 'uses' => 'AdminAjaxController@viewVendor']);
         Route::get('ajax/addMenuFrom/{id}', [ 'uses' => 'AdminAjaxController@addMenuFrom']);
+        Route::get('ajax/menuCategory/{id}/delete', 'AdminAjaxController@deleteMenuCategory')->name('admin.menu.category.delete');
         Route::get('ajax/deleteVendorCategory/{id}', 'AdminAjaxController@deleteVendorCategory');
         Route::get('ajax/deleteVendorLocation/{id}', 'AdminAjaxController@deleteVendorLocation');
         Route::get('ajax/refreshMenu', [ 'uses' => 'AdminAjaxController@refreshMenus']);
         Route::get('ajax/refreshVendorCategory', [ 'uses' => 'AdminAjaxController@refreshVendorCategory']);
         Route::get('ajax/refreshVendorLocation', [ 'uses' => 'AdminAjaxController@refreshVendorLocation']);
-        Route::get('ajax/refreshMenu/{id}', [ 'uses' => 'AdminAjaxController@refreshMenu']);
+        Route::get('ajax/refreshMenu/{id}', [ 'uses' => 'AdminAjaxController@refreshMenu'])->name('admin.refreshMenu');
         Route::get('ajax/getMenuCategoryList/{id}', ['uses' => 'AdminAjaxController@getMenuCategoryList']);
         Route::get('ajax/deleteMenu/{id}', ['as' => 'admin.menu.delete', 'uses' => 'AdminAjaxController@deleteMenu']);
         Route::get('ajax/deleteVendor/{id}', ['as' => 'admin.vendor.delete', 'uses' => 'AdminAjaxController@deleteVendor']);
@@ -180,7 +191,12 @@ use Illuminate\Support\Facades\Route;
         Route::get('ajax/rider/category/{id}/delete', 'AdminAjaxController@deleteRiderCategory')->name('admin.rider.category.delete');
         Route::get('ajax/rider/{id}/assign', 'AdminAjaxController@assignRiderForm')->name('admin.rider.assign');
         Route::get('ajax/rider/{id}/unassign', 'AdminAjaxController@unassignRider')->name('admin.rider.unassign');
+        Route::get('ajax/rider/{id}/orders', 'AdminAjaxController@riderPendingOrders')->name('admin.ajax.rider.orders');
         Route::get('ajax/rider/{location}/location/assign', 'AdminAjaxController@riderByAssignedLocation')->name('admin.rider.location.assign');
+        Route::get('ajax/order/{id}/assign', 'AdminAjaxController@assignRiderToOrderPage')->name('admin.order.confirm.assign');
+        Route::get('ajax/pending/delivery/{id}', 'AdminAjaxController@pendingDelivery')->name('admin.pending.delivery');
+        Route::get('ajax/order/{id}/view', 'AdminAjaxController@viewOrder')->name('admin.ajax.order');
+        Route::get('ajax/order/{id}/{order}/confirm', 'AdminAjaxController@confirmAssignOrder')->name('admin.order.confirm');
         //End Ajax Request
 
     });
@@ -205,6 +221,8 @@ use Illuminate\Support\Facades\Route;
         Route::get('dashboard', ['as' => 'vendor.dashboard', 'uses' => 'VendorController@dashboard']);
         Route::get('menu_list', ['as' => 'vendor.menus', 'uses' => 'VendorController@menus']);
         Route::get('profile', ['as' => 'vendor.profile', 'uses' => 'VendorController@profile']);
+        Route::get('password', ['as' => 'vendor.password', 'uses' => 'VendorController@password']);
+        Route::get('finances', ['as' => 'vendor.finances', 'uses' => 'VendorController@finances']);
         Route::get('authenticate-admin', ['as' => 'vendor.authAdmin', 'uses' => 'VendorController@authAdmin']);
 
         Route::post('authenticate-admin', ['as' => 'vendor.authAdmin', 'uses' => 'VendorController@authenticateAdmin']);
@@ -215,6 +233,8 @@ use Illuminate\Support\Facades\Route;
 
         Route::get('request/orders/{status}/{cancelled}', 'VendorAjaxController@orders')->name('vendor.ajax.orders');
         Route::get('request/order/{order_no}', 'VendorAjaxController@order')->name('vendor.ajax.order');
+        Route::get('request/transaction/today', 'VendorAjaxController@transactionToday')->name('vendor.transaction.today');
+        Route::get('request/transaction/filter', 'VendorAjaxController@transactionFilter')->name('vendor.transaction.filter');
         Route::get('request/order/{order_no}/confirm', 'VendorAjaxController@confirmOrder')->name('vendor.order.confirm');
         Route::get('request/order/{order_no}/decline', 'VendorAjaxController@declineOrder')->name('vendor.order.decline');
         Route::get('request/menu_list/{category}', 'VendorAjaxController@getMenuList')->name('vendor.menu_list');
@@ -227,9 +247,11 @@ use Illuminate\Support\Facades\Route;
         Route::get('menu/delete/{id}', 'VendorAjaxController@deleteMenu')->name('vendor.menu.delete');
 
         Route::post('menu/add', 'VendorAjaxController@addMenu')->name('vendor.menu.add');
+        Route::post('request/transaction/filter', 'VendorAjaxController@transactionFiltered')->name('vendor.transaction.filter');
         Route::post('menu_category/add', 'VendorAjaxController@addMenuCategory')->name('vendor.menu_category.add');
         Route::post('menu_category/edit', 'VendorAjaxController@editMenuCategory')->name('vendor.menu_category.edit');
         Route::post('menu/edit', 'VendorAjaxController@editMenu')->name('vendor.menu.edit');
+        Route::post('request/password', 'VendorAjaxController@changePassword')->name('vendor.password.change');
 
 
         //End Ajax Request

@@ -29,7 +29,7 @@
                 <footer class="type-1">
                     <div class="footer-columns-entry">
                         <div class="row">
-                            
+
                             <div class="col-md-3 col-sm-3">
                                 <h3 class="column-title">Popular Areas</h3>
                                 <ul class="column">
@@ -61,7 +61,8 @@
                                     <li><a href="#">News</a></li>
                                     <li><a href="#">Terms and conditions</a></li>
                                     <li><a href="#"> Privacy policy</a></li>
-                                    <li><a href="#">TheFoody free App for Android and iPhone</a></li>
+                                    <li><a href="#">{{env('APP_NAME')}} free App for Android </a></li>
+                                    <li><a href="#">{{env('APP_NAME')}} free App for iPhone</a></li>
                                     <li><a href="#">Careers</a></li>
 
                                 </ul>

@@ -56,6 +56,37 @@ $(document).ready(function() {
         });
     });
 
+    $(document).on('submit', '#filterTransactionForm', function(e) {
+        e.preventDefault();
+        $("#filterTransactionFormBtn").prop('disabled', true).html(" &nbsp; <i class='fa fa-spin fa-circle-notch'></i> &nbsp; ");
+        var href = $(this).data("href");
+
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        $.ajax({
+            url: href,
+            type: "POST",
+            data: new FormData(this),
+            contentType: false,       // The content type used when sending data to the server.
+            cache: false,             // To unable request pages to be cached
+            processData:false,
+            success: function(e) {
+                if(e.errors != null) {
+                    for(i in e.errors) {
+                        toastr.error(e.errors[i], "Error", {timeOut: 5000});
+                    }
+                    $("#filterTransactionFormBtn").prop('disabled', false).html("Filter");
+                }else {
+                    $(".orderListDiv").html(e);
+                }
+            }
+        });
+    });
+
     $(document).on('click', '#view_order', function() {
         $("#loadDisplayDiv").html("<center><br><i class='fa fa-spin fa-circle-notch fa-2x'></i></center><br>");
         $('#loadModal').modal('show');
@@ -375,6 +406,38 @@ $(document).ready(function() {
                     toastr.success(e.message, "Success", {timeOut: 5000});
                     $('#loadModal').modal('hide');
                     $("#menuCategoryBtn_" + e.category).click();
+                }
+            }
+        });
+    });
+
+    $(document).on('submit', '#changePasswordForm', function(e) {
+        e.preventDefault();
+        $("#changePasswordFormBtn").prop('disabled', true).html(" &nbsp; <i class='fa fa-spin fa-circle-notch'></i> &nbsp; ");
+        var href = $(this).data("href");
+
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        $.ajax({
+            url: href,
+            type: "POST",
+            data: new FormData(this),
+            contentType: false,       // The content type used when sending data to the server.
+            cache: false,             // To unable request pages to be cached
+            processData:false,
+            success: function(e) {
+                if(e.errors != null) {
+                    for(i in e.errors) {
+                        toastr.error(e.errors[i], "Error", {timeOut: 5000});
+                    }
+                    $("#changePasswordFormBtn").prop('disabled', false).html("CHANGE PASSWORD");
+                }else {
+                    toastr.success(e.message, "Success", {timeOut: 5000});
+                    window.location.reload();
                 }
             }
         });

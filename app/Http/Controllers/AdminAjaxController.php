@@ -8,9 +8,13 @@ use App\Location;
 use App\Order;
 use App\Rider;
 use App\Rider_category;
+use App\Slider;
+use App\User;
 use App\Vendor_auth;
 use App\Vendor_category;
+use App\Vendors;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class AdminAjaxController extends Controller
@@ -28,6 +32,7 @@ class AdminAjaxController extends Controller
             $validatedData = Validator::make($request->all(), [
                 'name' => 'max:55|required',
                 'email' => 'email|required',
+                'description' => 'required',
                 'cover' => 'required|image|max:1999',
                 'vendor-image' => 'required|image|max:1999',
                 'address' => 'max:250|required',
@@ -78,6 +83,100 @@ class AdminAjaxController extends Controller
         }
     }
 
+    public function editVendor(Request $request) {
+
+        if($request->ajax()) {
+
+            $validatedData = Validator::make($request->all(), [
+                'name' => 'max:55|required',
+                'email' => 'email|required',
+                'description' => 'required',
+                'cover' => 'image|max:1999',
+                'vendor-image' => 'image|max:1999',
+                'address' => 'max:250|required',
+                'contact' => 'max:250|required',
+                'state' => 'max:250|required',
+                'lga' => 'max:250|required',
+                'area' => 'max:250|required',
+                'country' => 'max:250|required',
+                'zip' => 'max:250|required',
+                'type' => 'max:250|required',
+                'tax' => 'max:250|required',
+                'delivery_charge' => 'max:250|required',
+                'vendor_charge' => 'max:250|required',
+                'open' => 'max:250|required',
+                'close' => 'max:250|required',
+            ]);
+
+            if ($validatedData->fails())
+            {
+                return response()->json(['errors'=>$validatedData->errors()->all()]);
+            }else {
+
+                if ($request->hasFile('cover')) {
+
+                    $vendor_cover_extension = $request->file('cover')->getClientOriginalExtension();
+                    $cover_filename = $request->name.'_cover_'.time().'.'.$vendor_cover_extension ;
+                    $cover_path = $request->file('cover')->storeAs('public/vendor', $cover_filename) ;
+
+                    if($cover_path) {
+                        Vendors::where(['id' => $request->id])->update([
+                            'cover' => asset('storage/vendor/'.$cover_filename),
+                        ]);
+                    }else {
+                        return response()->json(['errors'=>'Error uploading file']);
+                    }
+                }else {
+                    $cover_path = true ;
+                }
+
+                if ($request->hasFile('vendor-image')) {
+
+                    $vendor_image_extension = $request->file('vendor-image')->getClientOriginalExtension();
+                    $vendor_image_filename = $request->name.'_image_'.time().'.'.$vendor_image_extension ;
+                    $image_path = $request->file('vendor-image')->storeAs('public/vendor', $vendor_image_filename) ;
+
+                    if($image_path) {
+                        Vendors::where(['id' => $request->id])->update([
+                            'image' => asset('storage/vendor/'.$vendor_image_filename),
+                        ]);
+                    }else {
+                        return response()->json(['errors'=>'Error uploading file']);
+                    }
+                }else {
+                    $image_path = true ;
+                }
+
+                if($image_path == true && $cover_path = true) {
+                    $update = Vendors::where(['id' => $request->id])->update(
+                        [
+                            'name' => $request->name,
+                            'email' => $request->email,
+                            'description' => $request->description,
+                            'contact' => $request->contact,
+                            'address' => $request->address,
+                            'state' => $request->state,
+                            'lga' => $request->lga,
+                            'country' => $request->country,
+                            'zip' => $request->zip,
+                            'area' => $request->area,
+                            'type' => $request->type,
+                            'tax' => $request->tax,
+                            'delivery_charge' => $request->delivery_charge,
+                            'vendor_charge' => $request->vendor_charge,
+                            'opening' => $request->open,
+                            'closing' => $request->close,
+                            'updated_at' => now(),
+                        ]
+                    );
+
+                    return response()->json(['errors'=>null, 'message'=>'Vendor edit Uploaded Successfully']);
+                }
+
+            }
+        }
+    }
+
     public function addMenu(Request $request) {
         if($request->ajax()) {
             $validatedData = Validator::make($request->all(), [
@@ -122,10 +221,8 @@ class AdminAjaxController extends Controller
 
     public function viewVendor($id) {
         $query = AdminModel::getVendor($id);
-        $auth = Vendor_auth::where(['vendor_id' => $id])->first();
         $data = array(
             'query' => $query,
-            'auth' => $auth,
         );
         return view('admin.pages.ajax.view_vendor')->with($data) ;
     }
@@ -177,9 +274,9 @@ class AdminAjaxController extends Controller
         }
     }
 
-    public function deleteMenuCategory(Request $request) {
+    public function deleteMenuCategory($id ,Request $request) {
         if($request->ajax()) {
-            $query = AdminModel::deleteMenuCategory($request->category_id);
+            $query = AdminModel::deleteMenuCategory($id);
             if($query) {
                 return response()->json(['errors'=>null, 'message'=>'Deleted Successfully']);
             }else {
@@ -237,6 +334,7 @@ class AdminAjaxController extends Controller
                 'name' => 'max:191|required|unique:vendor_category',
                 'cover' => 'required|image|max:1999',
                 'description' => 'max:250|required',
+                'commission' => 'required',
             ]);
 
             if ($validatedData->fails())
@@ -254,6 +352,7 @@ class AdminAjaxController extends Controller
                         $query = Vendor_category::insert([
                             'name' => $request->name,
                             'description' => $request->description,
+                            'commission' => $request->commission,
                             'image' => asset('storage/vendor/category/'.$filename),
                         ]);
                         if($query) {
@@ -349,6 +448,140 @@ class AdminAjaxController extends Controller
         }
     }
 
+    public function riderPendingOrders($id) {
+        $orders = Order::leftJoin('address', 'address.id', 'order.address')
+                            ->leftJoin('vendors', 'vendors.id', '=', 'order.vendor_id' )
+                            ->leftJoin('customers', 'customers.user_id', '=', 'order.user_id')
+                            ->select('order.*', DB::raw('customers.phone as user_phone'), DB::raw('vendors.state as vendor_state'), DB::raw('vendors.lga as vendor_lga'), 'vendors.name', 'customers.firstname', 'customers.lastname', 'address.lga','address.address','address.description','address.phone','address.state')
+                            ->where(['order.rider_id' => $id])
+                            ->get();
+
+        $rider = Rider::where(['id' => $id])->first();
+
+        $data = array(
+            'orders' => $orders,
+            'rider' => $rider,
+        );
+
+        return view('admin.pages.ajax.rider_orders')->with($data);
+    }
+
+    public function pendingDelivery($id) {
+        $order = Order::leftJoin('address', 'address.id', 'order.address')
+                            ->leftJoin('vendors', 'vendors.id', 'order.vendor_id' )
+                            ->leftJoin('customers', 'customers.user_id', 'order.user_id')
+                            ->leftJoin('riders', 'riders.id', 'order.rider_id')
+                            ->select('order.*', DB::raw('riders.phone as rider_phone'), DB::raw('riders.firstname as rider_firstname'), DB::raw('riders.lastname as rider_lastname'), DB::raw('customers.phone as user_phone'), DB::raw('vendors.state as vendor_state'), DB::raw('vendors.lga as vendor_lga'), 'vendors.name', 'customers.firstname', 'customers.lastname', 'address.lga','address.address','address.description','address.phone','address.state')
+                            ->where(['order.id' => $id])
+                            ->first();
+
+        $data = array(
+            'order' => $order,
+        );
+
+        return view('admin.pages.ajax.pending_deliveries')->with($data);
+    }
+
+    public function viewOrder($id) {
+        $order = Order::leftJoin('address', 'address.id', 'order.address')
+                            ->leftJoin('vendors', 'vendors.id', 'order.vendor_id' )
+                            ->leftJoin('customers', 'customers.user_id', 'order.user_id')
+                            ->select('order.*', DB::raw('customers.phone as user_phone'), DB::raw('vendors.state as vendor_state'), DB::raw('vendors.lga as vendor_lga'), 'vendors.name', 'customers.firstname', 'customers.lastname', 'address.lga','address.address','address.description','address.phone','address.state')
+                            ->where(['order.id' => $id])
+                            ->first();
+
+        $data = array(
+            'order' => $order,
+        );
+
+        return view('admin.pages.ajax.orders_view')->with($data);
+    }
+
+    public function addSlider(Request $request) {
+
+        if($request->ajax()) {
+
+            $validatedData = Validator::make($request->all(), [
+                'image' => 'required|image|max:1999',
+            ]);
+
+            if ($validatedData->fails())
+            {
+                return response()->json(['errors'=>$validatedData->errors()->all()]);
+            }else {
+
+                if ($request->hasFile('image')) {
+
+                    $extension = $request->file('image')->getClientOriginalExtension();
+                    $filename = 'slider_'.time().'.'.$extension ;
+                    $path = $request->file('image')->storeAs('public/site/slider', $filename) ;
+
+                    if($path) {
+                        $query = Slider::insert([
+                            'image' => asset('storage/site/slider/'.$filename),
+                        ]);
+                        if($query) {
+                            return response()->json(['errors'=>null, 'message'=>'Uploaded Successfully']);
+                        }
+                        return response()->json(['errors'=>['Server error try again']]);
+                    }
+                    return response()->json(['errors'=>['Error uploading file']]);
+
+                }else {
+
+                    return response()->json(['errors'=>['No file Selected']]);
+
+                }
+            }
+        }
+
+    }
+
+    public function deleteSlider($id) {
+        $query = Slider::where(['id' => $id])->delete() ;
+
+        if($query) {
+            return response()->json(['errors'=>null, 'message'=>'Deleted Successfully']);
+        }
+        return response()->json(['errors'=>['Server error try again']]);
+    }
+
+    public function assignRiderToOrderPage($id) {
+        $order = Order::join('vendors','vendors.id','=','order.vendor_id')->select('order.*','vendors.name','vendors.state','vendors.lga')->where(['order.id' => $id])->first() ;
+
+        $riders = Rider::leftJoin('order', 'order.rider_id', 'riders.id')
+                            ->select('riders.*', DB::raw('count(order.order_no) as order_no'))
+                            ->where(['riders.location_assigned' => $order->lga, 'riders.state' => $order->state])
+                            ->get();
+        $other_riders = Rider::leftJoin('order', 'order.rider_id', 'riders.user_id')
+                                ->select('riders.*', DB::raw('count(order.order_no) as order_no'))
+                                ->where(['riders.state' => $order->state])
+                                ->get();
+
+        $data = array(
+            'riders' => $riders,
+            'other_riders' => $other_riders,
+            'order' => $order,
+        );
+
+        return view('admin.pages.ajax.order_assign')->with($data);
+    }
+
+    public function confirmAssignOrder($id, $order, Request $request) {
+        if ($request->ajax()) {
+            $query = Order::where(['id' => $order])->update([
+                'rider_id' => $id,
+            ]);
+
+            if ($query) {
+                return response()->json(['errors' => NULL, 'message' => 'Rider assigned successfully', 'location' => route('admin.orders') ]);
+            }else {
+                return response()->json(['errors'=>['Error, try again !']]);
+            }
+
+        }
+    }
+
     public function addRiderCategory(Request $request) {
         if ($request->ajax()) {
             $validatedData = Validator::make($request->all(), [
@@ -391,7 +624,7 @@ class AdminAjaxController extends Controller
             $validatedData = Validator::make($request->all(), [
                 'firstname' => 'required',
                 'lastname' => 'required',
-                'email' => 'required|unique:riders',
+                'email' => 'required|unique:users',
                 'category' => 'required',
                 'company' => 'required',
                 'phone' => 'required',
@@ -416,10 +649,19 @@ class AdminAjaxController extends Controller
                     $image_path = $request->file('photo')->storeAs('public/rider', $filename) ;
 
                     if($image_path) {
+                        $addUser = User::insert([
+                            'email' => $request->email,
+                            'role' => 'rider',
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+
+                        $get = User::where(['email' => $request->email]) ;
+
                         $insert = Rider::insert([
                             'firstname' => $request->firstname,
                             'lastname' => $request->lastname,
-                            'email' => $request->email,
+                            'user_id' => $get->first()->id,
                             'category' => $request->category,
                             'company' => $request->company,
                             'phone' => $request->phone,
@@ -444,8 +686,6 @@ class AdminAjaxController extends Controller
                                 $s .= $ranString[rand(0, 25)];
                             }
 
-                            $get = Rider::where(['email' => $request->email]) ;
-
                             $username = strtolower($request->firstname).$get->first()->id.$s;
                             $password = bcrypt($username);
 
@@ -466,6 +706,89 @@ class AdminAjaxController extends Controller
                         }
                     }else {
                         return response()->json(['errors'=>['Error, could not upload photo, try again !']]);
+                    }
+                }
+            }
+        }
+    }
+
+    public function editRider(Request $request) {
+        if ($request->ajax()) {
+            $validatedData = Validator::make($request->all(), [
+                'firstname' => 'required',
+                'lastname' => 'required',
+                'category' => 'required',
+                'company' => 'required',
+                'phone' => 'required',
+                'state' => 'required',
+                'country' => 'required',
+                'lga' => 'required',
+                'dob' => 'required',
+                'address' => 'required',
+                'plate' => 'required',
+                'photo' => 'image|max:1999',
+            ]);
+
+            if ($validatedData->fails())
+            {
+                return response()->json(['errors'=>$validatedData->errors()->all()]);
+            }else {
+
+                if ($request->hasFile('photo')) {
+
+                    $extension = $request->file('photo')->getClientOriginalExtension();
+                    $filename = $request->firstname.'_image_'.rand(1,100).time().'.'.$extension ;
+                    $image_path = $request->file('photo')->storeAs('public/rider', $filename) ;
+
+                    if($image_path) {
+                        $update = Rider::where(['id' => $request->id])->update([
+                            'firstname' => $request->firstname,
+                            'lastname' => $request->lastname,
+                            'category' => $request->category,
+                            'company' => $request->company,
+                            'phone' => $request->phone,
+                            'state' => $request->state,
+                            'country' => $request->country,
+                            'lga' => $request->lga,
+                            'date_of_birth' => $request->dob,
+                            'address' => $request->address,
+                            'spouse_name' => $request->spouse_name,
+                            'spouse_phone' => $request->spouse_phone,
+                            'plate_number' => $request->plate,
+                            'image' => asset('storage/rider/'.$filename),
+                            'updated_at' => now(),
+                        ]) ;
+
+                        if($update) {
+                            return response()->json(['errors'=>NULL, 'message' => 'Rider edited successfully']);
+                        }else {
+                            return response()->json(['errors'=>['Error, try again !']]);
+                        }
+                    }else {
+                        return response()->json(['errors'=>['Error, could not upload photo, try again !']]);
+                    }
+                }else {
+                    $update = Rider::where(['id' => $request->id])->update([
+                        'firstname' => $request->firstname,
+                        'lastname' => $request->lastname,
+                        'category' => $request->category,
+                        'company' => $request->company,
+                        'phone' => $request->phone,
+                        'state' => $request->state,
+                        'country' => $request->country,
+                        'lga' => $request->lga,
+                        'date_of_birth' => $request->dob,
+                        'address' => $request->address,
+                        'spouse_name' => $request->spouse_name,
+                        'spouse_phone' => $request->spouse_phone,
+                        'plate_number' => $request->plate,
+                        'updated_at' => now(),
+                    ]) ;
+
+                    if($update) {
+                        return response()->json(['errors'=>NULL, 'message' => 'Rider edited successfully']);
+                    }else {
+                        return response()->json(['errors'=>['Error, try again !']]);
                     }
                 }
             }

@@ -17,6 +17,7 @@
 
 	<link href="{{ asset('css/main.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/all.css') }}">
+    <link rel="stylesheet" href="{{ asset('icons/ionicons/css/ionicons.css') }}">
     <link href="{{ asset('css/u/animate.css') }}" rel="stylesheet">
     <link href="{{ asset('css/u/main.css') }}" rel="stylesheet">
     <link href="{{ asset('css/u/component.css') }}" rel="stylesheet">
@@ -46,7 +47,7 @@
 		<div class="main-wrapper" style="margin-top: 0px !important;">
 
 			<!-- start hero-header -->
-			<div class="hero" style="background-image:url({{asset('images/bander2.png')}}); background-size:cover;">
+			{{-- <div class="hero" style="background-image:url({{asset('images/bander2.png')}}); background-size:cover;">
 				<div class="container">
 
 					<h1>tickle your tastebuds</h1>
@@ -82,7 +83,111 @@
 
 				</div>
 
-			</div>
+            </div> --}}
+
+            <div class="">
+                <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+                    <div class="carousel-inner">
+
+                        @if ($sliders->count() >= 1)
+                                <?php
+                                    $i = 0 ;
+                                    foreach ($sliders as $slider) {
+                                        if($i == 0) {
+                                            ?>
+
+                                            <div class="carousel-item active">
+                                                <div style="width: 100%; height: 90vh; background-image: url('{{$slider->image}}'); background-position: 0px; background-size: cover; background-repeat: no-repeat;">
+                                                    <div style="text-align:center; padding:140px 20px 20px 20px; color:#fff !important; width: 100%; height:90vh; background-color: rgba(0,0,0,0.4);">
+                                                        <span style="font-weight: bolder; font-size:35px;">Tickle Your Tastebuds</span><br><br>
+                                                        <p style="font-size: 20px;">Find amazing selection of local restaurant delivering food to your door</p>
+
+                                                        <div class="main-search-form-wrapper">
+
+                                                            <form>
+
+                                                                <div class="form-holder">
+                                                                    <div class="row gap-0">
+
+                                                                        <div class="col-xss-6 col-xs-6 col-sm-6">
+                                                                            <input class="form-control" placeholder="e.g. Benin / Lagos" />
+                                                                        </div>
+
+                                                                        <div class="col-xss-6 col-xs-6 col-sm-6">
+                                                                            <input class="form-control" placeholder="Find a restaurant" />
+                                                                        </div>
+
+                                                                    </div>
+
+                                                                </div>
+
+                                                                <div class="btn-holder">
+                                                                    <button class="btn"><i class="ion-android-search"></i></button>
+                                                                </div>
+
+                                                            </form>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <?php
+                                            $i++ ;
+                                        }else {
+                                            ?>
+                                            <div class="carousel-item">
+                                                <div style="width: 100%; height: 90vh; background-image: url('{{$slider->image}}'); background-position: 0px; background-size: cover; background-repeat: no-repeat;">
+                                                    <div style="text-align:center; padding:140px 20px 20px 20px; color:#fff !important; width: 100%; height:90vh; background-color: rgba(0,0,0,0.4);">
+                                                        <span style="font-weight: bolder; font-size:35px;">Tickle Your Tastebuds</span><br><br>
+                                                        <p style="font-size: 20px;">Find amazing selection of local restaurant delivering food to your door</p>
+
+                                                        <div class="main-search-form-wrapper">
+
+                                                            <form>
+
+                                                                <div class="form-holder">
+                                                                    <div class="row gap-0">
+
+                                                                        <div class="col-xss-6 col-xs-6 col-sm-6">
+                                                                            <input class="form-control" placeholder="e.g. Benin / Lagos" />
+                                                                        </div>
+
+                                                                        <div class="col-xss-6 col-xs-6 col-sm-6">
+                                                                            <input class="form-control" placeholder="Find a restaurant" />
+                                                                        </div>
+
+                                                                    </div>
+
+                                                                </div>
+
+                                                                <div class="btn-holder">
+                                                                    <button class="btn"><i class="ion-android-search"></i></button>
+                                                                </div>
+
+                                                            </form>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <?php
+                                        }
+                                    }
+                                ?>
+                              @endif
+
+                        <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                        </a>
+
+                    </div>
+                </div>
+            </div>
 			<!-- end hero-header -->
 
 			<div class="post-hero">
@@ -176,7 +281,7 @@
 
 						<div class="section-title">
 
-							<h2 class="text-left text-center-sm">top seller</h2>
+							<h2 class="text-left text-center-sm">Top sellers</h2>
 
 						</div>
 
@@ -223,7 +328,7 @@
 
 						<div class="section-title">
 
-							<h2 class="text-left text-center-sm">Featured Restaurant</h2>
+							<h2 class="text-left text-center-sm">Featured Vendoor</h2>
 
 						</div>
 

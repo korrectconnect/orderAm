@@ -4,6 +4,7 @@ namespace App\Http;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 use App\Http\Middleware\adminMiddleware;
+use App\Http\Middleware\RiderMiddleware;
 use App\Http\Middleware\VendorMiddleware;
 
 class Kernel extends HttpKernel
@@ -67,6 +68,7 @@ class Kernel extends HttpKernel
         'role' => \Spatie\Permission\Middlewares\RoleMiddleware::class,
         'admin' => adminMiddleware::class,
         'vendor' => VendorMiddleware::class,
+        'rider' => RiderMiddleware::class,
     ];
 
     /**

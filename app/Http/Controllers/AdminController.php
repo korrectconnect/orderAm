@@ -7,6 +7,7 @@ use App\Location;
 use App\Order;
 use App\Rider;
 use App\Rider_category;
+use App\Slider;
 use App\Vendor_auth;
 use App\Vendor_category;
 use App\Vendors;
@@ -97,23 +98,23 @@ class AdminController extends Controller
         return view('admin.pages.vendor.view')->with($data);
     }
 
-    public function vendorAuth($id) {
+    public function vendorAuth(Request $request) {
         $str_result = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-        $account_id = substr(str_shuffle($str_result), 0, 6);
-        $secret = substr(str_shuffle($str_result), 0, 6);
-        $get = Vendor_auth::where(['vendor_id' => $id]);
-        if ($get->first() >= 1) {
+        $account_id = substr(str_shuffle($str_result), 0, 3).$request->id.substr(str_shuffle($str_result), 0, 3);
+        $secret = substr(str_shuffle($str_result), 0, 8);
+        $get = Vendor_auth::where(['vendor_id' => $request->id]);
+        if ($get->count() >= 1) {
             $query = $get->update([
                 'account_id' => $account_id,
                 'secret' => encrypt($secret),
-                'password' => bcrypt(123456),
+                'password' => bcrypt($account_id),
             ]);
         }else {
             $query = Vendor_auth::insert([
-                'vendor_id' => $id,
+                'vendor_id' => $request->id,
                 'account_id' => $account_id,
                 'secret' => encrypt($secret),
-                'password' => bcrypt(123456),
+                'password' => bcrypt($account_id),
             ]);
         }
 
@@ -126,11 +127,13 @@ class AdminController extends Controller
         $vendor = AdminModel::getVendor($id);
         $menus = AdminModel::getMenus($id);
         $categories = AdminModel::getMenuCategory($id);
+        $auth = Vendor_auth::where(['vendor_id' => $id])->first();
 
         $data = array(
             'vendor' => $vendor,
             'menus' => $menus,
-            'categories' => $categories
+            'categories' => $categories,
+            'auth' => $auth,
         );
 
         return view('admin.pages.vendor.single')->with($data);
@@ -181,8 +184,60 @@ class AdminController extends Controller
         return view('admin.pages.vendor.location')->with($data);
     }
 
+    public function transactions() {
+        $transactions = Order::join('vendors','vendors.id','=','order.vendor_id')->select('order.*','vendors.name','vendors.lga')->where(['order.status' => 2])->orderBy('updated_at', 'desc')->get() ;
+        $orders = Order::join('vendors','vendors.id','=','order.vendor_id')->select('order.*','vendors.name','vendors.lga')->where(['order.status' => 2, 'cancelled' => 0])->orderBy('updated_at', 'desc')->get() ;
+
+        if ($orders->count() >= 1) {
+            $profit = 0;
+            $total = 0;
+
+            foreach($orders as $order) {
+                $commission = ($order->total * $order->commission)/100 ;
+                $profit += $commission;
+                $total += $order->total;
+            }
+        }else {
+            $profit = 0;
+            $total = 0;
+        }
+
+        $data = array(
+            'transactions' => $transactions,
+            'profit' => $profit,
+            'total' => $total,
+            'delivered' => $orders->count(),
+        );
+
+        return view('admin.pages.transactions')->with($data);
+    }
+
+    public function pending() {
+        $orders = Order::join('vendors','vendors.id','=','order.vendor_id')
+                        ->select('order.*','vendors.name','vendors.lga')
+                        ->where([['order.status' , '=', 1], ['order.cancelled' , '=', 0], ['order.rider_id', '!=', NULL]])
+                        ->orderBy('updated_at', 'desc')
+                        ->get() ;
+
+        $data = array(
+            'orders' => $orders,
+        );
+
+        return view('admin.pages.pending')->with($data);
+    }
+
+    public function slider() {
+        $sliders = Slider::orderBy('id','desc')->get() ;
+
+        $data = array(
+            'sliders' => $sliders,
+        );
+
+        return view('admin.pages.sliders')->with($data);
+    }
+
     public function orders() {
-        $orders = DB::table('order')->join('vendors','vendors.id','=','order.vendor_id')->select('order.*','vendors.name','vendors.lga')->where('order.cancelled','=','0')->orderBy('order.created_at', 'desc')->get() ;
+        $orders = DB::table('order')->join('vendors','vendors.id','=','order.vendor_id')->select('order.*','vendors.name','vendors.lga')->where(['order.cancelled' => 0, 'order.status' => 1, 'order.rider_id' => NULL])->orderBy('order.created_at', 'desc')->get() ;
 
         $data = array(
             'orders' => $orders,
@@ -192,7 +247,9 @@ class AdminController extends Controller
     }
 
     public function riders() {
-        $riders = Rider::orderBy('firstname', 'asc')->get();
+        $riders = Rider::join('users','users.id','=','riders.user_id')
+                    ->select('riders.*','users.email','users.username')
+                    ->get();
 
         $data = array(
             'riders' => $riders,
@@ -202,7 +259,10 @@ class AdminController extends Controller
     }
 
     public function singleRider($id) {
-        $rider = Rider::where(['id' => $id])->first();
+        $rider = Rider::join('users','users.id','=','riders.user_id')
+                            ->select('riders.*','users.email','users.username')
+                            ->where(['riders.id' => $id])
+                            ->first();
 
         if ($rider != NULL) {
             $data = array(
@@ -211,6 +271,41 @@ class AdminController extends Controller
 
             return view('admin.pages.rider.single')->with($data);
         }
+    }
+
+    public function editRiderForm($id) {
+        $rider = Rider::join('users','users.id','=','riders.user_id')
+                            ->select('riders.*','users.email','users.username')
+                            ->where(['riders.id' => $id])
+                            ->first();
+        $categories = Rider_category::all();
+
+        $data = array(
+            'rider' => $rider,
+            'categories' => $categories
+        );
+
+        return view('admin.pages.rider.edit')->with($data);
+    }
+
+    public function editVendorForm($id) {
+        $vendor = Vendors::where(['id' => $id])->first();
+        $categories = Vendor_category::all();
+        $states = Location::where('type','=','state')->get();
+        $countries = Location::where('type','=','country')->get();
+        $lgas = Location::where('type','=','lga')->get();
+        $areas = Location::where('type','=','area')->get();
+
+        $data = array(
+            'vendor' => $vendor,
+            'categories' => $categories,
+            'states' => $states,
+            'countries' => $countries,
+            'lgas' => $lgas,
+            'areas' => $areas,
+        );
+
+        return view('admin.pages.vendor.edit')->with($data);
     }
 
 }

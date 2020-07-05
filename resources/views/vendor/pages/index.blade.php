@@ -19,19 +19,21 @@
                             <h2>Orders</h2>
 
                             <!-- {{route('vendor.ajax.orders', ['status' => 0, 'cancelled' => 0])}} -->
-                            <div class="col-md-12">
-                                <div class="alert alert-secondary">
-                                    <div class="orderMenuBtn" data-href="{{route('vendor.ajax.orders', ['status' => 0, 'cancelled' => 0])}}" >
-                                        <i class="fa fa-list"></i> Incoming Order
-                                    </div>
-                                    <div class="orderMenuBtn" data-href="{{route('vendor.ajax.orders', ['status' => 1, 'cancelled' => 0])}}" >
-                                        <i class="fa fa-biking"></i> Pending Delivery
-                                    </div>
-                                    <div class="orderMenuBtn" data-href="{{route('vendor.ajax.orders', ['status' => 2, 'cancelled' => 0])}}" >
-                                        <i class="fa fa-check-circle"></i> Delivered
-                                    </div>
-                                    <div class="orderMenuBtn" data-href="{{route('vendor.ajax.orders', ['status' => 0, 'cancelled' => 1])}}" >
-                                        <i class="fa fa-times-circle"></i> Cancelled
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="alert alert-secondary">
+                                        <div class="orderMenuBtn" data-href="{{route('vendor.ajax.orders', ['status' => 0, 'cancelled' => 0])}}" >
+                                            <i class="fa fa-list"></i> Incoming Order
+                                        </div>
+                                        <div class="orderMenuBtn" data-href="{{route('vendor.ajax.orders', ['status' => 1, 'cancelled' => 0])}}" >
+                                            <i class="fa fa-biking"></i> Pending Delivery
+                                        </div>
+                                        <div class="orderMenuBtn" data-href="{{route('vendor.ajax.orders', ['status' => 2, 'cancelled' => 0])}}" >
+                                            <i class="fa fa-check-circle"></i> Delivered
+                                        </div>
+                                        <div class="orderMenuBtn" data-href="{{route('vendor.ajax.orders', ['status' => 0, 'cancelled' => 1])}}" >
+                                            <i class="fa fa-times-circle"></i> Cancelled
+                                        </div>
                                     </div>
                                 </div>
                             </div>

@@ -8,7 +8,7 @@
 
             <div class="logo-wrapper">
                 <div class="logo">
-                    <a href="{{route('user.home')}}"><img src="{{asset('images/orderam logo.png')}}" alt="Logo" width="85" /></a>
+                    <a href="{{route('vendor.dashboard')}}"><img src="{{asset('images/orderam logo.png')}}" alt="Logo" width="85" /></a>
                 </div>
             </div>
 

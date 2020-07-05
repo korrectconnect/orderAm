@@ -30,13 +30,13 @@
 
                         <div class="admin-user-item">
 
-                            @if (auth()->user()->image != NULL)
-                                <div class="image" style="background-image: url('{{auth()->user()->image}}')"></div>
+                            @if ($user->image != NULL)
+                                <div class="image" style="background-image: url('{{$user->image}}')"></div>
                             @else
                                 <div class="image" style="background-image: url('{{asset('images/man/01.jpg')}}')"></div>
                             @endif
 
-                            <h4>{{auth()->user()->firstname." ".auth()->user()->lastname}}</h4>
+                            <h4>{{$user->firstname." ".$user->lastname}}</h4>
                             <p class="user-role">{{auth()->user()->email}}</p>
 
                         </div>

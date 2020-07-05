@@ -17,6 +17,8 @@ use Illuminate\Http\Request;
 
 Route::post('/register', 'Api\authController@register');
 Route::post('/login', 'Api\authController@login');
+Route::post('/rider/login', 'Api\authController@loginRider');
+
 
 Route::group(['middleware' => ['auth:api']], function() {
 
@@ -28,7 +30,7 @@ Route::group(['middleware' => ['auth:api']], function() {
     Route::post('/vendors/search', 'ApiController@searchVendorsByLocation'); // category(vendor category)|state|lga
     Route::post('/cart', 'ApiController@addToCart'); // menu_id
     Route::post('/rate/vendor', 'ApiController@rateVendor'); // vendor_id|rating|order_no|comment
-    Route::post('/coupon', 'ApiController@checkCoupon'); // coupon|vendor_id 
+    Route::post('/coupon', 'ApiController@checkCoupon'); // coupon|vendor_id
     Route::post('/favourite/vendor', 'ApiController@favouriteVendor'); // vendor_id
 
     Route::delete('/cart/{id}', 'ApiController@deleteCart'); // id(cart_id)
@@ -47,7 +49,7 @@ Route::group(['middleware' => ['auth:api']], function() {
     Route::get('/vendor/{id}', 'ApiController@vendor'); // id(Vendor_id)
     Route::get('/vendors/category', 'ApiController@vendorsCategory');
     Route::get('/favourite/vendor', 'ApiController@getFavouriteVendors');
-    Route::get('/vendors/featured/{limit}', 'ApiController@vendorsFeatured'); // limit
+    Route::get('/vendors/featured/{category}/{limit}', 'ApiController@vendorsFeatured'); // limit
     Route::get('/vendors', 'ApiController@vendors');
     Route::get('/menu/{id}', 'ApiController@getMenus'); // id(Vendor_id)
     Route::get('/menu/c/{id}', 'ApiController@getMenusCategory'); // id(Vendor_id)
@@ -60,6 +62,3 @@ Route::group(['middleware' => ['auth:api']], function() {
     Route::get('/order/completed', 'ApiController@completedOrder');
 
 });
-
-Route::get('/test/{id}/{name}', 'ApiController@test');
-

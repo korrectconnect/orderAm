@@ -35,20 +35,6 @@
                         @endif
                     </td>
                 </tr>
-                @if ($auth != NULL)
-                    <tr>
-                        <td><b>Account ID</b></td>
-                        <td>{{ $auth->account_id }}</td>
-                    </tr>
-                    <tr>
-                        <td><b>Password</b></td>
-                        <td>123456</td>
-                    </tr>
-                    <tr>
-                        <td><b>Admin Secret Pin</b></td>
-                        <td>{{ decrypt($auth->secret) }}</td>
-                    </tr>
-                @endif
             </tbody>
         </table>
     </div>

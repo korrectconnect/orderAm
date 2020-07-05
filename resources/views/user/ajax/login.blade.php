@@ -5,7 +5,8 @@
 	<!-- Border -->
 	<div class="bor bg-orange"></div>
 	<!-- Form -->
-	<form class="form" role="form" id="authLoginForm" method="POST">
+    <form class="form" role="form" id="authLoginForm" method="POST" data-href="{{route('user.login')}}">
+        @csrf
 		<!-- Form Group -->
 		<div class="form-group">
 			<!-- Label -->
@@ -19,7 +20,7 @@
 		</div>
 		<div class="form-group">
 			<!-- Button -->
-			<button type="submit" class="btn btn-primary" id="authLoginFormBtn" data-href="{{route('user.login')}}">Sign In</button>
+			<button type="submit" class="btn btn-primary" id="authLoginFormBtn" >Sign In</button>
 		</div>
 		<div class="form-group">
 			<a href="javascript:void()" class="black">Forget Password ?</a>

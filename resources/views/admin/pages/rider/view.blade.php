@@ -4,16 +4,17 @@
 
 <div class="col-lg-12">
     <div class="card">
-      <div class="card-header"><i class="fa fa-align-justify"></i> <b>All Vendors</b></div>
+      <div class="card-header"><i class="fa fa-align-justify"></i> <b>All Riders</b></div>
       <div class="card-body">
         <table class="table table-responsive-sm table-striped">
           <thead>
             <tr>
               <th>Date registered</th>
-              <th>Firstname</th>
-              <th>Lastname</th>
+              <th>Fullname</th>
+              <th>City</th>
               <th>Status</th>
               <th>Location assigned</th>
+              <th>Pending Orders</th>
               <th>company</th>
               <th>Action</th>
             </tr>
@@ -24,8 +25,8 @@
                 @foreach ($riders as $rider)
                     <tr id="rider_{{$rider->id}}">
                         <td>{{ $rider->created_at }}</td>
-                        <td>{{ $rider->firstname }}</td>
-                        <td>{{ $rider->lastname }}</td>
+                        <td>{{ $rider->firstname }} {{ $rider->lastname }}</td>
+                        <td>{{ $rider->state }}</td>
                         <td>
                             @if($rider->active == NULL || $rider->active == 0)
                                 <span class="badge badge-danger">Inactive</span>
@@ -42,6 +43,7 @@
                                 {{$rider->location_assigned}}
                             @endif
                         </td>
+                        <td><a href="javascript:void()" id="viewRiderOrdersBtn" data-href="{{route('admin.ajax.rider.orders', ['id' => $rider->id])}}"><small>(click to view)</small></a></td>
                         <td>
                             @if ($rider->company == NULL)
                                 <span class="text-warning">None</span>
@@ -50,8 +52,11 @@
                             @endif
                         </td>
                         <td style="font-size:12px;">
-                            <a href="javascript:void()" id="assignRiderBtn" data-href="{{route('admin.rider.assign', ['id' => $rider->id])}}">Assign</a> &nbsp; / &nbsp;
-                            <a href="{{route('admin.rider.single', ['id' => $rider->id])}}">View</a>
+
+                            <a href="{{route('admin.rider.single', ['id' => $rider->id])}}">View</a> &nbsp; / &nbsp;
+                            <a href="javascript:void()" id="assignRiderBtn" data-href="{{route('admin.rider.assign', ['id' => $rider->id])}}">Assign Location</a> &nbsp; / &nbsp;
+                            <a href="{{route('admin.rider.edit.form', ['id' => $rider->id])}}">Edit</a>
+
                         </td>
                     </tr>
 

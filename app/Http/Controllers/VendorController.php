@@ -93,6 +93,50 @@ class VendorController extends Controller
         return view('vendor.pages.profile')->with($data);
     }
 
+    public function password(Request $request) {
+        if($request->session()->has('vendor_secret')) {
+            if(decrypt($request->session()->get('vendor_secret')) == decrypt(auth()->guard('vendor')->user()->secret)) {
+                $auth = true ;
+            }else {
+                $request->session()->forget('vendor_secret');
+                return redirect()->route('vendor.authAdmin');
+            }
+        }else {
+            return redirect()->route('vendor.authAdmin');
+        }
+        $vendor_id = auth()->guard('vendor')->user()->vendor_id ;
+        $vendor = Vendors::where(['id' => $vendor_id])->first();
+
+        $data = array(
+            'auth' => $auth,
+            'vendor' => $vendor,
+        );
+
+        return view('vendor.pages.password')->with($data);
+    }
+
+    public function finances(Request $request) {
+        if($request->session()->has('vendor_secret')) {
+            if(decrypt($request->session()->get('vendor_secret')) == decrypt(auth()->guard('vendor')->user()->secret)) {
+                $auth = true ;
+            }else {
+                $request->session()->forget('vendor_secret');
+                return redirect()->route('vendor.authAdmin');
+            }
+        }else {
+            return redirect()->route('vendor.authAdmin');
+        }
+        $vendor_id = auth()->guard('vendor')->user()->vendor_id ;
+        $vendor = Vendors::where(['id' => $vendor_id])->first();
+
+        $data = array(
+            'auth' => $auth,
+            'vendor' => $vendor,
+        );
+
+        return view('vendor.pages.finances')->with($data);
+    }
+
     public function authAdmin(Request $request) {
         if($request->session()->has('vendor_secret')) {
             if(decrypt($request->session()->get('vendor_secret')) == decrypt(auth()->guard('vendor')->user()->secret)) {

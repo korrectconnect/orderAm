@@ -18,6 +18,7 @@ use App\User;
 use App\Vendors;
 use Carbon\Carbon;
 use App\Address;
+use App\Customer;
 
 class AjaxController extends Controller
 {
@@ -50,13 +51,24 @@ class AjaxController extends Controller
 
                 $insert = User::insert([
                     'email' => $request->email,
-                    'firstname' => $request->firstname,
-                    'lastname' => $request->lastname,
-                    'phone' => $request->phone,
                     'password' => bcrypt($request->password),
+                    'role' => 'customer',
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ]);
 
                 if ($insert) {
+
+                    $getUser = User::where(['email' => $request->email])->first() ;
+                    $insert_c = Customer::insert([
+                        'firstname' => $request->firstname,
+                        'lastname' => $request->lastname,
+                        'phone' => $request->phone,
+                        'user_id' => $getUser->id,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+
                     if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
                         return response()->json(['errors'=>null, 'message'=>'Sign Up Successful']);
                     }else {
@@ -256,11 +268,13 @@ class AjaxController extends Controller
                 $states = Location::where('type','=','state')->get();
                 $lgas = Location::where('type','=','lga')->get();
                 $areas = Location::where('type','=','area')->get();
+                $user = Customer::where(['user_id' => auth()->user()->id])->first() ;
 
                 $data = array(
                     'states' => $states,
                     'lgas' => $lgas,
                     'areas' => $areas,
+                    'user' => $user,
                 );
                 return view("user.ajax.address")->with($data);
             }
@@ -292,7 +306,7 @@ class AjaxController extends Controller
                     if ($insert) {
                         if (Address::where(['user_id' => auth()->user()->id])->get()->count() == 1) {
                             $getAddress = Address::where(['user_id' => auth()->user()->id])->firstOrFail();
-                            $updateUser = User::where(['id' => auth()->user()->id])->update([
+                            $updateUser = Customer::where(['user_id' => auth()->user()->id])->update([
                                 'address_id' => $getAddress->id,
                             ]);
                             $updateAddress = $getAddress->update([
@@ -499,10 +513,11 @@ class AjaxController extends Controller
         if ($request->ajax()) {
             if (Auth::check()) {
                 $address = Address::where(['user_id' => auth()->user()->id, 'id' => $id])->first();
+                $user = Customer::where(['user_id' => auth()->user()->id])->first() ;
                 if($address == NULL) {
                     return response()->json(['errors'=>['Invalid Address']]);
                 }else {
-                    return view('user.ajax.edit_address')->with(['address' => $address]);
+                    return view('user.ajax.edit_address')->with(['address' => $address, 'user' => $user]);
                 }
             }else {
                 return response()->json(['errors'=>['Session Expired, Sign In']]);
@@ -552,8 +567,9 @@ class AjaxController extends Controller
                 if($get->first() == NULL) {
                     return response()->json(['errors'=>['Invalid Address']]);
                 }else {
-                    if (auth()->user()->address_id == $id) {
-                        User::where(['id' => auth()->user()->id])->update(['address_id' => NULL]) ;
+                    $user = Customer::where(['user_id' => auth()->user()->id])->first() ;
+                    if ($user->address_id == $id) {
+                        Customer::where(['user_id' => auth()->user()->id])->update(['address_id' => NULL]) ;
                         $delete = Address::where(['id' => $id])->delete();
                     }else {
                         $delete = Address::where(['id' => $id])->delete();
@@ -583,7 +599,7 @@ class AjaxController extends Controller
                     Address::where(['user_id' => auth()->user()->id, 'default' => 1])->update([
                         'default' => NULL,
                     ]);
-                    User::where(['id' => auth()->user()->id])->update(['address_id' => $id]) ;
+                    Customer::where(['user_id' => auth()->user()->id])->update(['address_id' => $id]) ;
                     $update = Address::where(['user_id' => auth()->user()->id, 'id' => $id])->update([
                         'default' => 1,
                     ]);
@@ -642,7 +658,7 @@ class AjaxController extends Controller
                         $filename = auth()->user()->id.'_image_'.time().'.'.$extension ;
                         $image_path = $request->file('file')->storeAs('public/user', $filename) ;
                         if($image_path) {
-                            $update = User::where(['id' => auth()->user()->id])->update([
+                            $update = Customer::where(['user_id' => auth()->user()->id])->update([
                                 'firstname' => $request->firstname,
                                 'lastname' => $request->lastname,
                                 'phone' => $request->phone,
@@ -652,7 +668,7 @@ class AjaxController extends Controller
                             $update = false ;
                         }
                     }else {
-                        $update = User::where(['id' => auth()->user()->id])->update([
+                        $update = Customer::where(['user_id' => auth()->user()->id])->update([
                             'firstname' => $request->firstname,
                             'lastname' => $request->lastname,
                             'phone' => $request->phone,

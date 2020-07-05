@@ -16,7 +16,7 @@
     <meta name="description" content="CHOPNOW">
     <meta name="author" content="Kocots">
     <meta name="keyword" content="Chopnow Admin Panel - Access/Modify">
-    <title>OrderAm</title>
+    <title>OrderAm - Vendor Panel</title>
 
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="msapplication-TileImage" content="">
@@ -99,14 +99,14 @@
 
     <script>
       @if(Session::has('errors'))
-        var type = "{{ Session::get('alert-type', 'info') }}";
+        var type = "{{ Session::get('alert-type', 'error') }}";
         switch(type){
             case 'info':
-                toastr.info("{{ Session::get('errors') }}");
+                toastr.info("Invalid login attempt");
                 break;
 
             case 'warning':
-                toastr.warning("{{ Session::get('errors') }}");
+                toastr.warning("Invalid login attempt");
                 break;
 
             case 'success':
@@ -114,7 +114,7 @@
                 break;
 
             case 'error':
-                toastr.error("{{ Session::get('errors') }}");
+                toastr.error("Invalid login attempt");
                 break;
         }
       @endif

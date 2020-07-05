@@ -32,7 +32,7 @@
     <div style="font-size: 12px;">
         {{$address->address}}<br>
         {{$address->lga." (".$address->state.")"}}<br>
-        @if ($address->description !== NULL))
+        @if ($address->description !== NULL)
             <small>({{$address->description}})</small><br>
         @endif
     </div>
