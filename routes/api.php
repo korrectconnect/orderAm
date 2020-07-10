@@ -1,7 +1,8 @@
 <?php
 
-use App\Http\Controllers\ApiController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ApiController;
 //use Illuminate\Routing\Route;
 
 /*
@@ -61,5 +62,12 @@ Route::group(['middleware' => ['auth:api']], function() {
     Route::get('/rate/vendor/{id}', 'ApiController@checkVendorRating'); // id(vendor_id)
     Route::get('/order/running', 'ApiController@runningOrder');
     Route::get('/order/completed', 'ApiController@completedOrder');
+    Route::get('/order/distance', 'ApiController@getDistance');
+    Route::get('/rider/distance', 'ApiController@getDistanceRider');
+    Route::get('/messages/{admin_rider_id}', 'MessagesController@privateMessages');
+    Route::post('/messages/{admin_rider_id}', 'MessagesController@sendMessage');
+    Route::get('/rider/profile', 'RidersController@getRiderProfile');
+    Route::get('/rider/client-info', 'RidersController@getClientInfo');
+    Route::get('/rider/order-info', 'RidersController@getOrderInfo');
 
 });

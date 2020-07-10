@@ -13,6 +13,21 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+//Route::group(['middleware' => ['get.menu']], function () {
+
+    Route::get('/testing', 'AjaxController@testing');
+    Route::get('/colors', function () {     return view('dashboard.colors'); });
+    Route::prefix('vendor')->group(function(){
+        Route::get('/add', function() { return view('dashboard.vendor.add'); })->name('vendor.add');
+        Route::get('/edit', function() { return view('dashboard.vendor.edit'); })->name('vendor.edit');
+        Route::get('/', function() { return view('dashboard.vendor.view'); })->name('vendor.view');
+    });
+    Route::prefix('menu')->group(function(){
+        Route::get('/add', function() { return view('dashboard.menu.add'); })->name('menu.add');
+        Route::get('/edit', function() { return view('dashboard.menu.edit'); })->name('menu.edit');
+        Route::get('/', function() { return view('dashboard.menu.view'); })->name('menu.view');
+    });
+
    Route::get('/', 'UsersController@home')->name('user.home');
    Route::get('vendors/{name}', 'UsersController@vendors')->name('user.vendors');
    Route::get('vendors', 'UsersController@vendorsHome')->name('user.vendors.home');
