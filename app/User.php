@@ -49,13 +49,4 @@ class User extends Authenticatable
         'deleted_at'
     ];
 
-    public function rider()
-    {
-        return $this->hasOne(Rider::class);
-    }
-
-    public function message()
-    {
-        return $this->hasMany(Messages::class, 'from');
-    }
 }
