@@ -4,6 +4,7 @@
 
         <div class="alert alert-secondary">
             <b>Date : </b> {{$order->created_at}}<br>
+            <b>Order no. : </b> {{$order->order_no}}<br>
             <b>Customer Name : </b> {{$order->firstname." ".$order->lastname}}<br>
             <b>Customer Line 1 : </b> {{$order->user_phone}}<br>
             <b>Customer Line 2 : </b> {{$order->phone}}<br>

@@ -37,6 +37,7 @@ Route::group(['middleware' => ['auth:api']], function() {
     Route::delete('/address/{id}', 'ApiController@deleteAddress'); // id(address_id)
 
     Route::get('/address', 'ApiController@getAddress');
+    Route::get('/vendors/search/{category}/{state}/{lga}', 'ApiController@vendorsByLocation'); // category(vendor category)|state|lga
     Route::get('/address/{id}', 'ApiController@getSingleAddress'); // id(address_id)
     Route::get('/cart/{id}', 'ApiController@cart'); // id(Vendor_id)
     Route::get('/state', 'ApiController@state');
@@ -49,7 +50,7 @@ Route::group(['middleware' => ['auth:api']], function() {
     Route::get('/vendor/{id}', 'ApiController@vendor'); // id(Vendor_id)
     Route::get('/vendors/category', 'ApiController@vendorsCategory');
     Route::get('/favourite/vendor', 'ApiController@getFavouriteVendors');
-    Route::get('/vendors/featured/{category}/{limit}', 'ApiController@vendorsFeatured'); // limit
+    Route::get('/vendors/featured/{category}/{state}', 'ApiController@vendorsFeatured'); // limit
     Route::get('/vendors', 'ApiController@vendors');
     Route::get('/menu/{id}', 'ApiController@getMenus'); // id(Vendor_id)
     Route::get('/menu/c/{id}', 'ApiController@getMenusCategory'); // id(Vendor_id)

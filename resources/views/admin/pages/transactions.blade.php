@@ -70,7 +70,7 @@
                                             <td>{{$transaction->created_at}}</td>
                                             <td>{{$transaction->order_no}}</td>
                                             <td>&#8358; {{$transaction->total}}</td>
-                                            <td><span class="text-success">{{$transaction->commission}}% (&#8358;{{($transaction->total * $transaction->commission)/100}})</span></td>
+                                            <td><span class="text-success">{{$transaction->commission}}% (&#8358;{{(($transaction->total - $transaction->delivery_charge) * $transaction->commission)/100}})</span></td>
                                             <td>{{$transaction->name." (".$transaction->lga.")"}}</td>
                                             <td>{{$transaction->payment_mode}}</td>
                                             <td>

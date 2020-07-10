@@ -175,6 +175,7 @@ $('#addLocationForm').submit(function(e) {
 $('#vendorCategoryForm').submit(function(e) {
     e.preventDefault();
     $(".vendorCategoryBtn").prop("disabled", true);
+    var href = $(this).data('href');
 
     $.ajaxSetup({
         headers: {
@@ -183,7 +184,7 @@ $('#vendorCategoryForm').submit(function(e) {
     });
 
     $.ajax({
-        url:"category",
+        url: href,
         type: "POST",
         data: new FormData(this),
         contentType: false,       // The content type used when sending data to the server.
@@ -301,6 +302,64 @@ $("#cover-file").change(function() {
 $(document).ready(function() {
     $(".vendor_modal_btn").click(function() {
         window.location = "vendor/" + $("#moreVendorID").val() ;
+    });
+
+    setTimeout(function() {
+        $(".orderMenuBtn:first").click();
+        $(".menuCategoryBtn:first").click();
+    },100);
+});
+
+$(document).on('click', '.orderMenuBtn', function() {
+    $('.orderMenuBtn').removeClass('orderMenuActive');
+    $(this).addClass('orderMenuActive');
+    var href = $(this).data("href");
+
+    $(".orderListDiv").html("<center><i class='fa fa-spin fa-circle-notch fa-2x'></i></center>");
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    $.ajax({
+        url: href,
+        type: "get",
+        success: function(e) {
+            $(".orderListDiv").html(e);
+        }
+    });
+});
+
+$(document).on('submit', '#filterTransactionForm', function(e) {
+    e.preventDefault();
+    $("#filterTransactionFormBtn").prop('disabled', true).html(" &nbsp; <i class='fa fa-spin fa-circle-notch'></i> &nbsp; ");
+    var href = $(this).data("href");
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    $.ajax({
+        url: href,
+        type: "POST",
+        data: new FormData(this),
+        contentType: false,       // The content type used when sending data to the server.
+        cache: false,             // To unable request pages to be cached
+        processData:false,
+        success: function(e) {
+            if(e.errors != null) {
+                for(i in e.errors) {
+                    toastr.error(e.errors[i], "Error", {timeOut: 5000});
+                }
+                $("#filterTransactionFormBtn").prop('disabled', false).html("Filter");
+            }else {
+                $(".orderListDiv").html(e);
+            }
+        }
     });
 });
 
@@ -819,7 +878,7 @@ $(document).on('click', '#confirmAssignOrderBtn', function() {
                 }
             }else {
                 toastr.success(e.message, "Success", {timeOut: 5000});
-                window.location = e.location ;
+                window.location.reload() ;
             }
         }
     });

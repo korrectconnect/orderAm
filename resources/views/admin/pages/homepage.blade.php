@@ -33,7 +33,7 @@
                           <use xlink:href="assets/icons/coreui/free-symbol-defs.svg#cui-location-pin"></use>
                         </svg>
                       </button>
-                      <div class="text-value-lg">0</div>
+                      <div class="text-value-lg">{{$pending}}</div>
                       <div>Pending Orders</div>
                     </div>
                     <div class="c-chart-wrapper mt-3 mx-3" style="height:70px;">
@@ -53,8 +53,8 @@
                         </button>
                         <div class="dropdown-menu dropdown-menu-right"><a class="dropdown-item" href="#">Action</a><a class="dropdown-item" href="#">Another action</a><a class="dropdown-item" href="#">Something else here</a></div>
                       </div>
-                      <div class="text-value-lg">0</div>
-                      <div>Today's Orders</div>
+                      <div class="text-value-lg">{{$delivery}}</div>
+                      <div>Pending Deliveries</div>
                     </div>
                     <div class="c-chart-wrapper mt-3" style="height:70px;">
                       <canvas class="chart" id="card-chart3" height="70"></canvas>
@@ -73,7 +73,7 @@
                         </button>
                         <div class="dropdown-menu dropdown-menu-right"><a class="dropdown-item" href="#">Action</a><a class="dropdown-item" href="#">Another action</a><a class="dropdown-item" href="#">Something else here</a></div>
                       </div>
-                      <div class="text-value-lg">0</div>
+                      <div class="text-value-lg">{{$customers}}</div>
                       <div>Customers</div>
                     </div>
                     <div class="c-chart-wrapper mt-3 mx-3" style="height:70px;">

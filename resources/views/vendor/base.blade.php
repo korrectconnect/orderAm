@@ -24,6 +24,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Main styles for this application-->
 
+    <link rel="icon" type="image/png" href="{{asset('images/favicon.png')}}">
+
     <link href="{{ asset('css/main.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/all.css') }}">
     <link href="{{ asset('css/u/animate.css') }}" rel="stylesheet">

@@ -8,11 +8,13 @@ use App\Location;
 use App\Order;
 use App\Rider;
 use App\Rider_category;
+use App\Rider_order;
 use App\Slider;
 use App\User;
 use App\Vendor_auth;
 use App\Vendor_category;
 use App\Vendors;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -449,14 +451,15 @@ class AdminAjaxController extends Controller
     }
 
     public function riderPendingOrders($id) {
+        $rider = Rider::where(['id' => $id])->first();
+
         $orders = Order::leftJoin('address', 'address.id', 'order.address')
                             ->leftJoin('vendors', 'vendors.id', '=', 'order.vendor_id' )
                             ->leftJoin('customers', 'customers.user_id', '=', 'order.user_id')
+                            ->join('rider_orders', 'rider_orders.order_no', 'order.order_no')
                             ->select('order.*', DB::raw('customers.phone as user_phone'), DB::raw('vendors.state as vendor_state'), DB::raw('vendors.lga as vendor_lga'), 'vendors.name', 'customers.firstname', 'customers.lastname', 'address.lga','address.address','address.description','address.phone','address.state')
-                            ->where(['order.rider_id' => $id])
+                            ->where(['rider_orders.rider_id' => $id])
                             ->get();
-
-        $rider = Rider::where(['id' => $id])->first();
 
         $data = array(
             'orders' => $orders,
@@ -470,13 +473,18 @@ class AdminAjaxController extends Controller
         $order = Order::leftJoin('address', 'address.id', 'order.address')
                             ->leftJoin('vendors', 'vendors.id', 'order.vendor_id' )
                             ->leftJoin('customers', 'customers.user_id', 'order.user_id')
-                            ->leftJoin('riders', 'riders.id', 'order.rider_id')
-                            ->select('order.*', DB::raw('riders.phone as rider_phone'), DB::raw('riders.firstname as rider_firstname'), DB::raw('riders.lastname as rider_lastname'), DB::raw('customers.phone as user_phone'), DB::raw('vendors.state as vendor_state'), DB::raw('vendors.lga as vendor_lga'), 'vendors.name', 'customers.firstname', 'customers.lastname', 'address.lga','address.address','address.description','address.phone','address.state')
+                            ->select('order.*', DB::raw('customers.phone as user_phone'), DB::raw('vendors.state as vendor_state'), DB::raw('vendors.lga as vendor_lga'), 'vendors.name', 'customers.firstname', 'customers.lastname', 'address.lga','address.address','address.description','address.phone','address.state')
                             ->where(['order.id' => $id])
                             ->first();
 
+        $rider = Rider_order::join('riders', 'riders.id', 'rider_orders.rider_id')
+                                ->select('riders.*')
+                                ->where(['rider_orders.order_no' => $order->order_no])
+                                ->first();
+
         $data = array(
             'order' => $order,
+            'rider' => $rider,
         );
 
         return view('admin.pages.ajax.pending_deliveries')->with($data);
@@ -549,12 +557,12 @@ class AdminAjaxController extends Controller
     public function assignRiderToOrderPage($id) {
         $order = Order::join('vendors','vendors.id','=','order.vendor_id')->select('order.*','vendors.name','vendors.state','vendors.lga')->where(['order.id' => $id])->first() ;
 
-        $riders = Rider::leftJoin('order', 'order.rider_id', 'riders.id')
-                            ->select('riders.*', DB::raw('count(order.order_no) as order_no'))
+        $riders = Rider::leftJoin('rider_orders', 'rider_orders.rider_id', 'riders.id')
+                            ->select('riders.*', DB::raw('count(rider_orders.order_no) as order_no'))
                             ->where(['riders.location_assigned' => $order->lga, 'riders.state' => $order->state])
                             ->get();
-        $other_riders = Rider::leftJoin('order', 'order.rider_id', 'riders.user_id')
-                                ->select('riders.*', DB::raw('count(order.order_no) as order_no'))
+        $other_riders = Rider::leftJoin('rider_orders', 'rider_orders.rider_id', 'riders.id')
+                                ->select('riders.*', DB::raw('count(rider_orders.order_no) as order_no'))
                                 ->where(['riders.state' => $order->state])
                                 ->get();
 
@@ -567,10 +575,13 @@ class AdminAjaxController extends Controller
         return view('admin.pages.ajax.order_assign')->with($data);
     }
 
-    public function confirmAssignOrder($id, $order, Request $request) {
+    public function confirmAssignOrder($id, $order_id, Request $request) {
         if ($request->ajax()) {
-            $query = Order::where(['id' => $order])->update([
+            $order = Order::where(['id' => $order_id])->first();
+
+            $query = Rider_order::where(['order_no' => $order->order_no])->update([
                 'rider_id' => $id,
+                'updated_at' => now(),
             ]);
 
             if ($query) {
@@ -874,6 +885,91 @@ class AdminAjaxController extends Controller
                     return response()->json(['errors'=>['Error, Could not run request try again']]);
                 }
 
+            }
+        }
+    }
+
+
+    public function transactionToday($vendor_id, Request $request) {
+        if ($request->ajax()) {
+
+            $orders = Order::where(['vendor_id' => $vendor_id, 'cancelled' => 0, 'status' => 2])
+                                ->whereDate('updated_at', Carbon::today())->get();
+            if ($orders->count() >= 1) {
+                $t = 0 ;
+                $c = 0;
+                $d = 0;
+                foreach ($orders as $order) {
+                    $t += ($order->total - $order->delivery_charge) ;
+                    $c += (($order->total - $order->delivery_charge)  * $order->commission)/100;
+                    $d += $order->delivery_charge ;
+                }
+                $total = $t ;
+            } else {
+                $total = 0.00;
+                $t = 0 ;
+                $c = 0;
+                $d = 0;
+            }
+
+
+            $data = array(
+                'orders' => $orders,
+                'total' => $total,
+                'commission' => $c,
+                'profit' => $total - $c,
+                'delivery' => $d,
+            );
+
+            return view('admin.pages.ajax.vendor_transaction_today')->with($data);
+        }
+    }
+
+    public function transactionFilter($vendor_id, Request $request) {
+        if ($request->ajax()) {
+
+            return view('admin.pages.ajax.filter')->with(['vendor_id' => $vendor_id]);
+        }
+    }
+
+    public function transactionFiltered(Request $request) {
+        if ($request->ajax()) {
+            $vendor_id = $request->vendor_id;
+
+            if ($request->start == NULL || $request->end == NULL) {
+                return response()->json(['errors' => ['At least one filled was left undefined']]);
+            }else {
+                $end = Carbon::createFromFormat('Y-m-d', $request->end);
+
+                $orders = Order::where(['vendor_id' => $vendor_id, 'cancelled' => 0, 'status' => 2])->whereBetween('updated_at', [$request->start, $end])->get();
+                if ($orders->count() >= 1) {
+                    $t = 0 ;
+                    $c = 0 ;
+                    $d = 0 ;
+                    foreach ($orders as $order) {
+                        $t += ($order->total - $order->delivery_charge) ;
+                        $c += (($order->total - $order->delivery_charge)  * $order->commission)/100;
+                        $d += $order->delivery_charge ;
+                    }
+                    $total = $t ;
+                } else {
+                    $total = 0.00;
+                    $c = 0;
+                    $d = 0 ;
+                }
+
+
+                $data = array(
+                    'orders' => $orders,
+                    'total' => $total,
+                    'start' => $request->start,
+                    'end' => $request->end,
+                    'commission' => $c,
+                    'profit' => $total - $c,
+                    'delivery' => $d,
+                );
+
+                return view('admin.pages.ajax.filtered')->with($data);
             }
         }
     }

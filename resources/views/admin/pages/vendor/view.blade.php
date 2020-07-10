@@ -31,6 +31,7 @@
                     </td>
                     <td style="font-size:12px;">
                         <a href="javascript:void()" data-toggle="modal" data-target="#myModal" id="view_btn_{{$each->id}}" data-id="{{$each->id}}">View</a> /
+                        <a href="{{route('admin.vendor.finance', ['id' => $each->id])}}" >Finance</a> /
                         <a href="{{route('admin.vendor.edit.form', ['id' => $each->id])}}" >Edit</a> /
                         <a href="javascript:void()" data-toggle="modal" data-target="#deleteModal" id="delete_vendor_{{$each->id}}" data-id="{{$each->id}}">Delete</a>
 

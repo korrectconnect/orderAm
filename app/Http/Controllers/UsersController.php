@@ -18,6 +18,7 @@ use App\Coupon;
 use App\Customer;
 use App\Favourite_vendor;
 use App\Order_item;
+use App\Rider_order;
 use App\Slider;
 use Carbon\Carbon;
 
@@ -337,6 +338,9 @@ class UsersController extends Controller
 
             if($order->save()) {
                 Cart::where(['vendor_id' => $request->vendor])->delete();
+                Rider_order::insert([
+                    'order_no' => $order_no,
+                ]);
                 $request->session()->flash('order', [
                     'vendor' => $vendor->id,
                     'number' => $order_no,

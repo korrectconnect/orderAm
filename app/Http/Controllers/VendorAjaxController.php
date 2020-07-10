@@ -473,8 +473,8 @@ class VendorAjaxController extends Controller
                 $t = 0 ;
                 $c = 0;
                 foreach ($orders as $order) {
-                    $t += $order->total ;
-                    $c += ($order->total  * $order->commission)/100;
+                    $t += ($order->total - $order->delivery_charge) ;
+                    $c += (($order->total - $order->delivery_charge)  * $order->commission)/100;
                 }
                 $total = $t ;
             } else {
@@ -517,8 +517,8 @@ class VendorAjaxController extends Controller
                     $t = 0 ;
                     $c = 0 ;
                     foreach ($orders as $order) {
-                        $t += $order->total ;
-                        $c += ($order->total  * $order->commission)/100;
+                        $t += ($order->total - $order->delivery_charge) ;
+                        $c += (($order->total - $order->delivery_charge)  * $order->commission)/100;
                     }
                     $total = $t ;
                 } else {

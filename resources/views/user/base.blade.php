@@ -18,6 +18,8 @@
     <meta name="keyword" content="Chopnow Admin Panel - Access/Modify">
     <title>OrderAm</title>
 
+    <link rel="icon" type="image/png" href="{{asset('images/favicon.png')}}">
+
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="msapplication-TileImage" content="">
     <meta name="theme-color" content="#ffffff">

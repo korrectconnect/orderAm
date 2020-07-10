@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\AdminModel;
+use App\Customer;
 use App\Location;
 use App\Order;
 use App\Rider;
@@ -11,6 +12,7 @@ use App\Slider;
 use App\Vendor_auth;
 use App\Vendor_category;
 use App\Vendors;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -25,10 +27,22 @@ class AdminController extends Controller
     public function dashboard() {
         $vendors = AdminModel::allVendors();
         $menus = AdminModel::getAllMenus();
+        $pending = Order::Join('rider_orders', 'rider_orders.order_no', 'order.order_no')
+                            ->select('order.*')
+                            ->where([['order.status', '=', 1], ['order.cancelled', '=', 0], ['rider_orders.rider_id', '=', NULL]])
+                            ->get()->count();
+        $delivery = Order::Join('rider_orders', 'rider_orders.order_no', 'order.order_no')
+                            ->select('order.*')
+                            ->where([['order.status', '=', 1], ['order.cancelled', '=', 0], ['rider_orders.rider_id', '!=', NULL]])
+                            ->get()->count();
+        $customers = Customer::all()->count();
 
         $data = array(
             'vendors' => $vendors,
-            'menus' => $menus
+            'menus' => $menus,
+            'pending' => $pending,
+            'delivery' => $delivery,
+            'customers' => $customers,
         );
 
         return view('admin.pages.homepage')->with($data);
@@ -96,6 +110,13 @@ class AdminController extends Controller
             'query' => $query
         );
         return view('admin.pages.vendor.view')->with($data);
+    }
+
+    public function vendorFinance($id) {
+
+        $vendor = Vendors::where(['id' => $id])->first();
+
+        return view('admin.pages.vendor.finance')->with(['vendor' => $vendor]);
     }
 
     public function vendorAuth(Request $request) {
@@ -193,9 +214,9 @@ class AdminController extends Controller
             $total = 0;
 
             foreach($orders as $order) {
-                $commission = ($order->total * $order->commission)/100 ;
+                $commission = (($order->total - $order->delivery_charge) * $order->commission)/100 ;
                 $profit += $commission;
-                $total += $order->total;
+                $total += ($order->total - $order->delivery_charge);
             }
         }else {
             $profit = 0;
@@ -214,8 +235,9 @@ class AdminController extends Controller
 
     public function pending() {
         $orders = Order::join('vendors','vendors.id','=','order.vendor_id')
-                        ->select('order.*','vendors.name','vendors.lga')
-                        ->where([['order.status' , '=', 1], ['order.cancelled' , '=', 0], ['order.rider_id', '!=', NULL]])
+                        ->join('rider_orders','rider_orders.order_no','order.order_no')
+                        ->select('order.*','vendors.name','vendors.lga','rider_orders.confirm')
+                        ->where([['order.cancelled', '=', 0], ['order.status', '=', 1], ['rider_orders.rider_id','!=',NULL]])
                         ->orderBy('updated_at', 'desc')
                         ->get() ;
 
@@ -237,7 +259,12 @@ class AdminController extends Controller
     }
 
     public function orders() {
-        $orders = DB::table('order')->join('vendors','vendors.id','=','order.vendor_id')->select('order.*','vendors.name','vendors.lga')->where(['order.cancelled' => 0, 'order.status' => 1, 'order.rider_id' => NULL])->orderBy('order.created_at', 'desc')->get() ;
+        $orders = DB::table('order')
+                    ->join('vendors','vendors.id','=','order.vendor_id')
+                    ->join('rider_orders','rider_orders.order_no','order.order_no')
+                    ->select('order.*','vendors.name','vendors.lga')
+                    ->where([['order.cancelled', '=', 0], ['order.status', '=', 1], ['rider_orders.rider_id','=',NULL]])
+                    ->orderBy('order.created_at', 'desc')->get() ;
 
         $data = array(
             'orders' => $orders,

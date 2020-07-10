@@ -64,8 +64,8 @@
                     <td>{{$order->updated_at}}</td>
                     <td>{{$order->order_no}}</td>
                     <td>{{$order->payment_mode}}</td>
-                    <td>&#8358;{{$order->total}}</td>
-                    <td>{{$order->commission}}% (&#8358;{{($order->total * $order->commission)/100}})</td>
+                    <td>&#8358;{{($order->total - $order->delivery_charge)}}</td>
+                    <td>{{$order->commission}}% (&#8358;{{(($order->total - $order->delivery_charge) * $order->commission)/100}})</td>
                     <td><a data-href="{{route('vendor.ajax.order', ['order_no' => $order->order_no])}}" href="javascript:void()" id="view_order">View</a></td>
                 </tr>
 

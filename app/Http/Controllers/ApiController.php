@@ -18,6 +18,7 @@ use App\Menu_category;
 use App\Order;
 use App\Order_item;
 use App\Order_status;
+use App\Rider_order;
 use App\Vendor_category;
 use App\Vendor_rating;
 use Carbon\Carbon;
@@ -103,6 +104,29 @@ class ApiController extends Controller
                     ->select('vendors.*',DB::raw('min(menus.price) as price'))
                     ->where([['vendors.type','=',$request->category],['vendors.state','=',$request->state],['vendors.lga','=',$request->lga]])
                     ->groupBy('vendors.id')->get() ;
+
+                    if ($search->count() < 1) {
+                        $search = Vendors::leftJoin('menus', 'menus.vendor_id', '=', 'vendors.id')
+                                ->select('vendors.*',DB::raw('min(menus.price) as price'))
+                                ->where([['vendors.type','=',$request->category],['vendors.state','=',$request->state]])
+                                ->groupBy('vendors.id')->get() ;
+                    }
+
+        return AppResource::collection($search);
+    }
+
+    public function vendorsByLocation($category,$state,$lga) {
+
+        $search = Vendors::leftJoin('menus', 'menus.vendor_id', '=', 'vendors.id')
+                    ->select('vendors.*',DB::raw('min(menus.price) as price'))
+                    ->where([['vendors.type','=',$category],['vendors.state','=',$state],['vendors.lga','=',$lga]])
+                    ->groupBy('vendors.id')->get() ;
+        if ($search->count() < 1) {
+            $search = Vendors::leftJoin('menus', 'menus.vendor_id', '=', 'vendors.id')
+                    ->select('vendors.*',DB::raw('min(menus.price) as price'))
+                    ->where([['vendors.type','=',$category],['vendors.state','=',$state]])
+                    ->groupBy('vendors.id')->get() ;
+        }
 
         return AppResource::collection($search);
     }
@@ -199,6 +223,9 @@ class ApiController extends Controller
 
             if($order->save()) {
                 Cart::where(['vendor_id' => $request->vendor_id])->delete();
+                Rider_order::insert([
+                    'order_no' => $order_no,
+                ]);
                 return new AppResource($order);
             }else {
                 Order_item::where(['order_no' => $order_no])->delete();
@@ -538,8 +565,8 @@ class ApiController extends Controller
         }
     }
 
-    public function vendorsFeatured($limit = 5, $category) {
-        $vendors = Vendors::where(['type' => $category])->inRandomOrder()->limit($limit)->get();
+    public function vendorsFeatured($category, $state) {
+        $vendors = Vendors::where(['type' => $category, 'state' => $state])->inRandomOrder()->limit(5)->get();
 
         return AppResource::collection($vendors);
     }

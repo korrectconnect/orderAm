@@ -20,6 +20,7 @@
                                     <th>Total</th>
                                     <th>Vendor</th>
                                     <th>Payment Mode</th>
+                                    <th>Rider Status</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -32,7 +33,14 @@
                                             <td>&#8358; {{$order->total}}</td>
                                             <td>{{$order->name." (".$order->lga.")"}}</td>
                                             <td>{{$order->payment_mode}}</td>
-                                            <td><a href="javascript:void()" id="viewPendingDeliveryBtn" data-href="{{route('admin.pending.delivery', ['id' => $order->id])}}">View</a></td>
+                                            <td>
+                                                @if ($order->confirm == 0)
+                                                    <span class="text-danger">Not confirmed</span>
+                                                @else
+                                                    <span class="text-success">Confirmed</span>
+                                                @endif
+                                            </td>
+                                            <td><a href="javascript:void()" id="viewPendingDeliveryBtn" data-href="{{route('admin.pending.delivery', ['id' => $order->id])}}">View</a> / <a href="javascript:void()" data-order="{{$order->order_no}}" data-href="{{route('admin.order.confirm.assign', ['id' => $order->id])}}" id="confirmOrderBtn">Re-assign</a></td>
                                         </tr>
                                     @endforeach
                                 @endif

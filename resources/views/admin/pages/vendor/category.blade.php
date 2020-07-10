@@ -5,7 +5,8 @@
     <div class="container">
         <div class="row">
             <div class="col-md-6">
-                <form action="" method="POST" id="vendorCategoryForm">
+                <form data-href="{{route('admin.vendor.category')}}" enctype="multipart/form-data" method="POST" id="vendorCategoryForm">
+                    @csrf
                     <div class="card">
                         <div class="card-header">
                             <strong>Add Vendor Category</strong>

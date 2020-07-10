@@ -19,7 +19,6 @@ class CreateOrderTable extends Migration
             $table->string('order_no')->nullable();
             $table->integer('vendor_id')->nullable();
             $table->string('transaction_id')->nullable();
-            $table->integer('rider_id')->nullable();
             $table->string('coupon_code')->nullable();
             $table->string('address')->nullable();
             $table->string('payment_mode')->nullable();

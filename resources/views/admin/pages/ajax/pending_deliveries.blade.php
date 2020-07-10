@@ -6,6 +6,6 @@
     <b>Total : </b> &#8358;{{$order->total}}<br>
     <b>Vendor : </b> {{$order->name}} ({{$order->vendor_lga}}, {{$order->vendor_state}})<br>
     <b>Address : </b> {{$order->address}} ({{$order->lga.", ".$order->state}})<br>
-    <b>Rider Name : </b> {{$order->rider_firstname." ".$order->rider_lastname}}<br>
-    <b>Rider Phone : </b> {{$order->rider_phone}}
+    <b>Rider Name : </b> {{$rider->firstname." ".$rider->lastname}}<br>
+    <b>Rider Phone : </b> {{$rider->phone}}
 </div>
