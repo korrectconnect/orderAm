@@ -70,5 +70,6 @@ Route::group(['middleware' => ['auth:api']], function() {
     Route::get('/rider/profile', 'RidersController@getRiderProfile');
     Route::get('/rider/client-info', 'RidersController@getClientInfo');
     Route::get('/rider/order-info', 'RidersController@getOrderInfo');
+    Route::get('/rider/current-location', 'RidersController@getRidersLocation');
 
 });

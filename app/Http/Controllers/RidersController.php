@@ -6,6 +6,8 @@ use App\User;
 use App\Order;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Services\GoogleMaps;
+use Stevebauman\Location\Facades\Location;
 
 class RidersController extends Controller
 {

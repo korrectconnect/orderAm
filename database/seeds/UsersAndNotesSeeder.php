@@ -23,21 +23,21 @@ class UsersAndNotesSeeder extends Seeder
         $statusIds = array();
         $faker = Faker::create();
         /* Create roles */
-        $adminRole = Role::create(['name' => 'admin']); 
-        RoleHierarchy::create([
-            'role_id' => $adminRole->id,
-            'hierarchy' => 1,
-        ]);
-        $userRole = Role::create(['name' => 'user']);
-        RoleHierarchy::create([
-            'role_id' => $userRole->id,
-            'hierarchy' => 2,
-        ]);
-        $guestRole = Role::create(['name' => 'guest']); 
-        RoleHierarchy::create([
-            'role_id' => $guestRole->id,
-            'hierarchy' => 3,
-        ]);
+        // $adminRole = Role::create(['name' => 'admin']); 
+        // RoleHierarchy::create([
+        //     'role_id' => $adminRole->id,
+        //     'hierarchy' => 1,
+        // ]);
+        // $userRole = Role::create(['name' => 'user']);
+        // RoleHierarchy::create([
+        //     'role_id' => $userRole->id,
+        //     'hierarchy' => 2,
+        // ]);
+        // $guestRole = Role::create(['name' => 'guest']); 
+        // RoleHierarchy::create([
+        //     'role_id' => $guestRole->id,
+        //     'hierarchy' => 3,
+        // ]);
         
         /*  insert status  */
         DB::table('status')->insert([
