@@ -24,6 +24,7 @@ use Illuminate\Http\Request;
 use App\OrderLocationDetails;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\AppResource;
+use Stevebauman\Location\Facades\Location as CurrentLocation;
 
 class ApiController extends Controller
 {
@@ -617,7 +618,7 @@ class ApiController extends Controller
     public function getDistanceRider($order_id)
     {
         $order_details = OrderLocationDetails::find($order_id);
-        $rider_location = Location::get(request()->ip());
+        $rider_location = CurrentLocation::get(request()->ip());
         $getUserDistance = GoogleMaps::getDistance($order_details->user_lat, $order_details->user_long, $order_details->vendor_lat, $order_details->vendor_long);
         $getVendorDistance = GoogleMaps::getDistance($order_details->vendor_lat, $order_details->vendor_long, $rider_location->latitude, $rider_location->longitude);
 
