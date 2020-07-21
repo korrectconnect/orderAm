@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Customer;
 use App\User;
 use App\Order;
 use Illuminate\Http\Request;
@@ -21,9 +22,9 @@ class RidersController extends Controller
     public function getClientInfo($order_id)
     {
         $order = Order::find($order_id);
-        $user = User::find($order->user_id);
+        $client = Customer::find($order->user_id);
 
-        return response()->json($user);
+        return response()->json($client);
     }
 
     public function getOrderInfo($order_id)
