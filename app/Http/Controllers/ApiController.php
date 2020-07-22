@@ -19,6 +19,7 @@ use App\Menu_category;
 use App\Vendor_rating;
 use App\Vendor_category;
 use App\Favourite_vendor;
+use Carbon\CarbonInterval;
 use App\Services\GoogleMaps;
 use Illuminate\Http\Request;
 use App\OrderLocationDetails;
@@ -618,13 +619,14 @@ class ApiController extends Controller
     public function getDistanceRider($order_id)
     {
         $order_details = OrderLocationDetails::find($order_id);
-        $rider_location = CurrentLocation::get(request()->ip());
+        $rider_location = CurrentLocation::get('129.205.124.7');//CurrentLocation::get(request()->ip());
         $getUserDistance = GoogleMaps::getDistance($order_details->user_lat, $order_details->user_long, $order_details->vendor_lat, $order_details->vendor_long);
         $getVendorDistance = GoogleMaps::getDistance($order_details->vendor_lat, $order_details->vendor_long, $rider_location->latitude, $rider_location->longitude);
+        
+        $total_time = $getUserDistance['duration'] + $getVendorDistance['duration'];
 
-        $total_time = $getUserDistance['duration'] + $getVendorDistance;
-
-        return response()->json(['total_time' => $total_time, 'getUserDistance' => $getUserDistance, 'getVendorDistance' => $getVendorDistance]);
+        return response()->json(['total_time' => CarbonInterval::seconds($total_time)->cascade()->forHumans(), 
+                                'getUserDistance' => $getUserDistance, 'getVendorDistance' => $getVendorDistance]);
     }
 
 }
