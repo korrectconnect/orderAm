@@ -1,0 +1,21 @@
+/node_modules
+/public/storage
+/storage/*.key
+/vendor
+.env
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+skooleeo.code-workspace
+make_backup/*
+docs/microservices/*
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
+api/playground.http
+coverage.xml
+.idea/workspace.xml
+.idea

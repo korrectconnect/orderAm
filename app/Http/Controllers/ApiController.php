@@ -2,26 +2,29 @@
 
 namespace App\Http\Controllers;
 
-use App\Address;
 use App\Cart;
+use App\User;
+use App\Menus;
+use App\Order;
 use App\Coupon;
+use App\Address;
+use App\Vendors;
 use App\Customer;
+use App\Location;
+use Carbon\Carbon;
+use App\Order_item;
+use App\Rider_order;
+use App\Order_status;
+use App\Menu_category;
+use App\Vendor_rating;
+use App\Vendor_category;
 use App\Favourite_vendor;
+use App\Services\GoogleMaps;
 use Illuminate\Http\Request;
+use App\OrderLocationDetails;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\AppResource;
-use App\Location;
-use App\Vendors;
-use App\Menus;
-use App\User;
-use App\Menu_category;
-use App\Order;
-use App\Order_item;
-use App\Order_status;
-use App\Rider_order;
-use App\Vendor_category;
-use App\Vendor_rating;
-use Carbon\Carbon;
+use Stevebauman\Location\Facades\Location as CurrentLocation;
 
 class ApiController extends Controller
 {
@@ -220,6 +223,20 @@ class ApiController extends Controller
             $order->Commission = $vendorC->Commission;
             $order->status = 0;
             $order->cancelled = 0;
+            
+            $user_address = DB::table('address')->where('user_id', auth()->user()->id)->first();
+            $vendor = DB::table('vendors')->find($request->vendor_id);
+    
+            $vendor_coordinates = GoogleMaps::getAddress($vendor->address);
+            $user_coordinates = GoogleMaps::getAddress($user_address->address.' '.$user_address->lga.' '.$user_address->state);
+    
+            OrderLocationDetails::create([
+                'order_id' => $order->id,
+                'user_lat' => $user_coordinates['lat'],
+                'user_long' => $user_coordinates['long'],
+                'vendor_lat' => $vendor_coordinates['lat'],
+                'vendor_long' => $vendor_coordinates['long'],
+            ]);
 
             if($order->save()) {
                 Cart::where(['vendor_id' => $request->vendor_id])->delete();
@@ -587,6 +604,27 @@ class ApiController extends Controller
         $query = Location::where('type','=','area')->get();
 
         return AppResource::collection($query);
+    }
+
+    public function getDistance($order_id)
+    {
+        $order_details = OrderLocationDetails::find($order_id);
+
+        $distance = GoogleMaps::getDistance($order_details->user_lat, $order_details->user_long, $order_details->vendor_lat, $order_details->vendor_long);
+
+        return new AppResource($distance);
+    }
+
+    public function getDistanceRider($order_id)
+    {
+        $order_details = OrderLocationDetails::find($order_id);
+        $rider_location = CurrentLocation::get(request()->ip());
+        $getUserDistance = GoogleMaps::getDistance($order_details->user_lat, $order_details->user_long, $order_details->vendor_lat, $order_details->vendor_long);
+        $getVendorDistance = GoogleMaps::getDistance($order_details->vendor_lat, $order_details->vendor_long, $rider_location->latitude, $rider_location->longitude);
+
+        $total_time = $getUserDistance['duration'] + $getVendorDistance;
+
+        return response()->json(['total_time' => $total_time, 'getUserDistance' => $getUserDistance, 'getVendorDistance' => $getVendorDistance]);
     }
 
 }
