@@ -596,7 +596,7 @@ class AdminAjaxController extends Controller
     public function addRiderCategory(Request $request) {
         if ($request->ajax()) {
             $validatedData = Validator::make($request->all(), [
-                'category' => 'max:191|required|unique:Rider_category',
+                'category' => 'max:191|required|unique:rider_category',
             ]);
 
             if ($validatedData->fails())
