@@ -17,7 +17,7 @@ class CreateVendorCategoryTable extends Migration
             $table->bigIncrements('id');
             $table->string('name')->nullable();
             $table->text('description')->nullable();
-            $table->double('Commission')->default(0);
+            $table->double('commission')->default(0);
             $table->string('image')->nullable();
             $table->timestamps();
         });

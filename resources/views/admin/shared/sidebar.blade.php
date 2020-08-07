@@ -27,20 +27,24 @@
 
         <div class="c-sidebar-nav-dropdown-items">
             <a class="dropdown-item" href="{{route('admin.vendor.add')}}">
-                <i class="fa fa-pencil"></i> &nbsp; &nbsp;
+                <i class="fa fa-user-plus"></i> &nbsp; &nbsp;
                 Add Vendor
             </a>
             <a class="dropdown-item" href="{{route('admin.vendor.view')}}">
-                <i class="fa fa-pencil"></i> &nbsp; &nbsp;
+                <i class="fa fa-list"></i> &nbsp; &nbsp;
                 View All
             </a>
             <a class="dropdown-item" href="{{route('admin.vendor.category')}}">
-                <i class="fa fa-pencil"></i> &nbsp; &nbsp;
+                <i class="fa fa-building"></i> &nbsp; &nbsp;
                 Vendor Category
             </a>
             <a class="dropdown-item" href="{{route('admin.vendor.location')}}">
-                <i class="fa fa-pencil"></i> &nbsp; &nbsp;
+                <i class="fa fa-location-arrow"></i> &nbsp; &nbsp;
                 Vendor Location
+            </a>
+            <a class="dropdown-item" href="{{route('admin.vendor.funding')}}">
+                <i class="fa fa-money-check"></i> &nbsp; &nbsp;
+                Funding History
             </a>
         </div>
 

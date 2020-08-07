@@ -22,6 +22,16 @@
                         <td>{{ $vendor->type }}</td>
                     </tr>
                     <tr>
+                        <td><b>Balance</b></td>
+                        <td>
+                            @if ($auth->account < 0)
+                                <span class="text-danger">&#8358;{{ $auth->account }}</span>
+                            @else
+                                <span class="text-success">&#8358;{{ $auth->account }}</span>
+                            @endif
+                        </td>
+                    </tr>
+                    <tr>
                         <td><b>Email</b></td>
                         <td>{{ $vendor->email }}</td>
                     </tr>
@@ -144,11 +154,7 @@
                 <h4 class="card-title">
                     Authenticator
 
-                    @if ($auth != NULL)
-                        <button class="btn btn-sm btn-link" style="float:right;" id="authVendorResetBtn" >Reset</button>
-                    @else
-                        <button class="btn btn-sm btn-link" style="float:right;" id="authVendorBtn" >Authenticate</button>
-                    @endif
+                    <button class="btn btn-sm btn-link" style="float:right;" id="authVendorResetBtn" >Reset</button>
                 </h4>
 
                 <form action="{{route('admin.vendor.auth')}}" method="POST" id="authVendorForm">
@@ -161,7 +167,7 @@
                         <tbody>
                             <tr>
                                 <td><b>Account ID</b></td>
-                                <td>{{ $auth->account_id }}</td>
+                                <td>{{ $user->username }}</td>
                             </tr>
                             <tr>
                                 <td><b>SuperAdmin Secret</b></td>
@@ -176,6 +182,32 @@
                     </div>
 
                 @endif
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">
+                    Fund Vendor
+
+                    <a class="btn btn-sm btn-link" href="javascript:void()" style="float:right;" id="vendorFundHistoryBtn" data-href="{{route('admin.vendor.funding.history', ['id' => $vendor->id])}}" >History</a>
+                </h4>
+
+                    <form data-href="{{route('admin.vendor.funding')}}" id="addVendorFund" >
+                        @csrf
+                        <div class="form-group">
+                            <label for="amount">Amount</label>
+                            <input name="amount" class="form-control" id="amount" type="text" placeholder="Enter amount">
+                          </div>
+                          <div class="form-group">
+                            <label for="description">Description</label>
+                            <input name="description" class="form-control" id="description" type="text" placeholder="Short transaction description">
+                          </div>
+                          <input type="hidden" name="user_id" value="{{$vendor->user_id}}">
+                          <input type="hidden" name="id" value="{{$vendor->id}}">
+                          <button type="submit" class="btn btn-xs btn-primary" id="addVendorFundBtn">Submit</button>
+                    </form>
+                </h4>
             </div>
         </div>
 </div>

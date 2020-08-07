@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Route;
    Route::get('user/address', 'UsersController@address')->name('user.address.book');
    Route::get('user/vendor/favourite', 'UsersController@favouriteVendors')->name('user.vendor.favourite');
    Route::get('user/password/change', 'UsersController@changePassword')->name('user.password.change');
+   Route::get('search/vendors', 'UsersController@searchVendors')->name('user.vendor.search');
 
 
    Route::post('logout', 'UsersController@logout')->name('logout');
@@ -142,6 +143,7 @@ use Illuminate\Support\Facades\Route;
         Route::get('vendor/finance/{id}', ['as' => 'admin.vendor.finance', 'uses' => 'AdminController@vendorFinance']);
         Route::get('vendor/category', ['as' => 'admin.vendor.category', 'uses' => 'AdminController@vendorCategory']);
         Route::get('vendor', ['as' => 'admin.vendor.view', 'uses' => 'AdminController@vendors']);
+        Route::get('vendor/funding', ['as' => 'admin.vendor.funding', 'uses' => 'AdminController@vendorFunding']);
         Route::get('rider/add', ['as' => 'admin.rider.add', 'uses' => 'AdminController@addRiderForm']);
         Route::get('rider/edit/{id}', ['as' => 'admin.rider.edit.form', 'uses' => 'AdminController@editRiderForm']);
         Route::get('rider/category', ['as' => 'admin.rider.category', 'uses' => 'AdminController@riderCategory']);
@@ -155,6 +157,7 @@ use Illuminate\Support\Facades\Route;
         Route::get('transactions', 'AdminController@transactions')->name('admin.transactions');
         Route::get('pending', 'AdminController@pending')->name('admin.pending');
         Route::get('settings/slider', 'AdminController@slider')->name('admin.slider');
+
 
 
         Route::post('vendor/auth', 'AdminController@vendorAuth')->name('admin.vendor.auth');
@@ -174,6 +177,7 @@ use Illuminate\Support\Facades\Route;
         Route::post('menuCategory/add', ['as' => 'admin.menu_category.add', 'uses' => 'AdminAjaxController@addMenuCategory']);
         Route::post('ajax/rider/assign', 'AdminAjaxController@assignRider')->name('admin.assign.rider');
         Route::post('ajax/transaction/filter', 'AdminAjaxController@transactionFiltered')->name('admin.vendor.transaction.filter');
+        Route::post('vendor/funding', 'AdminAjaxController@fundVendor')->name('admin.vendor.funding');
 
         Route::get('slider/{id}/delete', 'AdminAjaxController@deleteSlider')->name('admin.slider.delete');
         Route::get('ajax/transaction/today/{vendor_id}', 'AdminAjaxController@transactionToday')->name('admin.vendor.transaction.today');
@@ -201,6 +205,7 @@ use Illuminate\Support\Facades\Route;
         Route::get('ajax/pending/delivery/{id}', 'AdminAjaxController@pendingDelivery')->name('admin.pending.delivery');
         Route::get('ajax/order/{id}/view', 'AdminAjaxController@viewOrder')->name('admin.ajax.order');
         Route::get('ajax/order/{id}/{order}/confirm', 'AdminAjaxController@confirmAssignOrder')->name('admin.order.confirm');
+        Route::get('vendor/funding/{id}/history', 'AdminAjaxController@fundVendorHistory')->name('admin.vendor.funding.history');
         //End Ajax Request
 
     });
@@ -239,6 +244,7 @@ use Illuminate\Support\Facades\Route;
         Route::get('request/order/{order_no}', 'VendorAjaxController@order')->name('vendor.ajax.order');
         Route::get('request/transaction/today', 'VendorAjaxController@transactionToday')->name('vendor.transaction.today');
         Route::get('request/transaction/filter', 'VendorAjaxController@transactionFilter')->name('vendor.transaction.filter');
+        Route::get('request/transaction/funding', 'VendorAjaxController@transactionFunding')->name('vendor.transaction.funding');
         Route::get('request/order/{order_no}/confirm', 'VendorAjaxController@confirmOrder')->name('vendor.order.confirm');
         Route::get('request/order/{order_no}/decline', 'VendorAjaxController@declineOrder')->name('vendor.order.decline');
         Route::get('request/menu_list/{category}', 'VendorAjaxController@getMenuList')->name('vendor.menu_list');

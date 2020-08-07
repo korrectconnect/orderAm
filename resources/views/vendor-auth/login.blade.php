@@ -15,7 +15,7 @@
                             <label for="account_id" class="col-md-4 col-form-label text-md-right">{{ __('Account ID') }}</label>
 
                             <div class="col-md-6">
-                                <input id="account_id" type="text" class="form-control @error('account_id') is-invalid @enderror" name="account_id" value="{{ old('account_id') }}" required autocomplete="account_id" autofocus>
+                                <input id="account_id" type="text" class="form-control @error('account_id') is-invalid @enderror" name="username" value="{{ old('account_id') }}" required autocomplete="account_id" autofocus>
 
                                 @error('account_id')
                                     <span class="invalid-feedback" role="alert">

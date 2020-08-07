@@ -8,6 +8,7 @@ use App\Rider;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use App\User;
+use App\Vendors;
 use Illuminate\Support\Facades\Auth;
 
 class authController extends Controller
@@ -55,7 +56,7 @@ class authController extends Controller
                             ->select('users.*','customers.firstname','customers.lastname','customers.address_id','customers.image')
                             ->where(['users.id' => auth()->user()->id])
                             ->first();
-            return response(['user' => $user, 'access_token' => $accessToken ]);
+            return response(['user' => $user, 'access_token' => $accessToken ], 200);
         }else {
             return response()->json(['errors'=>['Could not log you in automatically, try login in manually']]);
         }
@@ -74,12 +75,12 @@ class authController extends Controller
     $getUser = User::where(['email' => $request->email])->first();
     if($getUser != NULL) {
         if ($getUser->role != 'customer') {
-            return response(['message' => 'Invalid Credentials']);
+            return response()->json(['message' => 'Invalid Credentials'], 401);
         }
     }
 
     if(!auth()->attempt($loginData)) {
-        return response(['message' => 'Invalid Credentials']);
+        return response()->json(['message' => 'Invalid Credentials'], 401);
     };
 
     $accessToken = auth()->user()->createToken('authToken')->accessToken;
@@ -88,7 +89,7 @@ class authController extends Controller
                             ->select('users.*','customers.firstname','customers.lastname','customers.address_id','customers.image')
                             ->where(['users.id' => auth()->user()->id])
                             ->first();
-    return response(['user' => $user, 'access_token' => $accessToken ]);
+    return response()->json(['user' => $user, 'access_token' => $accessToken ], 200);
 
  }
 
@@ -103,12 +104,12 @@ class authController extends Controller
     $getUser = User::where(['username' => $request->username])->first();
     if($getUser != NULL) {
         if ($getUser->role != 'rider') {
-            return response(['message' => 'Invalid Credentials']);
+            return response()->json(['message' => 'Invalid Credentials'], 401);
         }
     }
 
     if(!auth()->attempt($loginData)) {
-        return response(['message' => 'Invalid Credentials']);
+        return response()->json(['message' => 'Invalid Credentials']);
     };
 
     $accessToken = auth()->user()->createToken('authToken')->accessToken;
@@ -117,7 +118,35 @@ class authController extends Controller
                             ->select('riders.*','users.email','users.username')
                             ->where(['riders.user_id' => auth()->user()->id])
                             ->first();
-    return response(['rider' => $rider, 'access_token' => $accessToken ]);
+    return response()->json(['rider' => $rider, 'access_token' => $accessToken ], 200);
+
+ }
+
+ public function loginVendor(Request $request)
+ {
+    $loginData = $request->validate([
+        'password' => 'required',
+        'username' => 'required'
+    ]);
+
+    $getUser = User::where(['username' => $request->username])->first();
+    if($getUser != NULL) {
+        if ($getUser->role != 'vendor') {
+            return response()->json(['message' => 'Invalid Credentials'], 401);
+        }
+    }
+
+    if(!auth()->attempt($loginData)) {
+        return response()->json(['message' => 'Invalid Credentials']);
+    };
+
+    $accessToken = auth()->user()->createToken('authToken')->accessToken;
+
+    $vendor = Vendors::join('users','users.id','=','vendors.user_id')
+                            ->select('vendors.*','users.username')
+                            ->where(['vendors.user_id' => auth()->user()->id])
+                            ->first();
+    return response()->json(['vendor' => $vendor, 'access_token' => $accessToken ], 200);
 
  }
 

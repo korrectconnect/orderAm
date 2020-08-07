@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Menu_category;
 use App\Menus;
 use App\Order;
+use App\Vendor_auth;
 use App\Vendors;
 use Illuminate\Http\Request;
 
@@ -21,8 +22,9 @@ class VendorController extends Controller
     // }
 
     public function dashboard(Request $request) {
+        $auth_secret = Vendor_auth::where(['user_id' => auth()->guard('vendor')->user()->id])->first();
         if($request->session()->has('vendor_secret')) {
-            if(decrypt($request->session()->get('vendor_secret')) == decrypt(auth()->guard('vendor')->user()->secret)) {
+            if(decrypt($request->session()->get('vendor_secret')) == decrypt($auth_secret->secret)) {
                 $auth = true ;
             }else {
                 $request->session()->forget('vendor_secret');
@@ -31,9 +33,9 @@ class VendorController extends Controller
         }else {
             $auth = false;
         }
-        $vendor_id = auth()->guard('vendor')->user()->vendor_id ;
-        $vendor = Vendors::where(['id' => $vendor_id])->first();
-        $orders = Order::where(['vendor_id' => $vendor_id, 'status' => 0, 'cancelled' => 0])->get();
+
+        $vendor = Vendors::where(['user_id' => auth()->guard('vendor')->user()->id])->first();
+        $orders = Order::where(['vendor_id' => $vendor->id, 'status' => 0, 'cancelled' => 0])->get();
 
         $data = array(
             'vendor' => $vendor,
@@ -45,8 +47,9 @@ class VendorController extends Controller
     }
 
     public function menus(Request $request) {
+        $auth_secret = Vendor_auth::where(['user_id' => auth()->guard('vendor')->user()->id])->first();
         if($request->session()->has('vendor_secret')) {
-            if(decrypt($request->session()->get('vendor_secret')) == decrypt(auth()->guard('vendor')->user()->secret)) {
+            if(decrypt($request->session()->get('vendor_secret')) == decrypt($auth_secret->secret)) {
                 $auth = true ;
             }else {
                 $request->session()->forget('vendor_secret');
@@ -56,10 +59,10 @@ class VendorController extends Controller
             $auth = false;
         }
 
-        $vendor_id = auth()->guard('vendor')->user()->vendor_id ;
-        $vendor = Vendors::where(['id' => $vendor_id])->first();
-        $menus = Menus::where(['vendor_id' => $vendor_id])->get();
-        $menu_categories = Menu_category::where(['vendor_id' => $vendor_id])->get();
+
+        $vendor = Vendors::where(['user_id' => auth()->guard('vendor')->user()->id])->first();
+        $menus = Menus::where(['vendor_id' => $vendor->id])->get();
+        $menu_categories = Menu_category::where(['vendor_id' => $vendor->id])->get();
 
         $data = array(
             'vendor' => $vendor,
@@ -72,8 +75,9 @@ class VendorController extends Controller
     }
 
     public function profile(Request $request) {
+        $auth_secret = Vendor_auth::where(['user_id' => auth()->guard('vendor')->user()->id])->first();
         if($request->session()->has('vendor_secret')) {
-            if(decrypt($request->session()->get('vendor_secret')) == decrypt(auth()->guard('vendor')->user()->secret)) {
+            if(decrypt($request->session()->get('vendor_secret')) == decrypt($auth_secret->secret)) {
                 $auth = true ;
             }else {
                 $request->session()->forget('vendor_secret');
@@ -82,8 +86,8 @@ class VendorController extends Controller
         }else {
             $auth = false;
         }
-        $vendor_id = auth()->guard('vendor')->user()->vendor_id ;
-        $vendor = Vendors::where(['id' => $vendor_id])->first();
+
+        $vendor = Vendors::where(['user_id' => auth()->guard('vendor')->user()->id])->first();
 
         $data = array(
             'vendor' => $vendor,
@@ -94,8 +98,9 @@ class VendorController extends Controller
     }
 
     public function password(Request $request) {
+        $auth_secret = Vendor_auth::where(['user_id' => auth()->guard('vendor')->user()->id])->first();
         if($request->session()->has('vendor_secret')) {
-            if(decrypt($request->session()->get('vendor_secret')) == decrypt(auth()->guard('vendor')->user()->secret)) {
+            if(decrypt($request->session()->get('vendor_secret')) == decrypt($auth_secret->secret)) {
                 $auth = true ;
             }else {
                 $request->session()->forget('vendor_secret');
@@ -104,8 +109,8 @@ class VendorController extends Controller
         }else {
             return redirect()->route('vendor.authAdmin');
         }
-        $vendor_id = auth()->guard('vendor')->user()->vendor_id ;
-        $vendor = Vendors::where(['id' => $vendor_id])->first();
+
+        $vendor = Vendors::where(['user_id' => auth()->guard('vendor')->user()->id])->first();
 
         $data = array(
             'auth' => $auth,
@@ -116,8 +121,10 @@ class VendorController extends Controller
     }
 
     public function finances(Request $request) {
+        $auth_secret = Vendor_auth::where(['user_id' => auth()->guard('vendor')->user()->id])->first();
+        $account = $auth_secret->account ;
         if($request->session()->has('vendor_secret')) {
-            if(decrypt($request->session()->get('vendor_secret')) == decrypt(auth()->guard('vendor')->user()->secret)) {
+            if(decrypt($request->session()->get('vendor_secret')) == decrypt($auth_secret->secret)) {
                 $auth = true ;
             }else {
                 $request->session()->forget('vendor_secret');
@@ -126,11 +133,12 @@ class VendorController extends Controller
         }else {
             return redirect()->route('vendor.authAdmin');
         }
-        $vendor_id = auth()->guard('vendor')->user()->vendor_id ;
-        $vendor = Vendors::where(['id' => $vendor_id])->first();
+
+        $vendor = Vendors::where(['user_id' => auth()->guard('vendor')->user()->id])->first();
 
         $data = array(
             'auth' => $auth,
+            'account' => $account,
             'vendor' => $vendor,
         );
 
@@ -138,8 +146,9 @@ class VendorController extends Controller
     }
 
     public function authAdmin(Request $request) {
+        $auth_secret = Vendor_auth::where(['user_id' => auth()->guard('vendor')->user()->id])->first();
         if($request->session()->has('vendor_secret')) {
-            if(decrypt($request->session()->get('vendor_secret')) == decrypt(auth()->guard('vendor')->user()->secret)) {
+            if(decrypt($request->session()->get('vendor_secret')) == decrypt($auth_secret->secret)) {
                 $auth = true ;
             }else {
                 $request->session()->forget('vendor_secret');
@@ -148,8 +157,8 @@ class VendorController extends Controller
         }else {
             $auth = false;
         }
-        $vendor_id = auth()->guard('vendor')->user()->vendor_id ;
-        $vendor = Vendors::where(['id' => $vendor_id])->first();
+
+        $vendor = Vendors::where(['user_id' => auth()->guard('vendor')->user()->id])->first();
 
         $data = array(
             'vendor' => $vendor,
@@ -160,8 +169,9 @@ class VendorController extends Controller
     }
 
     public function authenticateAdmin(Request $request) {
-        $vendor_id = auth()->guard('vendor')->user()->vendor_id ;
-        $secret = auth()->guard('vendor')->user()->secret ;
+        $auth = Vendor_auth::where(['user_id' => auth()->guard('vendor')->user()->id])->first();
+
+        $secret = $auth->secret ;
 
         if ($request->secret == decrypt($secret)) {
             $request->session()->put('vendor_secret',encrypt($request->secret));
@@ -174,7 +184,7 @@ class VendorController extends Controller
     }
 
     public function authenticateAdminLogout(Request $request) {
-        $vendor_id = auth()->guard('vendor')->user()->vendor_id ;
+
 
         $request->session()->forget('vendor_secret');
         return redirect()->back();

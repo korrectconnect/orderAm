@@ -94,7 +94,7 @@ return [
 
         'vendor' => [
             'driver' => 'eloquent',
-            'model' => App\Vendor_auth::class,
+            'model' => App\User::class,
         ],
 
         'rider' => [

@@ -9,10 +9,22 @@ class AdminModel extends Model
 {
     //
     public static function addVendor($request, $image, $cover) {
+        $addUser = User::insert([
+            'email' => $request->email,
+            'username' => $request->username,
+            'password' => bcrypt($request->username),
+            'role' => 'vendor',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $get = User::where(['username' => $request->username]) ;
+
         $insert = DB::table('vendors')->insert(
             [
                 'name' => $request->name,
                 'email' => $request->email,
+                'user_id' => $get->first()->id,
                 'description' => $request->description,
                 'contact' => $request->contact,
                 'address' => $request->address,
@@ -36,6 +48,14 @@ class AdminModel extends Model
         );
 
         if ($insert) {
+            $str_result = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+            $secret = substr(str_shuffle($str_result), 0, 8);
+
+            $query = Vendor_auth::insert([
+                'user_id' => $get->first()->id,
+                'secret' => encrypt($secret),
+            ]);
+
             return true ;
         }else {
             return false ;

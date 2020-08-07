@@ -9,7 +9,7 @@
 				<div class="container">
 
 					<ol class="breadcrumb-list booking-step">
-						<li><a href="index.html">Home</a></li>
+						<li><a href="{{route('user.home')}}">Home</a></li>
                         <li><span>Order</span></li>
                         <li><span> &nbsp; / &nbsp; Cart</span></li>
 					</ol>
@@ -233,7 +233,7 @@
 									<!-- Your Order Ends -->
 									<div id="ad-wrapper">
 
-										<img class="img-responsive" src="{{asset('images/add-banner/add-banner.png')}}" alt="">
+										{{-- <img class="img-responsive" src="{{asset('images/add-banner/add-banner.png')}}" alt=""> --}}
 
 									</div>
 								</div>

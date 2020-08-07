@@ -49,9 +49,4 @@ class User extends Authenticatable
         'deleted_at'
     ];
 
-    public function rider()
-    {
-        return $this->hasOne(Rider::class);
-    }
-
 }

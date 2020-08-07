@@ -1,8 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiController;
+use Illuminate\Http\Request;
 //use Illuminate\Routing\Route;
 
 /*
@@ -19,6 +18,7 @@ use App\Http\Controllers\ApiController;
 Route::post('/register', 'Api\authController@register');
 Route::post('/login', 'Api\authController@login');
 Route::post('/rider/login', 'Api\authController@loginRider');
+Route::post('/vendor/login', 'Api\authController@loginVendor');
 
 
 Route::group(['middleware' => ['auth:api']], function() {
@@ -62,14 +62,32 @@ Route::group(['middleware' => ['auth:api']], function() {
     Route::get('/rate/vendor/{id}', 'ApiController@checkVendorRating'); // id(vendor_id)
     Route::get('/order/running', 'ApiController@runningOrder');
     Route::get('/order/completed', 'ApiController@completedOrder');
-    
-    Route::get('/order/distance/{order_id}', 'ApiController@getDistance');
-    Route::get('/rider/distance/{order_id}', 'ApiController@getDistanceRider');
-    Route::get('/messages/{admin_rider_id}', 'MessagesController@privateMessages');
-    Route::post('/messages/{admin_rider_id}', 'MessagesController@sendMessage');
-    Route::get('/rider/profile', 'RidersController@getRiderProfile');
-    Route::get('/rider/client-info/{order_id}', 'RidersController@getClientInfo');
-    Route::get('/rider/order-info/{order_id}', 'RidersController@getOrderInfo');
-    Route::get('/rider/current-location', 'RidersController@getRidersLocation');
+
+
+
+
+    Route::post('/vendor/auth/menu', 'Api\VendorController@addMenu');
+    Route::post('/vendor/auth/menu/edit', 'Api\VendorController@editMenu');
+    Route::delete('/vendor/auth/menu/{id}', 'Api\VendorController@deleteMenu');
+    Route::get('/vendor/auth/menu', 'Api\VendorController@getMenu');
+    Route::get('/vendor/auth/menu/unsorted', 'Api\VendorController@getUnsortedMenu');
+    Route::get('/vendor/auth/menu/c/{category}', 'Api\VendorController@getMenuByCategory');
+
+    Route::post('/vendor/auth/menu/category', 'Api\VendorController@addMenuCategory');
+    Route::post('/vendor/auth/menu/category/edit', 'Api\VendorController@editMenuCategory');
+    Route::delete('/vendor/auth/menu/category/{id}', 'Api\VendorController@deleteMenuCategory');
+    Route::get('/vendor/auth/menu/category', 'Api\VendorController@getMenuCategory');
+
+    Route::get('/vendor/auth/order/{id}', 'Api\VendorController@getOrder');
+    Route::get('/vendor/auth/orders', 'Api\VendorController@getOrders');
+    Route::get('/vendor/auth/orders/incoming', 'Api\VendorController@getIncomingOrders');
+    Route::get('/vendor/auth/orders/pending', 'Api\VendorController@getPendingOrders');
+    Route::get('/vendor/auth/orders/delivered', 'Api\VendorController@getDeliveredOrders');
+    Route::get('/vendor/auth/orders/cancelled', 'Api\VendorController@getCancelledOrders');
+
+    Route::get('/vendor/auth/orders/confirm/{id}', 'Api\VendorController@confirmOrders');
+    Route::get('/vendor/auth/orders/decline/{id}', 'Api\VendorController@declineOrders');
+
+    Route::post('/vendor/auth/password', 'Api\VendorController@changePassword');
 
 });

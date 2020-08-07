@@ -281,7 +281,7 @@
                     <!-- start add wrapper -->
                     <div id="ad-wrapper">
 
-                        <img class="img-responsive" src="{{asset('images/add-banner/add-banner.png')}}" alt="">
+                        {{-- <img class="img-responsive" src="{{asset('images/add-banner/add-banner.png')}}" alt=""> --}}
 
                     </div>
                     <!-- end add wrapper -->
@@ -297,25 +297,7 @@
     <!--end order-online-->
     <!-- Content End -->
 
-    <!-- start mobile footer nav -->
-    <nav class="navbar navbar-default navbar-fixed-bottom visible-xs visible-sm mobile-cart-nav">
-        <div class="mobile-cart-inner-content">
-            <div class="row">
-                <div class="col-md-4 col-xs-4">
-                    <div class="mobile-cart-item">
-                        <a id="mobileCartToggle" href="#"><i class="fa fa-shopping-basket"></i><span id="cart-item"> 10</span></a>
-                    </div>
-                </div>
-                <div class="col-md-4 col-xs-4">
-                    <div class="mobile-total-amount">Total: &pound;<span id="total-cart-amount">50</span></div>
-                </div>
-                <div class="col-md-4 col-xs-4">
-                    <a href="#" class="btn mobile-btn-checkout">Checkout</a>
-                </div>
-            </div>
-        </div>
-    </nav>
-    <!-- end mobile footer nav -->
+
 
 </div>
 

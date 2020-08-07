@@ -10,6 +10,7 @@ use App\Order;
 use App\Order_item;
 use App\User;
 use App\Vendor_auth;
+use App\Vendor_transaction;
 use App\Vendors;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -21,11 +22,11 @@ class VendorAjaxController extends Controller
     //
     public function orders($status, $cancelled, Request $request) {
         if ($request->ajax()) {
-            $vendor_id = auth()->guard('vendor')->user()->vendor_id ;
+            $vendor = Vendors::where(['user_id' => auth()->guard('vendor')->user()->id])->first();
             if ($cancelled == 1) {
-                $query = Order::where(['vendor_id' => $vendor_id, 'cancelled' => 1])->get();
+                $query = Order::where(['vendor_id' => $vendor->id, 'cancelled' => 1])->get();
             } else {
-                $query = Order::where(['vendor_id' => $vendor_id, 'cancelled' => 0, 'status' => $status])->get();
+                $query = Order::where(['vendor_id' => $vendor->id, 'cancelled' => 0, 'status' => $status])->get();
             }
 
             $data = array(
@@ -44,7 +45,7 @@ class VendorAjaxController extends Controller
             $order = Order::where(['order_no' => $order_no])->first();
 
                 if ($order != NULL) {
-                    $vendor = Vendors::findOrFail(auth()->guard('vendor')->user()->vendor_id );
+                    $vendor = Vendors::where(['user_id' => auth()->guard('vendor')->user()->id])->first();
                     $address = Address::findOrFail($order->address);
                     $order_items = Order_item::where(['order_no' => $order_no])->get();
                     $user = User::where(['id' => $order->user_id])->first();
@@ -70,9 +71,9 @@ class VendorAjaxController extends Controller
 
     public function confirmOrder($order_no, Request $request) {
         if ($request->ajax()) {
-            $vendor_id = auth()->guard('vendor')->user()->vendor_id ;
+            $vendor = Vendors::where(['user_id' => auth()->guard('vendor')->user()->id])->first();
 
-            $order = Order::where(['order_no' => $order_no, 'vendor_id' => $vendor_id]);
+            $order = Order::where(['order_no' => $order_no, 'vendor_id' => $vendor->id]);
             if ($order->first() != NULL) {
                 $update = $order->update([
                     'cancelled' => 0,
@@ -90,9 +91,9 @@ class VendorAjaxController extends Controller
 
     public function declineOrder($order_no, Request $request) {
         if ($request->ajax()) {
-            $vendor_id = auth()->guard('vendor')->user()->vendor_id ;
+            $vendor = Vendors::where(['user_id' => auth()->guard('vendor')->user()->id])->first();
 
-            $order = Order::where(['order_no' => $order_no, 'vendor_id' => $vendor_id]);
+            $order = Order::where(['order_no' => $order_no, 'vendor_id' => $vendor->id]);
             if ($order->first() != NULL) {
                 $update = $order->update([
                     'cancelled' => 1,
@@ -100,7 +101,7 @@ class VendorAjaxController extends Controller
                 ]);
 
                 if ($update) {
-                    return response()->json(['errors' => NULL, 'message' => 'Order has been confirmed. Pending delivery']);
+                    return response()->json(['errors' => NULL, 'message' => 'Order has been declined']);
                 }else {
                     return response()->json(['errors' => ['Could not confirm, try again']]);
                 }
@@ -110,13 +111,14 @@ class VendorAjaxController extends Controller
 
     public function getMenuList($category, Request $request) {
         if($request->ajax()) {
-            if ($category == 'NULL') {
+            if ($category == 'NULL' || $category == 'null') {
                 $category = NULL ;
             }
-            $vendor_id = auth()->guard('vendor')->user()->vendor_id ;
-            $menus = Menus::where(['vendor_id' => $vendor_id, 'category' => $category])->orderBy('id', 'desc')->get() ;
+            $vendor = Vendors::where(['user_id' => auth()->guard('vendor')->user()->id])->first();
+            $auth_secret = Vendor_auth::where(['user_id' => auth()->guard('vendor')->user()->id])->first();
+            $menus = Menus::where(['vendor_id' => $vendor->id, 'category' => $category])->orderBy('id', 'desc')->get() ;
             if($request->session()->has('vendor_secret')) {
-                if(decrypt($request->session()->get('vendor_secret')) == decrypt(auth()->guard('vendor')->user()->secret)) {
+                if(decrypt($request->session()->get('vendor_secret')) == decrypt($auth_secret->secret)) {
                     $auth = true ;
                 }else {
                     $request->session()->forget('vendor_secret');
@@ -128,7 +130,7 @@ class VendorAjaxController extends Controller
 
             $data = array(
                 'menus' => $menus,
-                'vendor_id' => $vendor_id,
+                'vendor_id' => $vendor->id,
                 'auth' => $auth,
             );
 
@@ -138,8 +140,8 @@ class VendorAjaxController extends Controller
 
     public function menuForm(Request $request) {
         if($request->ajax()) {
-            $vendor_id = auth()->guard('vendor')->user()->vendor_id ;
-            $menu_categories = Menu_category::where(['vendor_id' => $vendor_id])->get() ;
+            $vendor = Vendors::where(['user_id' => auth()->guard('vendor')->user()->id])->first();
+            $menu_categories = Menu_category::where(['vendor_id' => $vendor->id])->get() ;
 
             $data = array(
                 'menu_categories' => $menu_categories,
@@ -151,7 +153,7 @@ class VendorAjaxController extends Controller
 
     public function changePassword(Request $request) {
         if($request->ajax()) {
-            $vendor_id = auth()->guard('vendor')->user()->vendor_id ;
+            $vendor = Vendors::where(['user_id' => auth()->guard('vendor')->user()->id])->first();
 
             if (!(Hash::check($request->old, auth()->guard('vendor')->user()->password))) {
                 return response()->json(['errors'=>['Old Password is incorrect']]);
@@ -167,7 +169,7 @@ class VendorAjaxController extends Controller
                     if ($validatedData->fails()) {
                         return response()->json(['errors'=>$validatedData->errors()->all()]);
                     }else {
-                        $query = Vendor_auth::where(['vendor_id' => $vendor_id])->update([
+                        $query = Vendor_auth::where(['vendor_id' => $vendor->id])->update([
                             'password' => bcrypt($request->password),
                         ]);
 
@@ -186,7 +188,7 @@ class VendorAjaxController extends Controller
 
     public function addMenu(Request $request) {
         if($request->ajax()) {
-            $vendor_id = auth()->guard('vendor')->user()->vendor_id ;
+            $vendor = Vendors::where(['user_id' => auth()->guard('vendor')->user()->id])->first();
             $validatedData = Validator::make($request->all(), [
                 'name' => 'max:55|required',
                 'cover' => 'required|image|max:1999',
@@ -202,14 +204,14 @@ class VendorAjaxController extends Controller
                 if ($request->hasFile('cover')) {
 
                     $extension = $request->file('cover')->getClientOriginalExtension();
-                    $filename = $request->name.'_'.$vendor_id.'_'.time().'.'.$extension ;
+                    $filename = $request->name.'_'.$vendor->id.'_'.time().'.'.$extension ;
                     $path = $request->file('cover')->storeAs('public/menu', $filename) ;
 
-                    $category = Menu_category::where(['vendor_id' => $vendor_id, 'category' => $request->category])->first();
+                    $category = Menu_category::where(['vendor_id' => $vendor->id, 'category' => $request->category])->first();
 
                     if($path) {
                         $query = Menus::insert([
-                            'vendor_id' => $vendor_id,
+                            'vendor_id' => $vendor->id,
                             'menu' => $request->name,
                             'description' => $request->description,
                             'category' => $request->category,
@@ -238,7 +240,7 @@ class VendorAjaxController extends Controller
 
     public function menuCategoryForm(Request $request) {
         if($request->ajax()) {
-            $vendor_id = auth()->guard('vendor')->user()->vendor_id ;
+            $vendor = Vendors::where(['user_id' => auth()->guard('vendor')->user()->id])->first();
 
             return view('vendor.pages.ajax.add_category_form');
         }
@@ -246,7 +248,7 @@ class VendorAjaxController extends Controller
 
     public function addMenuCategory(Request $request) {
         if($request->ajax()) {
-            $vendor_id = auth()->guard('vendor')->user()->vendor_id ;
+            $vendor = Vendors::where(['user_id' => auth()->guard('vendor')->user()->id])->first();
             $validatedData = Validator::make($request->all(), [
                 'category' => 'max:20|required',
             ]);
@@ -256,11 +258,11 @@ class VendorAjaxController extends Controller
                 return response()->json(['errors'=>$validatedData->errors()->all()]);
             }else {
 
-                $get = Menu_category::where(['vendor_id' => $vendor_id, 'category' => $request->category])->first() ;
+                $get = Menu_category::where(['vendor_id' => $vendor->id, 'category' => $request->category])->first() ;
 
                 if ($get == NULL) {
                     $query = Menu_category::insert([
-                        'vendor_id' => $vendor_id,
+                        'vendor_id' => $vendor->id,
                         'category' => $request->category,
                         'created_at' => now(),
                         'updated_at' => now(),
@@ -279,8 +281,8 @@ class VendorAjaxController extends Controller
 
     public function editMenuCategoryForm($id, Request $request) {
         if ($request->ajax()) {
-            $vendor_id = auth()->guard('vendor')->user()->vendor_id ;
-            $category = Menu_category::where(['vendor_id' => $vendor_id, 'id' => $id ])->first();
+            $vendor = Vendors::where(['user_id' => auth()->guard('vendor')->user()->id])->first();
+            $category = Menu_category::where(['vendor_id' => $vendor->id, 'id' => $id ])->first();
 
             $data = array(
                 'category' => $category,
@@ -292,7 +294,7 @@ class VendorAjaxController extends Controller
 
     public function editMenuCategory(Request $request) {
         if($request->ajax()) {
-            $vendor_id = auth()->guard('vendor')->user()->vendor_id ;
+            $vendor = Vendors::where(['user_id' => auth()->guard('vendor')->user()->id])->first();
             $validatedData = Validator::make($request->all(), [
                 'category' => 'max:20|required',
             ]);
@@ -302,7 +304,7 @@ class VendorAjaxController extends Controller
                 return response()->json(['errors'=>$validatedData->errors()->all()]);
             }else {
 
-                $get = Menu_category::where(['vendor_id' => $vendor_id, 'category' => $request->category])->first() ;
+                $get = Menu_category::where(['vendor_id' => $vendor->id, 'category' => $request->category])->first() ;
 
                 if ($get == NULL) {
                     $query = Menu_category::where(['id' => $request->id])->update([
@@ -323,14 +325,14 @@ class VendorAjaxController extends Controller
 
     public function deleteMenuCategory($id, Request $request) {
         if ($request->ajax()) {
-            $vendor_id = auth()->guard('vendor')->user()->vendor_id ;
-            $category = Menu_category::where(['id' => $id, 'vendor_id' => $vendor_id]);
+            $vendor = Vendors::where(['user_id' => auth()->guard('vendor')->user()->id])->first();
+            $category = Menu_category::where(['id' => $id, 'vendor_id' => $vendor->id]);
             if ($category->first() != NULL) {
 
                 $name = $category->first()->category ;
                 $delete = $category->delete();
                 if ($delete) {
-                    $menu = Menus::where(['vendor_id' => $vendor_id, 'category' => $name]);
+                    $menu = Menus::where(['vendor_id' => $vendor->id, 'category' => $name]);
                     $countMenu = $menu->count();
                     $menu->update([
                         'category' => NULL,
@@ -350,11 +352,11 @@ class VendorAjaxController extends Controller
 
     public function toggleMenuStock($id, Request $request) {
         if ($request->ajax()) {
-            $vendor_id = auth()->guard('vendor')->user()->vendor_id ;
+            $vendor = Vendors::where(['user_id' => auth()->guard('vendor')->user()->id])->first();
 
-            $get = Menus::where(['id' => $id, 'vendor_id' => $vendor_id]);
+            $get = Menus::where(['id' => $id, 'vendor_id' => $vendor->id]);
             if ($get->first() != NULL) {
-                $category = Menu_category::where(['vendor_id' => $vendor_id, 'category' => $get->first()->category])->first();
+                $category = Menu_category::where(['vendor_id' => $vendor->id, 'category' => $get->first()->category])->first();
 
                 $getStock = $get->first()->stock ;
                 if ($getStock == 0) {
@@ -379,10 +381,10 @@ class VendorAjaxController extends Controller
 
     public function editMenuForm($id, Request $request) {
         if ($request->ajax()) {
-            $vendor_id = auth()->guard('vendor')->user()->vendor_id ;
+            $vendor = Vendors::where(['user_id' => auth()->guard('vendor')->user()->id])->first();
 
-            $menu = Menus::where(['vendor_id' => $vendor_id, 'id' => $id ])->first();
-            $category = Menu_category::where(['vendor_id' => $vendor_id])->get();
+            $menu = Menus::where(['vendor_id' => $vendor->id, 'id' => $id ])->first();
+            $category = Menu_category::where(['vendor_id' => $vendor->id])->get();
 
             $data = array(
                 'menu' => $menu,
@@ -395,7 +397,7 @@ class VendorAjaxController extends Controller
 
     public function editMenu(Request $request) {
         if ($request->ajax()) {
-            $vendor_id = auth()->guard('vendor')->user()->vendor_id ;
+            $vendor = Vendors::where(['user_id' => auth()->guard('vendor')->user()->id])->first();
             $validatedData = Validator::make($request->all(), [
                 'name' => 'max:55|required',
                 'cover' => 'image|max:1999',
@@ -408,15 +410,15 @@ class VendorAjaxController extends Controller
             {
                 return response()->json(['errors'=>$validatedData->errors()->all()]);
             }else {
-                $category = Menu_category::where(['vendor_id' => $vendor_id, 'category' => $request->category])->first();
+                $category = Menu_category::where(['vendor_id' => $vendor->id, 'category' => $request->category])->first();
                 if ($request->hasFile('cover')) {
 
                     $extension = $request->file('cover')->getClientOriginalExtension();
-                    $filename = $request->name.'_'.$vendor_id.'_'.time().'.'.$extension ;
+                    $filename = $request->name.'_'.$vendor->id.'_'.time().'.'.$extension ;
                     $path = $request->file('cover')->storeAs('public/menu', $filename) ;
 
                     if($path) {
-                        $query = Menus::where(['vendor_id' => $vendor_id, 'id' => $request->id])->update([
+                        $query = Menus::where(['vendor_id' => $vendor->id, 'id' => $request->id])->update([
                             'menu' => $request->name,
                             'description' => $request->description,
                             'category' => $request->category,
@@ -432,7 +434,7 @@ class VendorAjaxController extends Controller
 
                 }else {
 
-                    $query = Menus::where(['vendor_id' => $vendor_id, 'id' => $request->id])->update([
+                    $query = Menus::where(['vendor_id' => $vendor->id, 'id' => $request->id])->update([
                         'menu' => $request->name,
                         'description' => $request->description,
                         'category' => $request->category,
@@ -453,9 +455,9 @@ class VendorAjaxController extends Controller
 
     public function deleteMenu($id, Request $request) {
         if ($request->ajax()) {
-            $vendor_id = auth()->guard('vendor')->user()->vendor_id ;
+            $vendor = Vendors::where(['user_id' => auth()->guard('vendor')->user()->id])->first();
 
-            $delete = Menus::where(['vendor_id' => $vendor_id, 'id' => $id])->delete();
+            $delete = Menus::where(['vendor_id' => $vendor->id, 'id' => $id])->delete();
             if ($delete) {
                 return response()->json(['errors'=>null, 'message'=>'Menu deleted Successfully']);
             }
@@ -465,9 +467,9 @@ class VendorAjaxController extends Controller
 
     public function transactionToday(Request $request) {
         if ($request->ajax()) {
-            $vendor_id = auth()->guard('vendor')->user()->vendor_id ;
+            $vendor = Vendors::where(['user_id' => auth()->guard('vendor')->user()->id])->first();
 
-            $orders = Order::where(['vendor_id' => $vendor_id, 'cancelled' => 0, 'status' => 2])
+            $orders = Order::where(['vendor_id' => $vendor->id, 'cancelled' => 0, 'status' => 2])
                                 ->whereDate('updated_at', Carbon::today())->get();
             if ($orders->count() >= 1) {
                 $t = 0 ;
@@ -497,7 +499,7 @@ class VendorAjaxController extends Controller
 
     public function transactionFilter(Request $request) {
         if ($request->ajax()) {
-            $vendor_id = auth()->guard('vendor')->user()->vendor_id ;
+            $vendor = Vendors::where(['user_id' => auth()->guard('vendor')->user()->id])->first();
 
             return view('vendor.pages.ajax.filter');
         }
@@ -505,14 +507,14 @@ class VendorAjaxController extends Controller
 
     public function transactionFiltered(Request $request) {
         if ($request->ajax()) {
-            $vendor_id = auth()->guard('vendor')->user()->vendor_id ;
+            $vendor = Vendors::where(['user_id' => auth()->guard('vendor')->user()->id])->first();
 
             if ($request->start == NULL || $request->end == NULL) {
                 return response()->json(['errors' => ['At least one filled was left undefined']]);
             }else {
                 $end = Carbon::createFromFormat('Y-m-d', $request->end);
 
-                $orders = Order::where(['vendor_id' => $vendor_id, 'cancelled' => 0, 'status' => 2])->whereBetween('updated_at', [$request->start, $end])->get();
+                $orders = Order::where(['vendor_id' => $vendor->id, 'cancelled' => 0, 'status' => 2])->whereBetween('updated_at', [$request->start, $end])->get();
                 if ($orders->count() >= 1) {
                     $t = 0 ;
                     $c = 0 ;
@@ -538,6 +540,18 @@ class VendorAjaxController extends Controller
 
                 return view('vendor.pages.ajax.filtered')->with($data);
             }
+        }
+    }
+
+    public function transactionFunding(Request $request) {
+        if ($request->ajax()) {
+            $vendor = Vendors::where(['user_id' => auth()->guard('vendor')->user()->id])->first();
+
+            $funds = Vendor_transaction::where(['vendor_id' => $vendor->id])->get();
+            $data = array(
+                'funds' => $funds,
+            );
+            return view('vendor.pages.ajax.transaction_funding')->with($data);
         }
     }
 }

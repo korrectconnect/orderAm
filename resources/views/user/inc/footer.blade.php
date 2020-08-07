@@ -35,7 +35,7 @@
                                 <ul class="column">
                                     @if ($lgas->count() >= 1)
                                         @foreach ($lgas as $lga)
-                                            <li><a href="#">Food delivery {{$lga->name}}</a></li>
+                                            <li><a href="{{env('APP_URL')}}/search/vendors/?area={{$lga->name}}">Food delivery {{$lga->name}}</a></li>
                                         @endforeach
                                     @endif
                                 </ul>
@@ -74,7 +74,7 @@
                                 <ul class="column">
                                     @if ($states->count() >= 1)
                                         @foreach ($states as $state)
-                                            <li><a href="#">Food delivery {{$state->name}}</a></li>
+                                            <li><a href="{{env('APP_URL')}}/search/vendors/?city={{$state->name}}">Food delivery {{$state->name}}</a></li>
                                         @endforeach
                                     @endif
                                 </ul>

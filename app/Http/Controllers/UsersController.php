@@ -332,7 +332,7 @@ class UsersController extends Controller
             $order->total = $total;
             $order->tax = $vendor->tax;
             $order->balance = 0;
-            $order->Commission = $vendorC->Commission;
+            $order->commission = $vendorC->commission;
             $order->status = 0;
             $order->cancelled = 0;
 
@@ -486,6 +486,76 @@ class UsersController extends Controller
         }else {
             return redirect()->route('user.home');
         }
+    }
+
+    public function searchVendors() {
+
+        if (isset($_GET['key'])) {
+            $key = $_GET['key'];
+        }else {
+            $key = "" ;
+        }
+
+        if (isset($_GET['city'])) {
+            $city = $_GET['city'];
+        }else {
+            $city = "" ;
+        }
+
+        if (isset($_GET['area'])) {
+            $area = $_GET['area'];
+        }else {
+            $area = "" ;
+        }
+
+        if (($city != "") && ($key != "")) {
+            $result = true ;
+            $vendors = Vendors::leftJoin('menus', 'menus.vendor_id', '=', 'vendors.id')
+                            ->select('vendors.*',DB::raw('min(menus.price) as price'))
+                            ->where([['vendors.name','LIKE',"%$key%"], ['vendors.state','=',$city]])
+                            ->groupBy('vendors.id')
+                            ->get();
+        }else if (($city != "") && ($key == "") && ($area == "")) {
+            $result = true ;
+            $vendors = Vendors::leftJoin('menus', 'menus.vendor_id', '=', 'vendors.id')
+                        ->select('vendors.*',DB::raw('min(menus.price) as price'))
+                        ->where([['vendors.state','=',$city]])
+                        ->groupBy('vendors.id')
+                        ->get();
+        }else if (($area != "") && ($key == "") && ($city == "")) {
+            $result = true ;
+            $vendors = Vendors::leftJoin('menus', 'menus.vendor_id', '=', 'vendors.id')
+                        ->select('vendors.*',DB::raw('min(menus.price) as price'))
+                        ->where([['vendors.lga','=',$area]])
+                        ->groupBy('vendors.id')
+                        ->get();
+        }else if (($key != "") && ($area == "") && ($city == "")) {
+            $result = true ;
+            $vendors = Vendors::leftJoin('menus', 'menus.vendor_id', '=', 'vendors.id')
+                        ->select('vendors.*',DB::raw('min(menus.price) as price'))
+                        ->where([['vendors.name','LIKE',"%$key%"]])
+                        ->groupBy('vendors.id')
+                        ->get();
+        }else {
+            $result = false ;
+            $vendors = null ;
+        }
+
+
+        $states = Location::where('type','=','State')->get() ;
+        $lgas = Location::where('type','=','lga')->limit(5)->get() ;
+        $categories = Vendor_category::all();
+
+        $data = array(
+            'states' => $states,
+            'lgas' => $lgas,
+            'categories' => $categories,
+            'vendors' => $vendors,
+            'key' => $key,
+            'city' => $city,
+            'result' => $result,
+        );
+        return view('user.pages.vendors_search')->with($data);
     }
 
 }

@@ -8,7 +8,7 @@
     <div class="container">
 
         <ol class="breadcrumb-list booking-step">
-            <li><a href="index.html">Home</a></li>
+            <li><a href="{{route('user.home')}}">Home</a></li>
             <li><span>Order Success</span></li>
         </ol>
 

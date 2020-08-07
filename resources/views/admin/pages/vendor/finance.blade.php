@@ -5,7 +5,12 @@
 <div class="container">
     <div class="col-md-12">
         <div class="alert alert-secondary">
-            <h3>{{$vendor->name}}</h3>
+            <div>
+                <div style="display:inline-block; float:left; font-weight:bold; font-size:20px;">{{$vendor->name}}</div>
+                <div style="display:inline-block; float:right; ">
+                    Balance : <span style="font-size:20px;">&#8358;{{$auth->account}}</span>
+                </div>
+            </div><br><br>
             <div class="orderMenuBtn" data-href="{{route('admin.vendor.transaction.today', ['vendor_id' => $vendor->id])}}" >
                 <i class="fa fa-clock"></i> Today's Transaction
             </div>

@@ -206,6 +206,39 @@ $('#vendorCategoryForm').submit(function(e) {
     });
 });
 
+$('#addVendorFund').submit(function(e) {
+    e.preventDefault();
+    $("#addVendorFundBtn").prop("disabled", true);
+    var href = $(this).data('href');
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    $.ajax({
+        url: href,
+        type: "POST",
+        data: new FormData(this),
+        contentType: false,       // The content type used when sending data to the server.
+        cache: false,             // To unable request pages to be cached
+        processData:false,
+        success: function(e) {
+            if(e.errors != null) {
+                for(i in e.errors) {
+                    toastr.error(e.errors[i], "Error", {timeOut: 5000});
+                }
+                $("#addVendorFundBtn").prop("disabled", false);
+
+            }else {
+                toastr.success(e.message, "Success", {timeOut: 5000});
+                window.location.reload();
+            }
+        }
+    });
+});
+
 $(".vendor-category-upload-image").click(function() {
     $("#vendor-category-file").click();
     $('.vendor-category-upload-image').css("background-image","url('')");
@@ -830,6 +863,34 @@ $(document).on('submit', '#editVendorForm', function(e) {
 $(document).on('click', '#confirmOrderBtn', function() {
     $("#adminModalBody").html("<center><br><i class='fa fa-spin fa-circle-notch fa-2x'></i></center><br>");
     $("#adminModalTitle").html("Assign rider to order no. " + $(this).data('order'));
+    $('#adminModal').modal('show');
+    var href = $(this).data("href");
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    $.ajax({
+        url: href,
+        type: "get",
+        success: function(e) {
+            if(e.errors != null) {
+                for(i in e.errors) {
+                    toastr.error(e.errors[i], "Error", {timeOut: 3000});
+                    $('#adminModal').modal('hide');
+                }
+            }else {
+                $("#adminModalBody").html(e);
+            }
+        }
+    });
+});
+
+$(document).on('click', '#vendorFundHistoryBtn', function() {
+    $("#adminModalBody").html("<center><br><i class='fa fa-spin fa-circle-notch fa-2x'></i></center><br>");
+    $("#adminModalTitle").html("Funding History");
     $('#adminModal').modal('show');
     var href = $(this).data("href");
 

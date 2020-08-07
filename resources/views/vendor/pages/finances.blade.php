@@ -27,12 +27,26 @@
                                         <div class="orderMenuBtn" data-href="{{route('vendor.transaction.filter')}}" >
                                             <i class="fa fa-filter"></i> Filter
                                         </div>
+                                        <div class="orderMenuBtn" data-href="{{route('vendor.transaction.funding')}}" >
+                                            <i class="fa fa-clock"></i> Funding
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="card shadow-sm orderListDiv">
-                                <center><i class='fa fa-spin fa-circle-notch fa-2x'></i></center>
+                            <div class="card shadow-sm">
+                                    <div style="padding-right: 20px; color:#333; padding-top: 10px; margin-bottom: -15px; text-align:right;">
+                                        Balance:
+                                        @if ($account < 0)
+                                            <span class="text-danger" style="font-size: 30px;">&#8358;{{$account}}</span>
+                                        @else
+                                            <span class="text-success" style="font-size: 30px;">&#8358;{{$account}}</span>
+                                        @endif
+                                    </div>
+
+                                <div class="orderListDiv">
+                                    <center><i class='fa fa-spin fa-circle-notch fa-2x'></i></center>
+                                </div>
                             </div><br>
 
                         </div>

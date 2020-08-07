@@ -17,8 +17,12 @@
         </div>
         <div class="form-group">
           <label for="email">Email</label>
-          <input name="email" class="form-control" id="email" type="text" placeholder="Eg a@b.com">
+          <input name="email" class="form-control" id="email" type="email" placeholder="Eg a@b.com">
         </div>
+        <div class="form-group">
+            <label for="username">username</label>
+            <input name="username" class="form-control" id="username" type="text" placeholder="">
+          </div>
         <div class="form-group">
             <label for="description">Short description</label>
             <input name="description" class="form-control" id="description" type="text" placeholder="Eg, Freshly baked ,African dishes, Local recipy etc">

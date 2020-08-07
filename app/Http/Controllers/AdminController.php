@@ -9,8 +9,10 @@ use App\Order;
 use App\Rider;
 use App\Rider_category;
 use App\Slider;
+use App\User;
 use App\Vendor_auth;
 use App\Vendor_category;
+use App\Vendor_transaction;
 use App\Vendors;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -115,8 +117,9 @@ class AdminController extends Controller
     public function vendorFinance($id) {
 
         $vendor = Vendors::where(['id' => $id])->first();
+        $auth = Vendor_auth::where(['user_id' => $vendor->user_id])->first();
 
-        return view('admin.pages.vendor.finance')->with(['vendor' => $vendor]);
+        return view('admin.pages.vendor.finance')->with(['vendor' => $vendor, 'auth' => $auth]);
     }
 
     public function vendorAuth(Request $request) {
@@ -148,13 +151,15 @@ class AdminController extends Controller
         $vendor = AdminModel::getVendor($id);
         $menus = AdminModel::getMenus($id);
         $categories = AdminModel::getMenuCategory($id);
-        $auth = Vendor_auth::where(['vendor_id' => $id])->first();
+        $auth = Vendor_auth::where(['user_id' => $vendor->user_id])->first();
+        $user = User::where(['id' => $vendor->user_id])->first();
 
         $data = array(
             'vendor' => $vendor,
             'menus' => $menus,
             'categories' => $categories,
             'auth' => $auth,
+            'user' => $user,
         );
 
         return view('admin.pages.vendor.single')->with($data);
@@ -283,6 +288,19 @@ class AdminController extends Controller
         );
 
         return view('admin.pages.rider.view')->with($data);
+    }
+
+    public function vendorFunding() {
+        $funds = Vendor_transaction::join('vendors','vendors.id','vendor_transactions.vendor_id')
+                                    ->select('vendor_transactions.*', 'vendors.name')
+                                    ->orderBy('vendors.created_at')
+                                    ->get() ;
+
+        $data = array(
+            'funds' => $funds,
+        );
+
+        return view('admin.pages.vendor.funding')->with($data);
     }
 
     public function singleRider($id) {

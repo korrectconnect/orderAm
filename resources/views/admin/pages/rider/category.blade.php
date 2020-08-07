@@ -6,6 +6,7 @@
         <div class="row">
             <div class="col-md-6">
                 <form data-href="{{route('admin.rider.category')}}" method="POST" id="riderCategoryForm">
+                    @csrf
                     <div class="card">
                         <div class="card-header">
                             <strong>Add Riders Category</strong>

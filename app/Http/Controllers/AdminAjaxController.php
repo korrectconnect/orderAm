@@ -13,6 +13,7 @@ use App\Slider;
 use App\User;
 use App\Vendor_auth;
 use App\Vendor_category;
+use App\Vendor_transaction;
 use App\Vendors;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -33,7 +34,8 @@ class AdminAjaxController extends Controller
 
             $validatedData = Validator::make($request->all(), [
                 'name' => 'max:55|required',
-                'email' => 'email|required',
+                'email' => 'email|required|unique:users',
+                'username' => 'max:55|required|unique:users',
                 'description' => 'required',
                 'cover' => 'required|image|max:1999',
                 'vendor-image' => 'required|image|max:1999',
@@ -238,6 +240,41 @@ class AdminAjaxController extends Controller
         return view('admin.pages.ajax.add_menu_form')->with($data);
     }
 
+    public function fundVendor(Request $request) {
+        if($request->ajax()) {
+            $validatedData = Validator::make($request->all(), [
+                'amount' => 'required',
+                'description' => 'required',
+            ]);
+
+            if ($validatedData->fails())
+            {
+                return response()->json(['errors'=>$validatedData->errors()->all()]);
+            }else {
+                $query = Vendor_auth::where(['user_id' => $request->user_id]) ;
+                $amount = $query->first()->account + $request->amount;
+
+                $fund = $query->update([
+                    'account' => $amount,
+                ]);
+
+                $fund = Vendor_transaction::insert([
+                    'vendor_id' => $request->id,
+                    'amount' => $request->amount,
+                    'description' => $request->description,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                if ($fund) {
+
+                    return response()->json(['errors'=>null, 'message'=>'Account funded Successfully']);
+                }
+                return response()->json(['errors'=>['Error funding account']]);
+            }
+        }
+    }
+
     public function refreshMenus() {
         $menus = AdminModel::getAllMenus();
 
@@ -245,6 +282,23 @@ class AdminAjaxController extends Controller
             'menus' => $menus
         );
         return view('admin.pages.ajax.viewQuickMenus')->with($data);
+    }
+
+    public function fundVendorHistory($id) {
+        $vendor = AdminModel::getVendor($id);
+        $auth = Vendor_auth::where(['user_id' => $vendor->user_id])->first();
+        $funds = Vendor_transaction::join('vendors','vendors.id','vendor_transactions.vendor_id')
+                                    ->select('vendor_transactions.*', 'vendors.name')
+                                    ->where(['vendor_transactions.vendor_id' => $id])
+                                    ->orderBy('vendors.created_at')
+                                    ->get() ;
+
+        $data = array(
+            'auth' => $auth,
+            'funds' => $funds,
+        );
+
+        return view('admin.pages.ajax.vendor_fund_history')->with($data);
     }
 
     public function refreshMenu($id) {

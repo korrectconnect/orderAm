@@ -2,29 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use App\Cart;
-use App\User;
-use App\Menus;
-use App\Order;
-use App\Coupon;
 use App\Address;
-use App\Vendors;
+use App\Cart;
+use App\Coupon;
 use App\Customer;
-use App\Location;
-use Carbon\Carbon;
-use App\Order_item;
-use App\Rider_order;
-use App\Order_status;
-use App\Menu_category;
-use App\Vendor_rating;
-use App\Vendor_category;
 use App\Favourite_vendor;
-use App\Services\GoogleMaps;
 use Illuminate\Http\Request;
-use App\OrderLocationDetails;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\AppResource;
-use Stevebauman\Location\Facades\Location as CurrentLocation;
+use App\Location;
+use App\Vendors;
+use App\Menus;
+use App\User;
+use App\Menu_category;
+use App\Order;
+use App\Order_item;
+use App\Order_status;
+use App\Rider_order;
+use App\Vendor_category;
+use App\Vendor_rating;
+use Carbon\Carbon;
 
 class ApiController extends Controller
 {
@@ -45,7 +42,7 @@ class ApiController extends Controller
                     'image' => asset('storage/user/'.$filename),
                 ]);
             }else {
-                return response()->json(['status' => 400, 'message' => 'Could not upload image']);
+                return response()->json(['message' => 'Could not upload image'], 400);
             }
         }else {
             $edit = Customer::insert([
@@ -58,7 +55,7 @@ class ApiController extends Controller
         if($edit) {
             return new AppResource($user);
         }else {
-            return response()->json(['status' => 400, 'message' => 'Could not update profile']);
+            return response()->json(['message' => 'Could not update profile'], 400);
         }
     }
 
@@ -138,7 +135,7 @@ class ApiController extends Controller
         $vendor = Vendors::findOrFail($request->vendor_id);
         $vendorC = Vendor_category::where(['name' => $vendor->type])->first();
             if((date("H.i") < $vendor->opening) || (date("H.i") >= $vendor->closing)) {
-                return response()->json(['status' => 400, 'message'=>'Vendor is closed']);
+                return response()->json(['message'=>'Vendor is closed'], 400);
             }
             if($request->coupon == "") {
                 $coupon = NULL ;
@@ -195,7 +192,7 @@ class ApiController extends Controller
                     ]);
                 }
             }else {
-                return response()->json(['status' => 400, 'message'=>'Cart is empty']);
+                return response()->json(['message'=>'Cart is empty'], 400);
             }
 
             $getTotal = $vendor->delivery_charge + $vendor->tax + $vendor->vendor_charge + $order_total - $coupon_amount ;
@@ -223,20 +220,6 @@ class ApiController extends Controller
             $order->Commission = $vendorC->Commission;
             $order->status = 0;
             $order->cancelled = 0;
-            
-            $user_address = DB::table('address')->where('user_id', auth()->user()->id)->first();
-            $vendor = DB::table('vendors')->find($request->vendor_id);
-    
-            $vendor_coordinates = GoogleMaps::getAddress($vendor->address);
-            $user_coordinates = GoogleMaps::getAddress($user_address->address.' '.$user_address->lga.' '.$user_address->state);
-    
-            OrderLocationDetails::create([
-                'order_id' => $order->id,
-                'user_lat' => $user_coordinates['lat'],
-                'user_long' => $user_coordinates['long'],
-                'vendor_lat' => $vendor_coordinates['lat'],
-                'vendor_long' => $vendor_coordinates['long'],
-            ]);
 
             if($order->save()) {
                 Cart::where(['vendor_id' => $request->vendor_id])->delete();
@@ -246,7 +229,7 @@ class ApiController extends Controller
                 return new AppResource($order);
             }else {
                 Order_item::where(['order_no' => $order_no])->delete();
-                return response()->json(['status' => 400, 'message'=>'Could not place order']);
+                return response()->json(['message'=>'Could not place order'], 400);
             }
     }
 
@@ -255,7 +238,7 @@ class ApiController extends Controller
         if ($order->count() >= 1) {
             return AppResource::collection($order);
         } else {
-            return response()->json(['status' => 201, 'message'=>'Order list is empty']);
+            return response()->json(['message'=>'Order list is empty']);
         }
 
     }
@@ -265,7 +248,7 @@ class ApiController extends Controller
         if ($order->count() >= 1) {
             return AppResource::collection($order);
         } else {
-            return response()->json(['status' => 201, 'message'=>'Order list is empty']);
+            return response()->json(['message'=>'Order list is empty']);
         }
 
     }
@@ -275,7 +258,7 @@ class ApiController extends Controller
         if ($order->count() >= 1) {
             return AppResource::collection($order);
         } else {
-            return response()->json(['status' => 201, 'message'=>'Order list is empty']);
+            return response()->json(['message'=>'Order list is empty']);
         }
 
     }
@@ -288,10 +271,10 @@ class ApiController extends Controller
                  'user_id' => auth()->user()->id,
                  'vendor_id' => $request->vendor_id,
              ]);
-             return response()->json(['message' => 'Vendor has been added to favourites', 'status' => 200]);
+             return response()->json(['message' => 'Vendor has been added to favourites']);
         }else {
              $query = $fav->delete();
-             return response()->json(['message' => 'Vendor has been removed from favourites', 'status' => 200]);
+             return response()->json(['message' => 'Vendor has been removed from favourites']);
         }
     }
 
@@ -304,7 +287,7 @@ class ApiController extends Controller
         if ($fav->count() >= 1) {
             return AppResource::collection($fav);
         } else {
-            return response()->json(['status' => 201, 'message'=>'You have not added any vendor to favourites']);
+            return response()->json(['message'=>'You have not added any vendor to favourites']);
         }
 
     }
@@ -321,12 +304,12 @@ class ApiController extends Controller
             $rate->comment = $request->comment;
 
             if ($rate->save()) {
-                return response()->json(['status' => 200, 'message'=>'Thank you for your rating']);
+                return response()->json(['message'=>'Thank you for your rating'], 200);
             }else {
-                return response()->json(['status' => 400, 'message'=>'Could not rate vendor']);
+                return response()->json(['message'=>'Could not rate vendor'], 400);
             }
         }else {
-            return response()->json(['status' => 201, 'message'=>'You have already rated vendor on this order']);
+            return response()->json(['message'=>'You have already rated vendor on this order']);
         }
     }
 
@@ -351,9 +334,9 @@ class ApiController extends Controller
             }
 
             $vendor_rating = $r/$rating->count() ;
-            return response()->json(['status' => 200, 'rating' => $vendor_rating]);
+            return response()->json(['rating' => $vendor_rating], 200);
         } else {
-            return response()->json(['status' => 200, 'rating' => 0]);
+            return response()->json(['rating' => 0], 200);
         }
 
     }
@@ -391,7 +374,7 @@ class ApiController extends Controller
     public function editAddress(Request $request) {
         $get = Address::where(['user_id' => auth()->user()->id, 'id' => $request->address_id]);
         if($get->first() == NULL) {
-            return response()->json(['status' => 400, 'message'=>'Invalid Address']);
+            return response()->json(['message'=>'Invalid Address'], 400);
         }else {
             $edit = $get->update([
                 'address' => $request->address,
@@ -402,7 +385,7 @@ class ApiController extends Controller
             if($edit) {
                 return new AppResource($get->first());
             }else {
-                return response()->json(['status' => 400, 'message'=>'Error editing Address']);
+                return response()->json(['message'=>'Error editing Address'], 400);
             }
         }
     }
@@ -412,7 +395,7 @@ class ApiController extends Controller
         if ($get != NULL) {
             return new AppResource($get);
         }else {
-            return response()->json(['status' => 400, 'message'=>'Invalid Address']);
+            return response()->json(['message'=>'Invalid Address'], 400);
         }
     }
 
@@ -457,7 +440,7 @@ class ApiController extends Controller
         $getMenu = Menus::where(['id' => $request->menu_id])->first();
         $vendor = Vendors::findOrFail($getMenu->vendor_id);
         if((date("H.i") < $vendor->opening) || (date("H.i") >= $vendor->closing)) {
-            return response()->json(['status' => 400, 'message' => 'Vendor is closed']);
+            return response()->json(['message' => 'Vendor is closed'], 400);
         }
 
         if($get != null) {
@@ -524,7 +507,7 @@ class ApiController extends Controller
         $getCart = $cart->first();
         $vendor = Vendors::findOrFail($getCart->vendor_id);
         if((date("H.i") < $vendor->opening) || (date("H.i") >= $vendor->closing)) {
-            return response()->json(['status' => 400, 'message' => 'Vendor is closed']);
+            return response()->json(['message' => 'Vendor is closed'], 400);
         }
 
         if($getCart->quantity > 1) {
@@ -545,7 +528,7 @@ class ApiController extends Controller
         $getCart = $cart->first();
         $vendor = Vendors::findOrFail($getCart->vendor_id);
         if((date("H.i") < $vendor->opening) || (date("H.i") >= $vendor->closing)) {
-            return response()->json(['status' => 400, 'message' => 'Vendor is closed']);
+            return response()->json(['message' => 'Vendor is closed'], 400);
         }
 
         $update = $cart->update(['quantity' => $getCart->quantity + 1]) ;
@@ -562,23 +545,23 @@ class ApiController extends Controller
         $coupon = Coupon::where('code','=',$request->coupon)->whereDate('expire', '>=', $date)->first();
         if ($coupon != NULL) {
             if(($coupon->vendor_id != NULL) && ($coupon->vendor_id != $request->vendor_id)) {
-                return response()->json(['status' => 400, 'message'=>'Coupon does not apply to this vendor']);
+                return response()->json(['message'=>'Coupon does not apply to this vendor'], 400);
             }else {
                 $checkUser = Order::where(['user_id' => auth()->user()->id])->get();
                 if ($coupon->count == 0) {
                     if ($checkUser->count() >= 1) {
-                        return response()->json(['status' => 400, 'message'=>'Coupon only applies to first time users']);
+                        return response()->json(['message'=>'Coupon only applies to first time users'], 400);
                     }
                     return new AppResource($coupon);
                 } else {
                     if ($checkUser->count() >= $coupon->count) {
-                        return response()->json(['status' => 400, 'message'=>'Coupon max reached']);
+                        return response()->json(['message'=>'Coupon max reached'], 400);
                     }
                     return new AppResource($coupon);
                 }
             }
         }else {
-            return response()->json(['status' => 400, 'message'=>'Expired or invalid Coupon']);
+            return response()->json(['message'=>'Expired or invalid Coupon'], 400);
         }
     }
 
@@ -604,27 +587,6 @@ class ApiController extends Controller
         $query = Location::where('type','=','area')->get();
 
         return AppResource::collection($query);
-    }
-
-    public function getDistance($order_id)
-    {
-        $order_details = OrderLocationDetails::find($order_id);
-
-        $distance = GoogleMaps::getDistance($order_details->user_lat, $order_details->user_long, $order_details->vendor_lat, $order_details->vendor_long);
-
-        return new AppResource($distance);
-    }
-
-    public function getDistanceRider($order_id)
-    {
-        $order_details = OrderLocationDetails::find($order_id);
-        $rider_location = CurrentLocation::get(request()->ip());
-        $getUserDistance = GoogleMaps::getDistance($order_details->user_lat, $order_details->user_long, $order_details->vendor_lat, $order_details->vendor_long);
-        $getVendorDistance = GoogleMaps::getDistance($order_details->vendor_lat, $order_details->vendor_long, $rider_location->latitude, $rider_location->longitude);
-
-        $total_time = $getUserDistance['duration'] + $getVendorDistance;
-
-        return response()->json(['total_time' => $total_time, 'getUserDistance' => $getUserDistance, 'getVendorDistance' => $getVendorDistance]);
     }
 
 }

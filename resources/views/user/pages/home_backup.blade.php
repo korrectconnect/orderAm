@@ -99,6 +99,37 @@
 
                                             <div class="carousel-item active">
                                                 <div style="width: 100%; height: 90vh; background-image: url('{{$slider->image}}'); background-position: 0px; background-size: cover; background-repeat: no-repeat;">
+                                                    <div style="text-align:center; padding:140px 20px 20px 20px; color:#fff !important; width: 100%; height:90vh; background-color: rgba(0,0,0,0.4);">
+                                                        <span style="font-weight: bolder; font-size:35px;">Tickle Your Tastebuds</span><br><br>
+                                                        <p style="font-size: 20px;">Find amazing selection of local restaurant delivering food to your door</p>
+
+                                                        <div class="main-search-form-wrapper">
+
+                                                            <form>
+
+                                                                <div class="form-holder">
+                                                                    <div class="row gap-0">
+
+                                                                        <div class="col-xss-6 col-xs-6 col-sm-6">
+                                                                            <input class="form-control" placeholder="e.g. Benin / Lagos" />
+                                                                        </div>
+
+                                                                        <div class="col-xss-6 col-xs-6 col-sm-6">
+                                                                            <input class="form-control" placeholder="Find a restaurant" />
+                                                                        </div>
+
+                                                                    </div>
+
+                                                                </div>
+
+                                                                <div class="btn-holder">
+                                                                    <button class="btn"><i class="ion-android-search"></i></button>
+                                                                </div>
+
+                                                            </form>
+
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <?php
@@ -107,6 +138,37 @@
                                             ?>
                                             <div class="carousel-item">
                                                 <div style="width: 100%; height: 90vh; background-image: url('{{$slider->image}}'); background-position: 0px; background-size: cover; background-repeat: no-repeat;">
+                                                    <div style="text-align:center; padding:140px 20px 20px 20px; color:#fff !important; width: 100%; height:90vh; background-color: rgba(0,0,0,0.4);">
+                                                        <span style="font-weight: bolder; font-size:35px;">Tickle Your Tastebuds</span><br><br>
+                                                        <p style="font-size: 20px;">Find amazing selection of local restaurant delivering food to your door</p>
+
+                                                        <div class="main-search-form-wrapper">
+
+                                                            <form>
+
+                                                                <div class="form-holder">
+                                                                    <div class="row gap-0">
+
+                                                                        <div class="col-xss-6 col-xs-6 col-sm-6">
+                                                                            <input class="form-control" placeholder="e.g. Benin / Lagos" />
+                                                                        </div>
+
+                                                                        <div class="col-xss-6 col-xs-6 col-sm-6">
+                                                                            <input class="form-control" placeholder="Find a restaurant" />
+                                                                        </div>
+
+                                                                    </div>
+
+                                                                </div>
+
+                                                                <div class="btn-holder">
+                                                                    <button class="btn"><i class="ion-android-search"></i></button>
+                                                                </div>
+
+                                                            </form>
+
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <?php
@@ -123,38 +185,6 @@
                             <span class="carousel-control-next-icon" aria-hidden="true"></span>
                             <span class="sr-only">Next</span>
                         </a>
-
-                    </div>
-                </div>
-
-                <div style="text-align:center; padding:140px 20px 20px 20px; color:#fff !important; width: 100%; height:90vh; display:block; position: absolute; top:0px; background-color: rgba(0,0,0,0.4);">
-                    <span style="font-weight: bolder; font-size:35px;">Tickle Your Tastebuds</span><br><br>
-                    <p style="font-size: 20px;">Find amazing selection of local restaurant delivering food to your door</p>
-
-                    <div class="main-search-form-wrapper">
-
-                        <form action="{{route('user.vendor.search')}}" method="GET">
-
-                            <div class="form-holder">
-                                <div class="row gap-0">
-
-                                    <div class="col-xss-6 col-xs-6 col-sm-6">
-                                        <input name="city" class="form-control" placeholder="e.g. Benin / Lagos" />
-                                    </div>
-
-                                    <div class="col-xss-6 col-xs-6 col-sm-6">
-                                        <input name="key" class="form-control" placeholder="Find a restaurant" />
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                            <div class="btn-holder">
-                                <button class="btn"><i class="ion-android-search"></i></button>
-                            </div>
-
-                        </form>
 
                     </div>
                 </div>
@@ -416,7 +446,7 @@
 
 			<!-- Download App Start -->
 			<div class="download-app-area">
-				<div class="download-app-sec" style="background:url(images/download-app.jpg) bottom center no-repeat fixed;
+				<div class="download-app-sec" style="background:url(images/bander2.png) bottom center no-repeat fixed;
         background-size:cover;">
 					<div class="mask">
 						<div class="container">

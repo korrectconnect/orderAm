@@ -29,7 +29,7 @@ class CreateOrderTable extends Migration
             $table->text('comment')->nullable();
             $table->timestamp('delivery_time')->nullable();
             $table->decimal('balance')->nullable();
-            $table->double('Commission')->default(0);
+            $table->double('commission')->default(0);
             $table->boolean('status')->nullable();
             $table->boolean('cancelled')->nullable();
             $table->timestamps();

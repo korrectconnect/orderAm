@@ -40,7 +40,7 @@ class LoginController extends Controller
 
     public function username()
     {
-        return 'account_id';
+        return 'username';
     }
 
     protected function guard()
@@ -52,7 +52,7 @@ class LoginController extends Controller
     {
         $this->guard('vendor')->logout();
 
-        $request->session()->invalidate();
+        //$request->session()->invalidate();
 
         return $this->loggedOut($request) ?: redirect('/vendorredirect/login');
     }
