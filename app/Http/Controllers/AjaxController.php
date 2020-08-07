@@ -19,10 +19,20 @@ use App\Vendors;
 use Carbon\Carbon;
 use App\Address;
 use App\Customer;
+use App\OrderLocationDetails;
 
 class AjaxController extends Controller
 {
     //
+    public function testing()
+    {
+        OrderLocationDetails::truncate();
+
+        factory(OrderLocationDetails::class, 5)->create();
+
+        return 123;
+    }
+
     public function storeLocationToSession(Request $request) {
         if($request->ajax()) {
 

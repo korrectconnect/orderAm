@@ -18,10 +18,10 @@ class GoogleMaps
 
         $details['distance'] = null;
         $details['duration'] = null;
-
+        
         if(!empty($decoded_response) && isset($decoded_response->rows[0])){
             $details['distance'] = $decoded_response->rows[0]->elements[0]->distance->text;
-            $details['duration'] = $decoded_response->rows[0]->elements[0]->duration->text;
+            $details['duration'] = $decoded_response->rows[0]->elements[0]->duration->value;
         }
 
         return $details;

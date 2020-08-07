@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+   Route::get('/testing', 'AjaxController@testing');
    Route::get('/', 'UsersController@home')->name('user.home');
    Route::get('vendors/{name}', 'UsersController@vendors')->name('user.vendors');
    Route::get('vendors', 'UsersController@vendorsHome')->name('user.vendors.home');

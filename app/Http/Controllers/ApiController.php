@@ -7,6 +7,8 @@ use App\Cart;
 use App\Coupon;
 use App\Customer;
 use App\Favourite_vendor;
+use Carbon\CarbonInterval;
+use App\Services\GoogleMaps;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\AppResource;
@@ -587,6 +589,28 @@ class ApiController extends Controller
         $query = Location::where('type','=','area')->get();
 
         return AppResource::collection($query);
+    }
+
+    public function getDistance($order_id)
+    {
+        $order_details = OrderLocationDetails::find($order_id);
+
+        $distance = GoogleMaps::getDistance($order_details->user_lat, $order_details->user_long, $order_details->vendor_lat, $order_details->vendor_long);
+
+        return new AppResource($distance);
+    }
+
+    public function getDistanceRider($order_id)
+    {
+        $order_details = OrderLocationDetails::find($order_id);
+        $rider_location = CurrentLocation::get('129.205.124.7');//CurrentLocation::get(request()->ip());
+        $getUserDistance = GoogleMaps::getDistance($order_details->user_lat, $order_details->user_long, $order_details->vendor_lat, $order_details->vendor_long);
+        $getVendorDistance = GoogleMaps::getDistance($order_details->vendor_lat, $order_details->vendor_long, $rider_location->latitude, $rider_location->longitude);
+
+        $total_time = $getUserDistance['duration'] + $getVendorDistance['duration'];
+
+        return response()->json(['total_time' => CarbonInterval::seconds($total_time)->cascade()->forHumans(),
+                                'getUserDistance' => $getUserDistance, 'getVendorDistance' => $getVendorDistance]);
     }
 
 }
