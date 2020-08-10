@@ -7,6 +7,8 @@ use App\User;
 use App\Order;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Rider;
+use App\Rider_order;
 use App\Services\GoogleMaps;
 use Stevebauman\Location\Facades\Location;
 
@@ -31,6 +33,20 @@ class RidersController extends Controller
     {
         $order = Order::find($order_id);
         
+        return response()->json($order);
+    }
+
+    public function getRiderOrder($order_no, $rider_id)
+    {
+        $order = Rider_order::where('order_id', $order_no)->where('rider_id', $rider_id)->first();
+
+        return response()->json($order);
+    }
+
+    public function getRiderConfirmedOrder($order_no, $rider_id)
+    {
+        $order = Rider_order::where('order_id', $order_no)->where('rider_id', $rider_id)->where('confirm', 1)->first();
+
         return response()->json($order);
     }
 }
