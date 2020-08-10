@@ -33,6 +33,8 @@ Route::group(['middleware' => ['auth:api']], function() {
     Route::get('/rider/client-info/{order_id}', 'RidersController@getClientInfo'); //ABEG NO DEY DELETE THESE THINGS. I USE GOD BEG YOU
     Route::get('/rider/order-info/{order_id}', 'RidersController@getOrderInfo'); //ABEG NO DEY DELETE THESE THINGS. I USE GOD BEG YOU
     Route::get('/rider/current-location', 'RidersController@getRidersLocation'); //ABEG NO DEY DELETE THESE THINGS. I USE GOD BEG YOU
+    Route::get('get/rider-order/{order_no}/{rider_id}', 'RidersController@getRiderOrder'); //ABEG NO DEY DELETE THESE THINGS. I USE GOD BEG YOU
+    Route::get('get/rider-order/{order_no}/{rider_id}/confirmed', 'RidersController@getRiderConfirmedOrder'); //ABEG NO DEY DELETE THESE THINGS. I USE GOD BEG YOU
     //ABEG NO DEY DELETE THESE THINGS. I USE GOD BEG YOU
 
     Route::post('/users/update', 'ApiController@editUser'); // firstname|lastname|phone
