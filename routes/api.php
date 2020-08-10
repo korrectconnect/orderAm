@@ -1,7 +1,8 @@
 <?php
 
-use App\Http\Controllers\ApiController;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Route;
+use App\Http\Controllers\ApiController;
 //use Illuminate\Routing\Route;
 
 /*
@@ -22,6 +23,17 @@ Route::post('/vendor/login', 'Api\authController@loginVendor');
 
 
 Route::group(['middleware' => ['auth:api']], function() {
+
+    //ABEG NO DEY DELETE THESE THINGS. I USE GOD BEG YOU
+    Route::get('/order/distance/{order_id}', 'ApiController@getDistance'); //ABEG NO DEY DELETE THESE THINGS. I USE GOD BEG YOU
+    Route::get('/rider/distance/{order_id}', 'ApiController@getDistanceRider'); //ABEG NO DEY DELETE THESE THINGS. I USE GOD BEG YOU
+    Route::get('/messages/{admin_rider_id}', 'MessagesController@privateMessages'); //ABEG NO DEY DELETE THESE THINGS. I USE GOD BEG YOU
+    Route::post('/messages/{admin_rider_id}', 'MessagesController@sendMessage'); //ABEG NO DEY DELETE THESE THINGS. I USE GOD BEG YOU
+    Route::get('/rider/profile', 'RidersController@getRiderProfile'); //ABEG NO DEY DELETE THESE THINGS. I USE GOD BEG YOU
+    Route::get('/rider/client-info/{order_id}', 'RidersController@getClientInfo'); //ABEG NO DEY DELETE THESE THINGS. I USE GOD BEG YOU
+    Route::get('/rider/order-info/{order_id}', 'RidersController@getOrderInfo'); //ABEG NO DEY DELETE THESE THINGS. I USE GOD BEG YOU
+    Route::get('/rider/current-location', 'RidersController@getRidersLocation'); //ABEG NO DEY DELETE THESE THINGS. I USE GOD BEG YOU
+    //ABEG NO DEY DELETE THESE THINGS. I USE GOD BEG YOU
 
     Route::post('/users/update', 'ApiController@editUser'); // firstname|lastname|phone
     Route::post('/makeOrder', 'ApiController@makeOrder'); // vendor_id|coupon|address_id|payment_type(card or cash)|transaction_id
