@@ -49,4 +49,18 @@ class RidersController extends Controller
 
         return response()->json($order);
     }
+
+    public function getAllRiderOrders($rider_id)
+    {
+        $orders = Rider_order::where('rider_id', $rider_id)->get();
+
+        return response()->json($orders);
+    }
+
+    public function getAllRiderConfirmedOrders($rider_id)
+    {
+        $orders = Rider_order::where('rider_id', $rider_id)->where('confirm', 1)->get();
+
+        return response()->json($orders);
+    }
 }
