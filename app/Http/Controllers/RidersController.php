@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Rider;
 use App\Rider_order;
 use App\Services\GoogleMaps;
+use Illuminate\Support\Facades\DB;
 use Stevebauman\Location\Facades\Location;
 
 class RidersController extends Controller
@@ -17,7 +18,6 @@ class RidersController extends Controller
     public function getRiderProfile()
     {
         $rider = auth()->user()->rider;
-
         return response()->json($rider);
     }
 
@@ -52,8 +52,7 @@ class RidersController extends Controller
 
     public function getAllRiderOrders($rider_id)
     {
-        $orders = Rider_order::where('rider_id', $rider_id)->get();
-
+        $orders = DB::table('rider_orders')->where('rider_id', $rider_id)->get();
         return response()->json($orders);
     }
 
