@@ -32,7 +32,7 @@ class RidersController extends Controller
     public function getOrderInfo($order_id)
     {
         $order = Order::find($order_id);
-        
+
         return response()->json($order);
     }
 
