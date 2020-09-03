@@ -26,7 +26,7 @@ Route::group(['middleware' => ['auth:api']], function() {
 
     //ABEG NO DEY DELETE THESE THINGS. I USE GOD BEG YOU
     Route::get('/order/distance/{order_id}', 'ApiController@getDistance'); //ABEG NO DEY DELETE THESE THINGS. I USE GOD BEG YOU
-    Route::get('/rider/distance/{order_id}', 'ApiController@getDistanceRider'); //ABEG NO DEY DELETE THESE THINGS. I USE GOD BEG YOU
+    Route::post('/rider/distance/{order_id}/{rider_lat}/{rider_long}', 'ApiController@getDistanceRider'); //ABEG NO DEY DELETE THESE THINGS. I USE GOD BEG YOU
     Route::get('/messages/{admin_rider_id}', 'MessagesController@privateMessages'); //ABEG NO DEY DELETE THESE THINGS. I USE GOD BEG YOU
     Route::post('/messages/{admin_rider_id}', 'MessagesController@sendMessage'); //ABEG NO DEY DELETE THESE THINGS. I USE GOD BEG YOU
     Route::get('/rider/profile', 'RidersController@getRiderProfile'); //ABEG NO DEY DELETE THESE THINGS. I USE GOD BEG YOU
@@ -34,8 +34,8 @@ Route::group(['middleware' => ['auth:api']], function() {
     Route::get('/rider/order-info/{order_id}', 'RidersController@getOrderInfo'); //ABEG NO DEY DELETE THESE THINGS. I USE GOD BEG YOU
     Route::get('/rider/current-location', 'RidersController@getRidersLocation'); //ABEG NO DEY DELETE THESE THINGS. I USE GOD BEG YOU
     Route::get('/rider-order/{rider_id}/all', 'RidersController@getAllRiderOrders');
-    Route::get('/rider-order/{rider_id}/all', 'RidersController@getAllRiderOrders');
-    Route::get('/rider-order/{rider_id}/all/confirmed', 'RidersController@getAllRiderConfirmedOrders'); 
+    // Route::get('/rider-order/{rider_id}/all', 'RidersController@getAllRiderOrders');
+    Route::get('/rider-order/{rider_id}/all/confirmed', 'RidersController@getAllRiderConfirmedOrders');
     Route::get('/rider-order/{order_no}/{rider_id}', 'RidersController@getRiderOrder'); //ABEG NO DEY DELETE THESE THINGS. I USE GOD BEG YOU
     Route::get('/rider-order/{order_no}/{rider_id}/confirmed', 'RidersController@getRiderConfirmedOrder');
     //ABEG NO DEY DELETE THESE THINGS. I USE GOD BEG YOU
